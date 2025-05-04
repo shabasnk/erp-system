@@ -1,4 +1,8 @@
-import { BenefitsSection1, BenefitsSection2, BenefitsSection3 } from "./components/BenefitsSection";
+import {
+  BenefitsSection1,
+  BenefitsSection2,
+  // BenefitsSection3,
+} from "./components/BenefitsSection";
 import CtaSection from "./components/CtaSection";
 import FaqSection from "./components/FaqSection";
 import FeaturesSection from "./components/FeaturesSection";
@@ -12,12 +16,12 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <HeroSection/>
+      <HeroSection />
       <ProblemSection />
       <SolutionSection />
       <BenefitsSection1 />
       <BenefitsSection2 />
-      <BenefitsSection3 />
+      {/* <BenefitsSection3 /> */}
       <FeaturesSection />
       <FaqSection />
       <CtaSection />
