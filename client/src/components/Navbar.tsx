@@ -2,6 +2,8 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { BorderBeam } from "./magicui/border-beam";
+import { TextAnimate } from "./magicui/text-animate";
+// import { AuroraText } from "./magicui/aurora-text";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -9,11 +11,39 @@ const Navbar: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 ">
       <div className="relative mx-16 mt-8 rounded-lg overflow-hidden shadow-sm">
-        
         <div className=" bg-white border border-gray-100 rounded-lg ">
           <div className="flex items-center justify-between px-4 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div className="flex items-center">
-              <span className="text-2xl font-bold text-wez-red">WEZ-ERP</span>
+              <span
+                className="text-2xl font-bold"
+                // style={{
+                //   background: "linear-gradient(to right, #ea384c, #FF719A)",
+                //   WebkitBackgroundClip: "text",
+                //   backgroundClip: "text",
+                //   color: "transparent",
+                //   WebkitTextFillColor: "transparent",
+                //   display: "inline-block"
+                // }}
+              >
+                {/* <AuroraText colors={["#ea384c", "#FF719A"]} className="text-2xl font-bold" speed={2}> */}
+                <TextAnimate
+                  animation="blurInUp"
+                  by="character"
+                  duration={5}
+                  className="text-[#ea384c]"
+                  // style={{
+                  //   background: "linear-gradient(to right, #ea384c, #FF719A)",
+                  //   WebkitBackgroundClip: "text",
+                  //   backgroundClip: "text",
+                  //   color: "transparent",
+                  //   WebkitTextFillColor: "transparent",
+                  //   display: "inline-block"
+                  // }}
+                >
+                  WEZ-ERP
+                </TextAnimate>
+                {/* </AuroraText> */}
+              </span>
             </div>
 
             {/* Desktop Navigation */}
@@ -56,8 +86,6 @@ const Navbar: React.FC = () => {
               </Button>
             </div>
           </div>
-
-          
         </div>
         <BorderBeam
           duration={6}
@@ -70,7 +98,6 @@ const Navbar: React.FC = () => {
           size={400}
           className="from-transparent via-[#FF719A] to-transparent"
         />
-        
       </div>
 
       {/* Mobile Navigation */}

@@ -99,7 +99,7 @@ const ProblemSection: React.FC = () => {
             title="Security & Compliance" 
             description="Growing concerns about data security, privacy regulations, and maintaining compliance standards in business operations." 
             icon={<Shield className="w-6 h-6 text-indigo-600" />}
-            className="bg-indigo-50/50 border-indigo-100 hover:border-indigo-200"
+            className="md:col-span-2 bg-indigo-50/50 border-indigo-100 hover:border-indigo-200"
           />
         </div>
       </div>
