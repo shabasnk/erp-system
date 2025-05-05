@@ -3,6 +3,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* @custom-variant dark (&:is(.dark *)); */
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -39,7 +41,33 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-}
+  --animate-ripple: ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite;
+  @keyframes ripple {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+    }
+  }
+  --animate-aurora: aurora 8s ease-in-out infinite alternate
+;
+  @keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);}
+  25% {
+    background-position: 50% 100%;
+    transform: rotate(5deg) scale(1.1);}
+  50% {
+    background-position: 100% 50%;
+    transform: rotate(-3deg) scale(0.95);}
+  75% {
+    background-position: 50% 0%;
+    transform: rotate(3deg) scale(1.05);}
+  100% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);}}}
 
 :root {
   --radius: 0.625rem;
@@ -127,25 +155,34 @@
   body {
     @apply bg-background text-foreground;
   }
-  
+
   .section-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24;
   }
-  
+
   .section-title {
     @apply text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12;
   }
-  
+
   .feature-card {
     @apply p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow;
   }
-  
+
   .gradient-button {
     @apply px-6 py-3 rounded-md text-white font-medium transition-transform hover:scale-105 transform;
     background: linear-gradient(90deg, #ea384c 0%, #FF719A 100%);
   }
-  
+
   .section-subtitle {
     @apply text-lg md:text-xl text-center max-w-3xl mx-auto mb-12 text-gray-600;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
