@@ -1,7 +1,8 @@
-import { Sequelize, DataTypes } from 'sequelize';
+
+import { DataTypes } from 'sequelize';
 import sequelize from '../connect/connect.js';
 
-const User = sequelize.define('User', {
+const Shop = sequelize.define('Shop', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -11,21 +12,14 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  gender: {
-    type: DataTypes.STRING,
+  type: {
+    type: DataTypes.ENUM('Retail', 'Wholesale', 'Both'),
     allowNull: false,
   },
-  roleId: {
+  address: {
     type: DataTypes.STRING,
     allowNull: false,
   },
 });
 
-export default User;
-
-
+export default Shop;
