@@ -144,34 +144,34 @@ const SolutionSection: React.FC = () => {
   const solutions = [
     {
       tag: "Core Feature",
-      title: "Centralized Management",
-      description: "Manage inventory, orders, customers, and finances in one place with real-time updates across all departments.",
+      title: "All-in-One Control Panel",
+      description: "Check stock, track orders, handle customers, and manage money — all from one screen. No more jumping between apps.",
       person: {
         name: "Sarah Johnson",
         role: "Operations Director",
-        quote: "WEZ-ERP transformed how we manage our operations. Everything is now seamlessly connected."
+        quote: "Before WEZ-ERP, I had to use 4 different tools. Now, I just open one — and everything I need is right there."
       }
-    },
+    },    
     {
       tag: "Advanced Analytics",
-      title: "Data-Driven Decisions",
-      description: "Interactive dashboards and custom reports that give you actionable insights to optimize operations and increase profitability.",
+      title: "Know What’s Working (and What’s Not)",
+      description: "Get easy-to-read charts and reports that actually help you make smart choices — not just pretty graphs.",
       person: {
         name: "Michael Chen",
         role: "Business Analyst",
-        quote: "The analytics capabilities have revolutionized our decision-making process."
+        quote: "I finally spend less time digging through spreadsheets and more time making smart calls."
       }
-    },
+    },    
     {
       tag: "Automation",
-      title: "Streamlined Workflows",
-      description: "Automate repetitive tasks, approvals, and notifications to save time and reduce errors across all business processes.",
+      title: "Work Gets Done While You Sleep",
+      description: "Skip the boring stuff. Set things up once and let it run — no more chasing approvals or sending reminders.",
       person: {
         name: "Jessica Martinez",
         role: "Project Manager",
-        quote: "Automation has saved us countless hours and dramatically reduced errors."
+        quote: "We don’t waste time on the small stuff anymore. It just happens in the background now."
       }
-    }
+    }    
   ];
 
   return (

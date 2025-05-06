@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { AnimatedBeamMultipleOutput } from './custom/AnimatedBeamMultipleInputs';
-import { AnimatedList } from './magicui/animated-list';
-import { cn } from '@/lib/utils';
+import { AnimatedBeamMultipleOutput } from "./custom/AnimatedBeamMultipleInputs";
+import { AnimatedList } from "./magicui/animated-list";
+import { cn } from "@/lib/utils";
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { BarChart3, FileText, PieChart, Share2, ArrowRight, Sparkles, Users, Clock, Target } from 'lucide-react';
-import { FeatureParticles } from './magicui/feature-particles';
-import { DotPattern } from './magicui/dot-pattern';
+import {
+  BarChart3,
+  FileText,
+  PieChart,
+  Share2,
+  ArrowRight,
+  Sparkles,
+  Users,
+  Clock,
+  Target,
+} from "lucide-react";
+import { FeatureParticles } from "./magicui/feature-particles";
+import { DotPattern } from "./magicui/dot-pattern";
 
 interface BenefitCardProps {
   title: string;
@@ -15,7 +25,12 @@ interface BenefitCardProps {
   index: number;
 }
 
-const BenefitCard: React.FC<BenefitCardProps> = ({ title, description, icon, index }) => {
+const BenefitCard: React.FC<BenefitCardProps> = ({
+  title,
+  description,
+  icon,
+  index,
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -25,12 +40,12 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ title, description, icon, ind
   const magneticX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-30, 30]), {
     stiffness: 150,
     damping: 15,
-    mass: 0.1
+    mass: 0.1,
   });
   const magneticY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-30, 30]), {
     stiffness: 150,
     damping: 15,
-    mass: 0.1
+    mass: 0.1,
   });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -64,7 +79,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ title, description, icon, ind
       style={{
         x: magneticX,
         y: magneticY,
-        perspective: 1000
+        perspective: 1000,
       }}
       className="relative"
     >
@@ -72,7 +87,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ title, description, icon, ind
         style={{
           rotateX: useTransform(mouseY, [-1, 1], [15, -15]),
           rotateY: useTransform(mouseX, [-1, 1], [-15, 15]),
-          transformStyle: "preserve-3d"
+          transformStyle: "preserve-3d",
         }}
         className={cn(
           "relative bg-white/80 backdrop-blur-sm p-8 rounded-2xl transition-all duration-300",
@@ -88,7 +103,9 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ title, description, icon, ind
               [mouseX, mouseY],
               ([x, y]) => `
                 radial-gradient(
-                  circle at ${50 + (x as number) * 50}% ${50 + (y as number) * 50}%,
+                  circle at ${50 + (x as number) * 50}% ${
+                50 + (y as number) * 50
+              }%,
                   rgba(234, 56, 76, 0.1),
                   transparent 70%
                 )
@@ -99,41 +116,39 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ title, description, icon, ind
 
         {/* Content */}
         <div className="relative z-10">
-          <motion.div 
+          <motion.div
             className="relative w-14 h-14 mb-6 rounded-2xl overflow-hidden"
             whileHover={{ scale: 1.1 }}
-            transition={{ 
+            transition={{
               type: "spring",
               stiffness: 400,
-              damping: 10
+              damping: 10,
             }}
           >
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-[#ea384c] to-[#FF719A]"
               animate={{
-                rotate: isHovered ? 360 : 0
+                rotate: isHovered ? 360 : 0,
               }}
               transition={{
                 duration: 5,
                 ease: "linear",
-                repeat: Infinity
+                repeat: Infinity,
               }}
             />
             <div className="absolute inset-0.5 bg-white rounded-xl flex items-center justify-center">
-              <div className="w-6 h-6 text-[#ea384c]">
-                {icon}
-              </div>
+              <div className="w-6 h-6 text-[#ea384c]">{icon}</div>
             </div>
           </motion.div>
-          
-          <motion.h3 
+
+          <motion.h3
             className="text-xl font-bold mb-3"
             style={{ transform: "translateZ(50px)" }}
           >
             {title}
           </motion.h3>
-          
-          <motion.p 
+
+          <motion.p
             className="text-gray-600 leading-relaxed"
             style={{ transform: "translateZ(30px)" }}
           >
@@ -144,8 +159,9 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ title, description, icon, ind
           <motion.div
             className="absolute inset-0 -z-10"
             style={{
-              background: "linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.2) 45%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.2) 55%, transparent 60%)",
-              transform: "translateX(-100%)"
+              background:
+                "linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.2) 45%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.2) 55%, transparent 60%)",
+              transform: "translateX(-100%)",
             }}
             animate={isHovered ? { transform: "translateX(100%)" } : {}}
             transition={{ duration: 1 }}
@@ -157,7 +173,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ title, description, icon, ind
             style={{
               background: "linear-gradient(to right, #ea384c, #FF719A)",
               scaleX: 0,
-              originX: 0
+              originX: 0,
             }}
             animate={{ scaleX: isHovered ? 1 : 0 }}
             transition={{ duration: 0.3 }}
@@ -173,28 +189,35 @@ export const BenefitsSection1: React.FC = () => {
   const benefits = [
     {
       title: "Team Collaboration",
-      description: "Streamline communication and project coordination with real-time updates and shared workspaces",
-      icon: <Users />
+      description:
+        "Make communication and project coordination easier with real-time updates and shared spaces.",
+      icon: <Users />,
     },
     {
       title: "Task Management",
-      description: "Organize and prioritize work across departments with intuitive drag-and-drop interfaces",
-      icon: <Clock />
+      description:
+        "Keep work organized and on track with easy drag-and-drop tools.",
+      icon: <Clock />,
     },
     {
       title: "Resource Allocation",
-      description: "Optimize workloads and prevent bottlenecks with AI-powered resource distribution",
-      icon: <Target />
+      description:
+        "Distribute work efficiently and avoid bottlenecks with smart resource management.",
+      icon: <Target />,
     },
     {
       title: "Progress Tracking",
-      description: "Visualize project milestones and completion status with interactive timelines",
-      icon: <BarChart3 />
-    }
+      description:
+        "Track project progress with interactive timelines and visual milestones.",
+      icon: <BarChart3 />,
+    },
   ];
 
   return (
-    <section id="benefits" className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-gray-50/30">
+    <section
+      id="benefits"
+      className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-gray-50/30"
+    >
       <div className="absolute inset-0">
         <DotPattern
           className={cn(
@@ -228,10 +251,10 @@ export const BenefitsSection1: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="text-4xl md:text-5xl font-bold mb-6"
           >
-            Transform your team's
+            Make your team
             <span className="relative ml-2">
               <span className="relative z-10 bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent">
-                productivity
+                work better
               </span>
               <motion.span
                 className="absolute -bottom-2 left-0 right-0 h-3 bg-[#ea384c]/10 -z-10 rounded-full"
@@ -250,17 +273,14 @@ export const BenefitsSection1: React.FC = () => {
             transition={{ delay: 0.3 }}
             className="text-lg text-gray-600 md:text-xl max-w-2xl mx-auto"
           >
-            Empower your team with cutting-edge tools designed to enhance collaboration and streamline workflows
+            Give your team easy-to-use tools that help them work together and
+            get things done faster.
           </motion.p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {benefits.map((benefit, index) => (
-            <BenefitCard
-              key={index}
-              {...benefit}
-              index={index}
-            />
+            <BenefitCard key={index} {...benefit} index={index} />
           ))}
         </div>
 
@@ -274,35 +294,40 @@ export const BenefitsSection1: React.FC = () => {
                   viewport={{ once: true }}
                   className="relative"
                 >
-                  <h3 className="text-2xl font-bold mb-4">Experience the future of team management</h3>
+                  <h3 className="text-2xl font-bold mb-4">
+                    Transform how your team works
+                  </h3>
                   <p className="text-gray-600 mb-6">
-                    Try our comprehensive suite of collaboration tools and see the difference in your team's productivity.
+                    Explore our easy-to-use tools and boost your team's
+                    productivity today.
                   </p>
+
                   <Button
                     className="relative group overflow-hidden rounded-xl px-8 py-4 text-white"
                     style={{
-                      background: "linear-gradient(90deg, #ea384c 0%, #FF719A 100%)",
+                      background:
+                        "linear-gradient(90deg, #ea384c 0%, #FF719A 100%)",
                     }}
                   >
                     <motion.div
                       className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
                       animate={{
-                        x: ["100%", "-100%"]
+                        x: ["100%", "-100%"],
                       }}
                       transition={{
                         duration: 2,
                         repeat: Infinity,
-                        ease: "linear"
+                        ease: "linear",
                       }}
                     />
                     <span className="relative flex items-center gap-2">
-                      Try team management tools
+                      Explore team tools
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </span>
                   </Button>
                 </motion.div>
               </div>
-              
+
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#ea384c]/20 to-[#FF719A]/20 rounded-2xl blur-2xl" />
                 <div className="relative aspect-video bg-white rounded-xl shadow-lg overflow-hidden">
@@ -336,14 +361,14 @@ export const BenefitsSection2: React.FC = () => {
               viewport={{ once: true }}
               className="inline-block px-4 py-1 mb-6 text-sm font-semibold tracking-wider uppercase rounded-full"
               style={{
-                background: 'linear-gradient(90deg, #ea384c 0%, #FF719A 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
+                background: "linear-gradient(90deg, #ea384c 0%, #FF719A 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
               }}
             >
               Analytics & Insights
             </motion.span>
-            
+
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -351,8 +376,11 @@ export const BenefitsSection2: React.FC = () => {
               transition={{ delay: 0.2 }}
               className="text-4xl md:text-5xl font-bold mb-6"
             >
-              Transform Data Into 
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#ea384c] to-[#FF719A]"> Actionable Insights</span>
+              Transform Data Into
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#ea384c] to-[#FF719A]">
+                {" "}
+                Actionable Insights
+              </span>
             </motion.h2>
           </div>
 
@@ -406,7 +434,7 @@ export const BenefitsSection2: React.FC = () => {
                 </div>
               </div>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -418,28 +446,32 @@ export const BenefitsSection2: React.FC = () => {
                 {[
                   {
                     title: "Real-time Analytics",
-                    description: "Track KPIs and business metrics as they happen with customizable dashboards",
+                    description:
+                      "Track KPIs and business metrics as they happen with customizable dashboards",
                     icon: <BarChart3 className="w-5 h-5 text-white" />,
-                    delay: 0.2
+                    delay: 0.2,
                   },
                   {
                     title: "Custom Reports",
-                    description: "Create tailored reports for different departments and stakeholders",
+                    description:
+                      "Create tailored reports for different departments and stakeholders",
                     icon: <FileText className="w-5 h-5 text-white" />,
-                    delay: 0.3
+                    delay: 0.3,
                   },
                   {
                     title: "Data Visualization",
-                    description: "Transform complex data into easy-to-understand charts and graphs",
+                    description:
+                      "Transform complex data into easy-to-understand charts and graphs",
                     icon: <PieChart className="w-5 h-5 text-white" />,
-                    delay: 0.4
+                    delay: 0.4,
                   },
                   {
                     title: "Export Capabilities",
-                    description: "Share insights in multiple formats including PDF, Excel, and PowerPoint",
+                    description:
+                      "Share insights in multiple formats including PDF, Excel, and PowerPoint",
                     icon: <Share2 className="w-5 h-5 text-white" />,
-                    delay: 0.5
-                  }
+                    delay: 0.5,
+                  },
                 ].map((item, index) => (
                   <motion.div
                     key={index}
@@ -478,18 +510,19 @@ export const BenefitsSection2: React.FC = () => {
                 <Button
                   className="relative group overflow-hidden rounded-xl px-8 py-4 text-white w-full sm:w-auto"
                   style={{
-                    background: 'linear-gradient(90deg, #ea384c 0%, #FF719A 100%)'
+                    background:
+                      "linear-gradient(90deg, #ea384c 0%, #FF719A 100%)",
                   }}
                 >
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
                     animate={{
-                      x: ['100%', '-100%']
+                      x: ["100%", "-100%"],
                     }}
                     transition={{
                       duration: 2,
                       repeat: Infinity,
-                      ease: "linear"
+                      ease: "linear",
                     }}
                   />
                   <span className="relative flex items-center gap-2">
@@ -511,28 +544,46 @@ export const BenefitsSection3: React.FC = () => {
   return (
     <section className="bg-wez-soft-peach py-16 md:py-24">
       <div className="section-container">
-        <h2 className="section-title">Easily track orders and customer operations</h2>
-        
+        <h2 className="section-title">
+          Easily track orders and customer operations
+        </h2>
+
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold">Customer Orders</h3>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">Filter</Button>
-                <Button variant="outline" size="sm">Export</Button>
+                <Button variant="outline" size="sm">
+                  Filter
+                </Button>
+                <Button variant="outline" size="sm">
+                  Export
+                </Button>
               </div>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Order ID
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Customer
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Amount
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -540,36 +591,48 @@ export const BenefitsSection3: React.FC = () => {
                     <td className="px-4 py-3 text-sm">#ORD-2023-1842</td>
                     <td className="px-4 py-3 text-sm">John Doe</td>
                     <td className="px-4 py-3 text-sm">
-                      <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Delivered</span>
+                      <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                        Delivered
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-sm">May 1, 2023</td>
                     <td className="px-4 py-3 text-sm">$1,205.00</td>
-                    <td className="px-4 py-3 text-sm text-wez-red">View Details</td>
+                    <td className="px-4 py-3 text-sm text-wez-red">
+                      View Details
+                    </td>
                   </tr>
                   <tr>
                     <td className="px-4 py-3 text-sm">#ORD-2023-1841</td>
                     <td className="px-4 py-3 text-sm">Jane Smith</td>
                     <td className="px-4 py-3 text-sm">
-                      <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Processing</span>
+                      <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                        Processing
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-sm">Apr 30, 2023</td>
                     <td className="px-4 py-3 text-sm">$850.75</td>
-                    <td className="px-4 py-3 text-sm text-wez-red">View Details</td>
+                    <td className="px-4 py-3 text-sm text-wez-red">
+                      View Details
+                    </td>
                   </tr>
                   <tr>
                     <td className="px-4 py-3 text-sm">#ORD-2023-1840</td>
                     <td className="px-4 py-3 text-sm">Robert Johnson</td>
                     <td className="px-4 py-3 text-sm">
-                      <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Shipped</span>
+                      <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                        Shipped
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-sm">Apr 29, 2023</td>
                     <td className="px-4 py-3 text-sm">$2,540.25</td>
-                    <td className="px-4 py-3 text-sm text-wez-red">View Details</td>
+                    <td className="px-4 py-3 text-sm text-wez-red">
+                      View Details
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            
+
             <div className="flex justify-center mt-6">
               <Button className="gradient-button">Manage all orders</Button>
             </div>
@@ -583,16 +646,17 @@ export const BenefitsSection3: React.FC = () => {
 export const ListSection: React.FC = () => {
   return (
     <>
-    <li className={cn(
-      "relative mx-auto min-h-fit w-full max-w-[400px] cursor-pointer overflow-hidden rounded-2xl p-4",
-      // animation styles
-      "transition-all duration-200 ease-in-out hover:scale-[103%]",
-      // light styles
-      "bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
-      // dark styles
-      "transform-gpu dark:bg-transparent dark:backdrop-blur-md dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]",
-    )}>
-
-    </li></>
-  )
-}
+      <li
+        className={cn(
+          "relative mx-auto min-h-fit w-full max-w-[400px] cursor-pointer overflow-hidden rounded-2xl p-4",
+          // animation styles
+          "transition-all duration-200 ease-in-out hover:scale-[103%]",
+          // light styles
+          "bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
+          // dark styles
+          "transform-gpu dark:bg-transparent dark:backdrop-blur-md dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]"
+        )}
+      ></li>
+    </>
+  );
+};
