@@ -54,7 +54,7 @@ import Navbar from "./components/Navbar";
 import ProblemSection from "./components/ProblemSection";
 import SolutionSection from "./components/SolutionSection";
 import Login from "./pages/credintials/login" // ✅ Create this component
-
+import Register from "./pages/credintials/register";
 function HomePage() {
   return (
     <>
@@ -80,6 +80,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register/>}/>
         </Routes>
       </div>
     </Router>
