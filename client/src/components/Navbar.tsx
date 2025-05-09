@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { BorderBeam } from "./magicui/border-beam";
 import { TextAnimate } from "./magicui/text-animate";
+import { useNavigate } from "react-router-dom";
 // import { AuroraText } from "./magicui/aurora-text";
 
 const Navbar: React.FC = () => {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   return (
@@ -72,7 +74,7 @@ const Navbar: React.FC = () => {
               >
                 FAQ
               </a>
-              <Button className="gradient-button">Try for free</Button>
+              <Button className="gradient-button" onClick={() => navigate("/login")} >Try for free</Button>
             </nav>
 
             {/* Mobile menu button */}
@@ -128,7 +130,7 @@ const Navbar: React.FC = () => {
             >
               FAQ
             </a>
-            <Button className="gradient-button w-full">Try for free</Button>
+            <Button className="gradient-button w-full" onClick={() => navigate("/login")} >Try for free</Button>
           </nav>
         </div>
       )}
