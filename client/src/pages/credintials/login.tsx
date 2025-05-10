@@ -7,11 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
 import axios from 'axios';
 
-import '@fontsource/kantumruy-pro';
+// import '@fontsource/kantumruy-pro';
 import '@fontsource/kantumruy-pro/400.css';
 import '@fontsource/kantumruy-pro/600.css';
 import '@fontsource/kantumruy-pro/700.css';
@@ -120,23 +120,33 @@ function LoginForm({
       }, {
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        withCredentials: true, // Include cookies in the request
       });
+      
       console.log('Login successful', response.data);
+      
+      // Handle successful login
+      if (response.data && response.data.token) {
+        // Store token if your application uses it
+        localStorage.setItem('token', response.data.token);
+      }
+      
       // Redirect to dashboard or home page after successful login
-      // window.location.href = '/dashboard';
+      window.location.href = '/dashboard';
+      
     } catch (error) {
+      console.error('Login error:', error);
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          setLoginError(error.response.data.message || 'Login failed');
+          setLoginError(error.response.data?.message || 'Login failed. Please check your credentials.');
         } else if (error.request) {
-          setLoginError('No response from server');
+          setLoginError('No response from server. Please try again later.');
         } else {
-          setLoginError('An unexpected error occurred');
+          setLoginError('An unexpected error occurred. Please try again.');
         }
       } else {
-        console.error('Login error:', error);
-        setLoginError('An unexpected error occurred');
+        setLoginError('An unexpected error occurred. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -167,7 +177,7 @@ function LoginForm({
                       id="email"
                       type="text"
                       placeholder="email"
-                      className={`rounded-lg px-4 py-3 h-12 text-base border ${emailError ? 'border-[#F94040]' : 'border-gray-300'} focus:border-[#CD2C2C] focus-visible:ring-[#CD2C2C] focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all`}
+                      className={`rounded-lg px-4 py-3 h-12 text-base border ${emailError ? 'border-[#F94040]' : 'border-[#FFCDD2]'} focus:border-[#F8BBD0] focus-visible:ring-[#F8BBD0] focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all`}
                       value={email}
                       onChange={handleEmailChange}
                     />
@@ -187,7 +197,7 @@ function LoginForm({
                         id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="password"
-                        className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-[#F94040]' : 'border-gray-300'} focus:border-[#CD2C2C] focus-visible:ring-[#CD2C2C] focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
+                        className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-[#F94040]' : 'border-[#FFCDD2]'} focus:border-[#F8BBD0] focus-visible:ring-[#F8BBD0] focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
                         value={password}
                         onChange={handlePasswordChange}
                       />
@@ -219,7 +229,7 @@ function LoginForm({
               <div className="flex justify-end -mt-1 mr-9">
                 <a
                   href="#"
-                  className="text-xs text-gray-600 hover:text-[#CD2C2C] underline-offset-4 hover:underline font-['Kantumruy_Pro']"
+                  className="text-xs text-gray-600 hover:text-rose-500 underline-offset-4 hover:underline font-['Kantumruy_Pro']"
                 >
                   forget password?
                 </a>
@@ -230,17 +240,17 @@ function LoginForm({
                 </div>
               )}
               <div className="flex justify-center items-center pt-2">
-                <button 
+                <Button 
                   type="submit"
-                  className={`w-28 rounded-lg py-2 text-base bg-gradient-to-r from-[#CD2C2C] to-[#671616] hover:bg-opacity-90 text-white transition-all font-['Kantumruy_Pro'] ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-28 rounded-lg py-2 text-base bg-gradient-to-r from-rose-300 to-rose-400 hover:from-rose-400 hover:to-rose-500 text-white transition-all font-['Kantumruy_Pro'] ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   disabled={isLoading}
                 >
                   {isLoading ? 'Logging in...' : 'Login'}
-                </button>
+                </Button>
               </div>
             </div>
-            <div className="text-center text-sm text-gray-600 pt-1">
-              <a href="#" className="text-xs font-['Kantumruy_Pro'] text-[#CD2C2C] underline-offset-4 hover:underline pb-80">
+            <div className="text-center text-sm text-gray-600 pt-4">
+              <a href="/register" className="text-xs font-['Kantumruy_Pro'] text-rose-500 hover:text-rose-600 underline-offset-4 hover:underline">
                 create account
               </a>
             </div>
