@@ -7,5 +7,6 @@ router.post("/register",register);
 
 router.post("/login",login);
 
+console.log("request comes");
 
 export default router;

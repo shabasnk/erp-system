@@ -1,8 +1,8 @@
 
 import asyncHandler from "express-async-handler";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Shops } from "../models/Shops.js"; // Adjust the import path if needed
+import Shop from "../models/shopModel.js"; // Adjust the import path if needed
 
 // // @desc    Authenticate and register Admin
 // // @route   POST /api/Admin/auth
@@ -25,6 +25,8 @@ const generateToken = (userId) => {
 };
 
 export const login = asyncHandler(async (req, res) => {
+    console.log("inside login");
+    
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -32,7 +34,7 @@ export const login = asyncHandler(async (req, res) => {
         throw new Error("Please provide both email and password");
     }
 
-    const user = await Shops.findOne({
+    const user = await Shop.findOne({
         where: { email: email.toLowerCase() }
     });
 
