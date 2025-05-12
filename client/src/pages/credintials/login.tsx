@@ -1,54 +1,39 @@
-import React, { useState } from 'react';
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import React, { useState } from 'react'
+import { cn } from "@/lib/utils"
+// import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
-import axios from 'axios';
+} from "@/components/ui/card"
+// import { Input } from "@/components/ui/input"
+// import { Label } from "@/components/ui/label"
+import axios from 'axios'
 
 // import '@fontsource/kantumruy-pro';
 import '@fontsource/kantumruy-pro/400.css';
 import '@fontsource/kantumruy-pro/600.css';
 import '@fontsource/kantumruy-pro/700.css';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-white p-6 md:p-10 overflow-hidden relative">
-      {/* Background dots pattern like in home page */}
-      <div className="absolute inset-0 z-0 opacity-10">
-        {Array(150).fill(0).map((_, index) => (
-          <div 
-            key={index} 
-            className="absolute rounded-full bg-[#CD2C2C]" 
-            style={{
-              width: Math.random() * 4 + 2 + 'px',
-              height: Math.random() * 4 + 2 + 'px',
-              left: Math.random() * 100 + '%',
-              top: Math.random() * 100 + '%',
-            }}
-          />
-        ))}
-      </div>
-      
+    <div className="flex h-screen w-full items-center justify-center bg-white p-6 md:p-10 overflow-hidden" style={{ backgroundImage: 'radial-gradient(#FF4B4B 1px, transparent 1px)', backgroundSize: '40px 40px', backgroundPosition: '-19px -19px' }}>
       <div className="w-full max-w-xs">
         <LoginForm />
       </div>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login
 
 function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -58,6 +43,7 @@ function LoginForm({
 
   // Email validation regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const navigate = useNavigate()
 
   // Email validation function
   const validateEmail = (value: string) => {
@@ -120,33 +106,25 @@ function LoginForm({
       }, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        withCredentials: true, // Include cookies in the request
+        }
       });
-      
       console.log('Login successful', response.data);
-      
-      // Handle successful login
-      if (response.data && response.data.token) {
-        // Store token if your application uses it
-        localStorage.setItem('token', response.data.token);
+
+      if(response){
+        navigate('shop/dashboard');
       }
-      
-      // Redirect to dashboard or home page after successful login
-      window.location.href = '/dashboard';
-      
     } catch (error) {
-      console.error('Login error:', error);
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          setLoginError(error.response.data?.message || 'Login failed. Please check your credentials.');
+          setLoginError(error.response.data.message || 'Login failed');
         } else if (error.request) {
-          setLoginError('No response from server. Please try again later.');
+          setLoginError('No response from server');
         } else {
-          setLoginError('An unexpected error occurred. Please try again.');
+          setLoginError('An unexpected error occurred');
         }
       } else {
-        setLoginError('An unexpected error occurred. Please try again.');
+        console.error('Login error:', error);
+        setLoginError('An unexpected error occurred');
       }
     } finally {
       setIsLoading(false);
@@ -158,12 +136,10 @@ function LoginForm({
       <Card className="bg-white shadow-lg border border-gray-100 rounded-xl w-[400px] h-[500px] pt-12">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
-            <div className="flex items-center">
-              <div className="text-2xl font-['Kantumruy_Pro'] text-[#CD2C2C] font-bold">WEZ-</div>
-              <span className="text-2xl font-['Kantumruy_Pro'] text-[#322D2D]">ERP</span>
-            </div>
+            <div className="text-2xl font-['Kantumruy_Pro'] text-[#FF4B4B] font-bold">WEZ-</div>
+            <span className="text-2xl font-['Kantumruy_Pro'] text-[#333333]">ER</span>
           </div>
-          <CardTitle className="text-2xl text-[#322D2D] pt-3 font-['Kantumruy_Pro'] font-normal">
+          <CardTitle className="text-2xl text-[#333333] pt-3 font-['Kantumruy_Pro'] font-normal">
             Login Your Account
           </CardTitle>
         </CardHeader>
@@ -173,16 +149,17 @@ function LoginForm({
               <div className="grid gap-1">
                 <div className="flex flex-col items-center">
                   <div className="relative w-70">
-                    <input
+                     <input
                       id="email"
                       type="text"
                       placeholder="email"
-                      className={`rounded-lg px-4 py-3 h-12 text-base border ${emailError ? 'border-[#F94040]' : 'border-[#FFCDD2]'} focus:border-[#F8BBD0] focus-visible:ring-[#F8BBD0] focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all`}
+                      className={`rounded-lg px-4 py-3 h-12 text-base border ${emailError ? 'border-gray-300' : 'border-[#F94040]'} focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all`}
+
                       value={email}
                       onChange={handleEmailChange}
                     />
                     {emailError && (
-                      <p className="text-[#F94040] text-xs mt-1 pl-1">
+                      <p className="text-[#FF4B4B] text-xs mt-1 pl-1">
                         {emailError}
                       </p>
                     )}
@@ -193,17 +170,19 @@ function LoginForm({
                 <div className="flex flex-col items-center">
                   <div className="relative w-70">
                     <div className="relative">
-                      <input
+                       <input
                         id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="password"
-                        className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-[#F94040]' : 'border-[#FFCDD2]'} focus:border-[#F8BBD0] focus-visible:ring-[#F8BBD0] focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
+                        // className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-gray-300' : 'border-[#F94040]’ } focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
+                        className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-gray-300' : 'border-[#F94040]'} focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
+
                         value={password}
                         onChange={handlePasswordChange}
                       />
                       <button
                         type="button"
-                        className="absolute right-3 top-3 text-gray-500 hover:text-gray-700 opacity-50 scale-80"
+                        className="absolute right-3 top-3 text-gray-500 hover:text-[#FF4B4B] opacity-70 scale-80"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -219,7 +198,7 @@ function LoginForm({
                       </button>
                     </div>
                     {passwordError && (
-                      <p className="text-[#F94040] text-xs mt-1 pl-1">
+                      <p className="text-[#FF4B4B] text-xs mt-1 pl-1">
                         {passwordError}
                       </p>
                     )}
@@ -229,34 +208,34 @@ function LoginForm({
               <div className="flex justify-end -mt-1 mr-9">
                 <a
                   href="#"
-                  className="text-xs text-gray-600 hover:text-rose-500 underline-offset-4 hover:underline font-['Kantumruy_Pro']"
+                  className="text-xs text-gray-600 underline-offset-4 hover:underline hover:text-[#FF4B4B] font-['Kantumruy_Pro']"
                 >
-                  forget password?
+                  Forgot password?
                 </a>
               </div>
               {loginError && (
                 <div className="flex justify-center -mt-2">
-                  <p className="text-red-500 text-xs w-70 text-center">{loginError}</p>
+                  <p className="text-[#FF4B4B] text-xs w-70 text-center">{loginError}</p>
                 </div>
               )}
               <div className="flex justify-center items-center pt-2">
-                <Button 
+                <button 
                   type="submit"
-                  className={`w-28 rounded-lg py-2 text-base bg-gradient-to-r from-rose-300 to-rose-400 hover:from-rose-400 hover:to-rose-500 text-white transition-all font-['Kantumruy_Pro'] ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-28 rounded-lg py-2 text-base bg-gradient-to-r from-[#FF4B4B] to-[#FF0000] hover:from-[#FF0000] hover:to-[#CC0000] text-white transition-all font-['Kantumruy_Pro'] ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   disabled={isLoading}
                 >
                   {isLoading ? 'Logging in...' : 'Login'}
-                </Button>
+                </button>
               </div>
             </div>
             <div className="text-center text-sm text-gray-600 pt-4">
-              <a href="/register" className="text-xs font-['Kantumruy_Pro'] text-rose-500 hover:text-rose-600 underline-offset-4 hover:underline">
-                create account
+              <a href="#" className="text-xs text-gray-800 hover:text-[#FF4B4B] underline-offset-4 hover:underline font-['Kantumruy_Pro']">
+                Create account
               </a>
             </div>
           </form>
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

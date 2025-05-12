@@ -28,8 +28,12 @@ export const login = asyncHandler(async (req, res) => {
     console.log("inside login");
     
     const { email, password } = req.body;
+    console.log("req.body:",req.body);
+    
 
     if (!email || !password) {
+        console.log("1");
+        
         res.status(400);
         throw new Error("Please provide both email and password");
     }
@@ -37,13 +41,19 @@ export const login = asyncHandler(async (req, res) => {
     const user = await Shop.findOne({
         where: { email: email.toLowerCase() }
     });
+    console.log("User:",user);
+    
 
     if (!user) {
+        console.log("2");
+        
         res.status(401);
         throw new Error("Invalid email or password");
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("isMatch:",isMatch);
+    
     if (!isMatch) {
         res.status(401);
         throw new Error("Invalid email or password");
@@ -52,7 +62,7 @@ export const login = asyncHandler(async (req, res) => {
     // Send response with token
     res.status(200).json({
         id: user.id,
-        name: user.name,
+        name: user.ownerName,
         email: user.email,
         token: generateToken(user.id),
     });
