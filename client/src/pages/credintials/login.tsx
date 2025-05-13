@@ -110,9 +110,17 @@ function LoginForm({
       });
       console.log('Login successful', response.data);
 
-      if(response){
-        navigate('shop/dashboard');
-      }
+      if (response && response.data?.token) {
+          localStorage.setItem('token', response.data.token); // ✅ Store token
+          localStorage.setItem('user', JSON.stringify({
+            id: response.data.id,
+            name: response.data.name,
+            email: response.data.email
+          })); // Optional: store user info
+
+  navigate('/dashboard');
+}
+
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -136,7 +144,7 @@ function LoginForm({
       <Card className="bg-white shadow-lg border border-gray-100 rounded-xl w-[400px] h-[500px] pt-12">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
-            <div className="text-2xl font-['Kantumruy_Pro'] text-[#FF4B4B] font-bold">WEZ-</div>
+            <div className="text-2xl font-['Kantumruy_Pro'] text-rose-400 font-bold">WEZ-</div>
             <span className="text-2xl font-['Kantumruy_Pro'] text-[#333333]">ER</span>
           </div>
           <CardTitle className="text-2xl text-[#333333] pt-3 font-['Kantumruy_Pro'] font-normal">
@@ -153,7 +161,7 @@ function LoginForm({
                       id="email"
                       type="text"
                       placeholder="email"
-                      className={`rounded-lg px-4 py-3 h-12 text-base border ${emailError ? 'border-gray-300' : 'border-[#F94040]'} focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all`}
+                      className={`rounded-lg px-4 py-3 h-12 text-base border ${emailError ? 'border-gray-300' : 'border-rose-500'} focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all`}
 
                       value={email}
                       onChange={handleEmailChange}
@@ -175,7 +183,7 @@ function LoginForm({
                         type={showPassword ? "text" : "password"}
                         placeholder="password"
                         // className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-gray-300' : 'border-[#F94040]’ } focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
-                        className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-gray-300' : 'border-[#F94040]'} focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
+                        className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-gray-300' : 'border-rose-500'} focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
 
                         value={password}
                         onChange={handlePasswordChange}
@@ -208,7 +216,7 @@ function LoginForm({
               <div className="flex justify-end -mt-1 mr-9">
                 <a
                   href="#"
-                  className="text-xs text-gray-600 underline-offset-4 hover:underline hover:text-[#FF4B4B] font-['Kantumruy_Pro']"
+                  className="text-xs text-gray-600 underline-offset-4 hover:underline hover:text-rose-500 font-['Kantumruy_Pro']"
                 >
                   Forgot password?
                 </a>
@@ -221,18 +229,22 @@ function LoginForm({
               <div className="flex justify-center items-center pt-2">
                 <button 
                   type="submit"
-                  className={`w-28 rounded-lg py-2 text-base bg-gradient-to-r from-[#FF4B4B] to-[#FF0000] hover:from-[#FF0000] hover:to-[#CC0000] text-white transition-all font-['Kantumruy_Pro'] ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-28 rounded-lg py-2 text-base bg-gradient-to-r from-rose-400 to-rose-500 hover:from-rose-400 hover:to-rose-500 text-white transition-all font-['Kantumruy_Pro'] ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   disabled={isLoading}
                 >
                   {isLoading ? 'Logging in...' : 'Login'}
                 </button>
               </div>
             </div>
-            <div className="text-center text-sm text-gray-600 pt-4">
-              <a href="#" className="text-xs text-gray-800 hover:text-[#FF4B4B] underline-offset-4 hover:underline font-['Kantumruy_Pro']">
+            <div className="text-center text-sm text-gray-600 pt-2">
+              <span
+                onClick={() => navigate('/register')}
+                className="text-xs text-gray-800 hover:text-rose-500 underline-offset-4 hover:underline font-['Kantumruy_Pro'] cursor-pointer"
+              >
                 Create account
-              </a>
-            </div>
+              </span>
+          </div>
+
           </form>
         </CardContent>
       </Card>
