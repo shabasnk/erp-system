@@ -1,39 +1,73 @@
-import React, { useState } from 'react'
-import { cn } from "@/lib/utils"
-// import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-// import { Input } from "@/components/ui/input"
-// import { Label } from "@/components/ui/label"
-import axios from 'axios'
+import React, { useState } from 'react';
+import { cn } from "@/lib/utils";
+import { motion } from 'framer-motion';
+import { Particles } from '@/components/magicui/particles';
+import { BorderBeam } from '@/components/magicui/border-beam';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-// import '@fontsource/kantumruy-pro';
+// Import font
 import '@fontsource/kantumruy-pro/400.css';
 import '@fontsource/kantumruy-pro/600.css';
 import '@fontsource/kantumruy-pro/700.css';
-import { useNavigate } from 'react-router-dom';
 
 function Login() {
+  const [darkMode, setDarkMode] = useState(false);
+  
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-white p-6 md:p-10 overflow-hidden" style={{ backgroundImage: 'radial-gradient(#FF4B4B 1px, transparent 1px)', backgroundSize: '40px 40px', backgroundPosition: '-19px -19px' }}>
-      <div className="w-full max-w-xs">
-        <LoginForm />
+    <div className={`relative min-h-screen w-full flex items-center justify-center overflow-hidden ${darkMode ? 'bg-black' : 'bg-gradient-to-b from-white to-gray-50/30'}`}>
+      {/* Background Effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <Particles        
+          className="absolute inset-0"
+          quantity={300}
+          ease={80}
+          color={darkMode ? "#FF4B4B" : "#FF4B4B"} 
+          refresh={false}
+        />
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background: darkMode 
+              ? "radial-gradient(circle at center, transparent, rgba(0, 0, 0, 0.5))" 
+              : "radial-gradient(circle at center, transparent, rgba(255,75,75,0.03))",
+            filter: "blur(80px)",
+            transform: "translateZ(0)",
+          }}
+        />
+      </div>
+
+      {/* Dark Mode Toggle */}
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className={`absolute top-4 right-4 z-20 p-2 rounded-full ${darkMode ? 'bg-black text-red-600 border border-gray-800' : 'bg-white text-red-400'} shadow-md`}
+      >
+        {darkMode ? (
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+          </svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+          </svg>
+        )}
+      </button>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex justify-center">
+        <LoginForm darkMode={darkMode} />
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
 
 function LoginForm({
   className,
+  darkMode = false,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
-  const [showPassword, setShowPassword] = useState(false)
+}: React.ComponentPropsWithoutRef<"div"> & { darkMode?: boolean }) {
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -43,7 +77,7 @@ function LoginForm({
 
   // Email validation regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // Email validation function
   const validateEmail = (value: string) => {
@@ -110,8 +144,15 @@ function LoginForm({
       });
       console.log('Login successful', response.data);
 
-      if(response){
-        navigate('shop/dashboard');
+      if (response && response.data?.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify({
+          id: response.data.id,
+          name: response.data.name,
+          email: response.data.email
+        }));
+
+        navigate('/dashboard');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -132,110 +173,160 @@ function LoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-8", className)} {...props}>
-      <Card className="bg-white shadow-lg border border-gray-100 rounded-xl w-[400px] h-[500px] pt-12">
-        <CardHeader className="text-center space-y-4">
-          <div className="flex justify-center">
-            <div className="text-2xl font-['Kantumruy_Pro'] text-[#FF4B4B] font-bold">WEZ-</div>
-            <span className="text-2xl font-['Kantumruy_Pro'] text-[#333333]">ER</span>
-          </div>
-          <CardTitle className="text-2xl text-[#333333] pt-3 font-['Kantumruy_Pro'] font-normal">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className={cn(
+        `w-full max-w-md rounded-xl shadow-lg p-8 relative overflow-hidden ${darkMode ? 'bg-black border border-gray-800' : 'bg-white'}`,
+        className
+      )}
+      {...props}
+    >
+      {/* Border Beam Effect */}
+      <BorderBeam
+        duration={6}
+        size={300}
+        className={`from-transparent ${darkMode ? 'via-red-500' : 'via-red-500'} to-transparent`}
+      />
+      
+      <div className="flex flex-col items-center mb-6">
+        <motion.div 
+          className="flex justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className="text-2xl font-['Kantumruy_Pro'] text-rose-400 font-bold">WEZ-</div>
+          <span className={`text-2xl font-['Kantumruy_Pro'] ${darkMode ? 'text-white' : 'text-gray-900'}`}>ER</span>
+        </motion.div>
+        <motion.h1 
+          className={`text-2xl font-bold text-center mt-4 font-['Kantumruy_Pro']`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <span className={darkMode ? 'text-white' : 'text-gray-900'}>
             Login Your Account
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6 pt-5">
-              <div className="grid gap-1">
-                <div className="flex flex-col items-center">
-                  <div className="relative w-70">
-                     <input
-                      id="email"
-                      type="text"
-                      placeholder="email"
-                      className={`rounded-lg px-4 py-3 h-12 text-base border ${emailError ? 'border-gray-300' : 'border-[#F94040]'} focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all`}
-
-                      value={email}
-                      onChange={handleEmailChange}
-                    />
-                    {emailError && (
-                      <p className="text-[#FF4B4B] text-xs mt-1 pl-1">
-                        {emailError}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-1">
-                <div className="flex flex-col items-center">
-                  <div className="relative w-70">
-                    <div className="relative">
-                       <input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="password"
-                        // className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-gray-300' : 'border-[#F94040]’ } focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
-                        className={`rounded-lg px-4 py-3 h-12 text-base border ${passwordError ? 'border-gray-300' : 'border-[#F94040]'} focus:border-gray-500 focus-visible:ring-gray-500 focus-visible:ring-1 focus-visible:ring-offset-1 w-full transition-all pr-10`}
-
-                        value={password}
-                        onChange={handlePasswordChange}
-                      />
-                      <button
-                        type="button"
-                        className="absolute right-3 top-3 text-gray-500 hover:text-[#FF4B4B] opacity-70 scale-80"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                        )}
-                      </button>
-                    </div>
-                    {passwordError && (
-                      <p className="text-[#FF4B4B] text-xs mt-1 pl-1">
-                        {passwordError}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-end -mt-1 mr-9">
-                <a
-                  href="#"
-                  className="text-xs text-gray-600 underline-offset-4 hover:underline hover:text-[#FF4B4B] font-['Kantumruy_Pro']"
-                >
-                  Forgot password?
-                </a>
-              </div>
-              {loginError && (
-                <div className="flex justify-center -mt-2">
-                  <p className="text-[#FF4B4B] text-xs w-70 text-center">{loginError}</p>
-                </div>
+          </span>
+        </motion.h1>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="mt-8 space-y-6 mx-auto max-w-xs">
+        <div>
+          <label htmlFor="email" className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            Email Address
+          </label>
+          <input
+            id="email"
+            type="text"
+            placeholder="your@email.com"
+            className={`rounded-lg px-4 py-3 h-12 text-base block w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
+              darkMode 
+                ? 'bg-black border-gray-800 text-white placeholder-gray-500 focus:ring-red-500 focus:border-red-500' 
+                : 'border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-red-500 focus:border-red-500'
+            } border ${emailError ? 'border-red-500' : ''}`}
+            value={email}
+            onChange={handleEmailChange}
+          />
+          {emailError && (
+            <p className="text-red-500 text-xs mt-1">
+              {emailError}
+            </p>
+          )}
+        </div>
+        
+        <div>
+          <label htmlFor="password" className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            Password
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="your password"
+              className={`rounded-lg px-4 py-3 h-12 text-base block w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 pr-10 ${
+                darkMode 
+                  ? 'bg-black border-gray-800 text-white placeholder-gray-500 focus:ring-red-500 focus:border-red-500' 
+                  : 'border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-red-500 focus:border-red-500'
+              } border ${passwordError ? 'border-red-500' : ''}`}
+              value={password}
+              onChange={handlePasswordChange}
+            />
+            <button
+              type="button"
+              className={`absolute right-3 top-3 ${darkMode ? 'text-gray-400 hover:text-red-500' : 'text-gray-500 hover:text-red-500'} opacity-70`}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
               )}
-              <div className="flex justify-center items-center pt-2">
-                <button 
-                  type="submit"
-                  className={`w-28 rounded-lg py-2 text-base bg-gradient-to-r from-[#FF4B4B] to-[#FF0000] hover:from-[#FF0000] hover:to-[#CC0000] text-white transition-all font-['Kantumruy_Pro'] ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Logging in...' : 'Login'}
-                </button>
+            </button>
+          </div>
+          {passwordError && (
+            <p className="text-red-500 text-xs mt-1">
+              {passwordError}
+            </p>
+          )}
+        </div>
+
+        <div className="flex justify-end -mt-1">
+          <a
+            href="#"
+            className={`text-xs ${darkMode ? 'text-gray-300 hover:text-red-500' : 'text-gray-600 hover:text-red-500'} underline-offset-4 hover:underline font-['Kantumruy_Pro']`}
+          >
+            Forgot password?
+          </a>
+        </div>
+
+        {loginError && (
+          <div className="flex justify-center -mt-2">
+            <p className="text-red-500 text-xs text-center">{loginError}</p>
+          </div>
+        )}
+
+        <div>
+          <button 
+            type="submit"
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white shadow-md transition-all duration-300 ${
+              darkMode 
+                ? 'bg-gradient-to-r from-red-600 to-pink-500 hover:from-red-700 hover:to-pink-600' 
+                : 'bg-gradient-to-r from-red-600 to-pink-500 hover:from-red-700 hover:to-pink-600'
+            } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Logging in...</span>
               </div>
-            </div>
-            <div className="text-center text-sm text-gray-600 pt-4">
-              <a href="#" className="text-xs text-gray-800 hover:text-[#FF4B4B] underline-offset-4 hover:underline font-['Kantumruy_Pro']">
-                Create account
-              </a>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  )
+            ) : (
+              'Login'
+            )}
+          </button>
+        </div>
+
+        <div className={`text-center text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          Don't have an account?{' '}
+          <button 
+            type="button"
+            onClick={() => navigate('/register')}
+            className={`font-medium ${darkMode ? 'text-red-600 hover:text-red-500' : 'text-red-600 hover:text-red-500'} font-['Kantumruy_Pro']`}
+          >
+            Create account
+          </button>
+        </div>
+      </form>
+    </motion.div>
+  );
 }
