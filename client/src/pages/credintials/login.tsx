@@ -65,6 +65,7 @@ export default Login;
 function LoginForm({
   className,
   darkMode = false,
+  
   ...props
 }: React.ComponentPropsWithoutRef<"div"> & { darkMode?: boolean }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -330,3 +331,4 @@ function LoginForm({
     </motion.div>
   );
 }
+

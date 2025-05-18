@@ -28,8 +28,6 @@
 
 
 
-
-
 import { Sequelize, DataTypes } from 'sequelize';
 import sequelize from '../connect/connect.js';
 import bcrypt from 'bcrypt';
