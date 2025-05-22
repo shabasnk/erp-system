@@ -6,49 +6,73 @@ interface CompanyInformationProps {
 
 const CompanyInformation = ({ darkMode }: CompanyInformationProps) => {
   return (
-    <div className={`w-full p-6 rounded-lg mb-6 ${darkMode ? 'bg-gray-800/50 border border-gray-700' : 'bg-red-50 border border-red-100'}`}>
-      <h3 className={`text-lg font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+    <div className={`w-full p-6 rounded-xl mb-6 relative overflow-hidden ${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'}`}>
+      {/* Pink Gradient Border Beam Effect */}
+      <div className="absolute inset-0 overflow-hidden rounded-xl">
+        <div className={`absolute inset-0 bg-gradient-to-r ${
+          darkMode 
+            ? 'from-transparent via-pink-500/20 to-transparent' 
+            : 'from-transparent via-pink-400/20 to-transparent'
+        } opacity-70`} />
+      </div>
+      
+      {/* Pink Gradient Title */}
+      <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-6 bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent`}>
         Company Information
       </h3>
       
-      <div className="space-y-4">
+      <div className="space-y-5 relative z-10">
         <div>
-          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-pink-200' : 'text-pink-800'} font-['Kantumruy_Pro']`}>
             Company Name
           </label>
           <input
             type="text"
             placeholder="Enter company name"
-            className={`w-full px-3 py-2 rounded-md ${darkMode 
-              ? 'bg-gray-700 border-gray-600 text-white' 
-              : 'bg-white border-gray-300'} border focus:ring-red-500 focus:border-red-500`}
+            className={`w-full px-4 py-3 rounded-lg text-base ${darkMode 
+              ? 'bg-gray-700 border-pink-800 text-white placeholder-pink-300 focus:ring-pink-400 focus:border-pink-400' 
+              : 'bg-white border-pink-200 text-gray-800 placeholder-pink-400 focus:ring-pink-400 focus:border-pink-400'} border shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50`}
           />
         </div>
         
         <div>
-          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-pink-200' : 'text-pink-800'} font-['Kantumruy_Pro']`}>
             Position
           </label>
           <input
             type="text"
             placeholder="Your position in company"
-            className={`w-full px-3 py-2 rounded-md ${darkMode 
-              ? 'bg-gray-700 border-gray-600 text-white' 
-              : 'bg-white border-gray-300'} border focus:ring-red-500 focus:border-red-500`}
+            className={`w-full px-4 py-3 rounded-lg text-base ${darkMode 
+              ? 'bg-gray-700 border-pink-800 text-white placeholder-pink-300 focus:ring-pink-400 focus:border-pink-400' 
+              : 'bg-white border-pink-200 text-gray-800 placeholder-pink-400 focus:ring-pink-400 focus:border-pink-400'} border shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50`}
           />
         </div>
         
         <div>
-          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-pink-200' : 'text-pink-800'} font-['Kantumruy_Pro']`}>
             Department
           </label>
           <input
             type="text"
             placeholder="Your department"
-            className={`w-full px-3 py-2 rounded-md ${darkMode 
-              ? 'bg-gray-700 border-gray-600 text-white' 
-              : 'bg-white border-gray-300'} border focus:ring-red-500 focus:border-red-500`}
+            className={`w-full px-4 py-3 rounded-lg text-base ${darkMode 
+              ? 'bg-gray-700 border-pink-800 text-white placeholder-pink-300 focus:ring-pink-400 focus:border-pink-400' 
+              : 'bg-white border-pink-200 text-gray-800 placeholder-pink-400 focus:ring-pink-400 focus:border-pink-400'} border shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50`}
           />
+        </div>
+
+        <div className="pt-2">
+          <button
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white shadow-md transition-all duration-300 ${
+              darkMode 
+                ? 'bg-gradient-to-r from-[#ea384c] to-[#FF719A] hover:from-[#d83245] hover:to-[#e6688d]' 
+                : 'bg-gradient-to-r from-[#ea384c] to-[#FF719A] hover:from-[#d83245] hover:to-[#e6688d]'
+            } relative overflow-hidden group font-['Kantumruy_Pro']`}
+          >
+            <span className="relative z-10">Update Company Info</span>
+            {/* Animated background for extra effect */}
+            <span className="absolute inset-0 bg-gradient-to-r from-[#FF719A] to-[#ea384c] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+          </button>
         </div>
       </div>
     </div>
