@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
-import { motion } from 'framer-motion';
+import { motion, MotionProps } from 'framer-motion';
 import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import { useNavigate } from 'react-router-dom';
@@ -15,22 +15,22 @@ function Login() {
   const [darkMode, setDarkMode] = useState(false);
   
   return (
-    <div className={`relative min-h-screen w-full flex items-center justify-center overflow-hidden ${darkMode ? 'bg-black' : 'bg-gradient-to-b from-white to-gray-50/30'}`}>
+    <div className={`relative min-h-screen w-full flex items-center justify-center overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-b from-white to-pink-50'}`}>
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <Particles        
           className="absolute inset-0"
           quantity={300}
           ease={80}
-          color={darkMode ? "#FF4B4B" : "#FF4B4B"} 
+          color={darkMode ? "#FF4B4B" : "#FF719A"} 
           refresh={false}
         />
         <motion.div
           className="absolute inset-0"
           style={{
             background: darkMode 
-              ? "radial-gradient(circle at center, transparent, rgba(0, 0, 0, 0.5))" 
-              : "radial-gradient(circle at center, transparent, rgba(255,75,75,0.03))",
+              ? "radial-gradient(circle at center, transparent, rgba(0, 0, 0, 0.7))" 
+              : "radial-gradient(circle at center, transparent, rgba(255,113,154,0.1))",
             filter: "blur(80px)",
             transform: "translateZ(0)",
           }}
@@ -40,7 +40,7 @@ function Login() {
       {/* Dark Mode Toggle */}
       <button
         onClick={() => setDarkMode(!darkMode)}
-        className={`absolute top-4 right-4 z-20 p-2 rounded-full ${darkMode ? 'bg-black text-red-600 border border-gray-800' : 'bg-white text-red-400'} shadow-md`}
+        className={`absolute top-4 right-4 z-20 p-2 rounded-full ${darkMode ? 'bg-gray-800 text-pink-400 border border-gray-700' : 'bg-white text-pink-600'} shadow-md hover:scale-105 transition-transform`}
       >
         {darkMode ? (
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -62,12 +62,16 @@ function Login() {
 
 export default Login;
 
+interface LoginFormProps extends MotionProps {
+  className?: string;
+  darkMode?: boolean;
+}
+
 function LoginForm({
   className,
   darkMode = false,
-  
   ...props
-}: React.ComponentPropsWithoutRef<"div"> & { darkMode?: boolean }) {
+}: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -179,7 +183,7 @@ function LoginForm({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       className={cn(
-        `w-full max-w-md rounded-xl shadow-lg p-8 relative overflow-hidden ${darkMode ? 'bg-black border border-gray-800' : 'bg-white'}`,
+        `w-full max-w-md rounded-xl shadow-lg p-8 relative overflow-hidden ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`,
         className
       )}
       {...props}
@@ -188,7 +192,7 @@ function LoginForm({
       <BorderBeam
         duration={6}
         size={300}
-        className={`from-transparent ${darkMode ? 'via-red-500' : 'via-red-500'} to-transparent`}
+        className={`from-transparent ${darkMode ? 'via-pink-500' : 'via-pink-400'} to-transparent`}
       />
       
       <div className="flex flex-col items-center mb-6">
@@ -198,8 +202,8 @@ function LoginForm({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="text-2xl font-['Kantumruy_Pro'] text-rose-400 font-bold">WEZ-</div>
-          <span className={`text-2xl font-['Kantumruy_Pro'] ${darkMode ? 'text-white' : 'text-gray-900'}`}>ER</span>
+          <div className="text-2xl font-['Kantumruy_Pro'] text-pink-500 font-bold">WEZ-</div>
+          <span className={`text-2xl font-['Kantumruy_Pro'] ${darkMode ? 'text-white' : 'text-gray-800'}`}>ER</span>
         </motion.div>
         <motion.h1 
           className={`text-2xl font-bold text-center mt-4 font-['Kantumruy_Pro']`}
@@ -207,7 +211,7 @@ function LoginForm({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <span className={darkMode ? 'text-white' : 'text-gray-900'}>
+          <span className={darkMode ? 'text-white' : 'text-gray-800'}>
             Login Your Account
           </span>
         </motion.h1>
@@ -224,8 +228,8 @@ function LoginForm({
             placeholder="your@email.com"
             className={`rounded-lg px-4 py-3 h-12 text-base block w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
               darkMode 
-                ? 'bg-black border-gray-800 text-white placeholder-gray-500 focus:ring-red-500 focus:border-red-500' 
-                : 'border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-red-500 focus:border-red-500'
+                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-pink-500 focus:border-pink-500' 
+                : 'border-gray-300 text-gray-800 placeholder-gray-500 focus:ring-pink-500 focus:border-pink-500'
             } border ${emailError ? 'border-red-500' : ''}`}
             value={email}
             onChange={handleEmailChange}
@@ -248,15 +252,15 @@ function LoginForm({
               placeholder="your password"
               className={`rounded-lg px-4 py-3 h-12 text-base block w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 pr-10 ${
                 darkMode 
-                  ? 'bg-black border-gray-800 text-white placeholder-gray-500 focus:ring-red-500 focus:border-red-500' 
-                  : 'border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-red-500 focus:border-red-500'
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-pink-500 focus:border-pink-500' 
+                  : 'border-gray-300 text-gray-800 placeholder-gray-500 focus:ring-pink-500 focus:border-pink-500'
               } border ${passwordError ? 'border-red-500' : ''}`}
               value={password}
               onChange={handlePasswordChange}
             />
             <button
               type="button"
-              className={`absolute right-3 top-3 ${darkMode ? 'text-gray-400 hover:text-red-500' : 'text-gray-500 hover:text-red-500'} opacity-70`}
+              className={`absolute right-3 top-3 ${darkMode ? 'text-gray-400 hover:text-pink-400' : 'text-gray-500 hover:text-pink-600'} opacity-70`}
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
@@ -281,7 +285,7 @@ function LoginForm({
         <div className="flex justify-end -mt-1">
           <a
             href="#"
-            className={`text-xs ${darkMode ? 'text-gray-300 hover:text-red-500' : 'text-gray-600 hover:text-red-500'} underline-offset-4 hover:underline font-['Kantumruy_Pro']`}
+            className={`text-xs ${darkMode ? 'text-gray-300 hover:text-pink-400' : 'text-gray-600 hover:text-pink-600'} underline-offset-4 hover:underline font-['Kantumruy_Pro']`}
           >
             Forgot password?
           </a>
@@ -298,22 +302,26 @@ function LoginForm({
             type="submit"
             className={`w-full py-3 px-4 rounded-lg font-medium text-white shadow-md transition-all duration-300 ${
               darkMode 
-                ? 'bg-gradient-to-r from-red-600 to-pink-500 hover:from-red-700 hover:to-pink-600' 
-                : 'bg-gradient-to-r from-red-600 to-pink-500 hover:from-red-700 hover:to-pink-600'
-            } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                ? 'bg-gradient-to-r from-[#ea384c] to-[#FF719A] hover:from-[#d83245] hover:to-[#e6688d]' 
+                : 'bg-gradient-to-r from-[#ea384c] to-[#FF719A] hover:from-[#d83245] hover:to-[#e6688d]'
+            } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''} relative overflow-hidden group`}
             disabled={isLoading}
           >
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>Logging in...</span>
-              </div>
-            ) : (
-              'Login'
-            )}
+            <span className="relative z-10">
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Logging in...</span>
+                </div>
+              ) : (
+                'Login'
+              )}
+            </span>
+            {/* Animated background for extra effect */}
+            <span className="absolute inset-0 bg-gradient-to-r from-[#FF719A] to-[#ea384c] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
           </button>
         </div>
 
@@ -322,7 +330,7 @@ function LoginForm({
           <button 
             type="button"
             onClick={() => navigate('/register')}
-            className={`font-medium ${darkMode ? 'text-red-600 hover:text-red-500' : 'text-red-600 hover:text-red-500'} font-['Kantumruy_Pro']`}
+            className={`font-medium ${darkMode ? 'text-pink-400 hover:text-pink-300' : 'text-pink-600 hover:text-pink-500'} font-['Kantumruy_Pro']`}
           >
             Create account
           </button>
@@ -331,4 +339,3 @@ function LoginForm({
     </motion.div>
   );
 }
-

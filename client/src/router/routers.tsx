@@ -29,7 +29,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/credintials/login";
 import Register from "../pages/credintials/register";
 import HomePage from "../pages/homePage";
-import Dashboard from "@/pages/dashboard";
+import Dashboard from "@/pages/dashboard/dashboard";
 import { useAuth } from "@/hooks/useAuth";
 import ProtectedRoute from '@/routes/protectedRoute';
 
