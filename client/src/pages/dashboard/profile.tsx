@@ -121,3 +121,5 @@ function Profile({ darkMode, user, onBack }: ProfileProps) {
 }
 
 export default Profile;
+
+

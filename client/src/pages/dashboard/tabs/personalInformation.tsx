@@ -4,7 +4,6 @@ interface PersonalInformationProps {
   darkMode: boolean;
   user: {
     name: string;
-    email: string;
     avatar: string;
     phone?: string;
   };
@@ -23,7 +22,7 @@ const PersonalInformation = ({ darkMode, user }: PersonalInformationProps) => {
       </div>
       
       {/* Pink Gradient Title */}
-     <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-6 bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent`}>
+      <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-6 bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent`}>
         Personal Information
       </h3>
       
@@ -35,19 +34,6 @@ const PersonalInformation = ({ darkMode, user }: PersonalInformationProps) => {
           <input
             type="text"
             defaultValue={user.name}
-            className={`w-full px-4 py-3 rounded-lg text-base ${darkMode 
-              ? 'bg-gray-700 border-pink-800 text-white placeholder-pink-300 focus:ring-pink-400 focus:border-pink-400' 
-              : 'bg-white border-pink-200 text-gray-800 placeholder-pink-400 focus:ring-pink-400 focus:border-pink-400'} border shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50`}
-          />
-        </div>
-        
-        <div>
-          <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-pink-200' : 'text-pink-800'} font-['Kantumruy_Pro']`}>
-            Email Address
-          </label>
-          <input
-            type="email"
-            defaultValue={user.email}
             className={`w-full px-4 py-3 rounded-lg text-base ${darkMode 
               ? 'bg-gray-700 border-pink-800 text-white placeholder-pink-300 focus:ring-pink-400 focus:border-pink-400' 
               : 'bg-white border-pink-200 text-gray-800 placeholder-pink-400 focus:ring-pink-400 focus:border-pink-400'} border shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50`}
@@ -69,7 +55,7 @@ const PersonalInformation = ({ darkMode, user }: PersonalInformationProps) => {
         </div>
 
         <div className="pt-2">
-         <button
+          <button
             className={`w-full py-3 px-4 rounded-lg font-medium text-white shadow-md transition-all duration-300 ${
               darkMode 
                 ? 'bg-gradient-to-r from-[#ea384c] to-[#FF719A] hover:from-[#d83245] hover:to-[#e6688d]' 

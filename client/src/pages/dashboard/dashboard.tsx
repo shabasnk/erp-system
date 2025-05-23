@@ -3,10 +3,8 @@ import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import Profile from './profile';
-import ProductsNav from './navbar/products';
-import BillingNav from './navbar/billing';
 
 // Import font
 import '@fontsource/kantumruy-pro/400.css';
@@ -15,10 +13,14 @@ import '@fontsource/kantumruy-pro/700.css';
 
 const Dashboard = () => {
   const [darkMode, setDarkMode] = useState(false);
-  const [activeTab, setActiveTab] = useState('products');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine active tab based on route
+  const activeTab = location.pathname.includes('billing') ? 'billing' : 
+                   location.pathname.includes('profile') ? 'profile' : 'products';
 
   // Mock user data
   const user = {
@@ -28,7 +30,6 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    // Clear user data and token
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
@@ -61,8 +62,26 @@ const Dashboard = () => {
       <nav className={`relative z-20 ${darkMode ? 'bg-gray-900/80 border-b border-pink-900' : 'bg-white/80 backdrop-blur-sm'} shadow-sm`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
             <div className="flex items-center">
+              {/* Mobile menu button */}
+              {activeTab !== 'profile' && (
+                <div className="md:hidden mr-2">
+                  <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className={`p-2 rounded-md ${darkMode ? 'text-pink-400 hover:bg-gray-700' : 'text-pink-600 hover:bg-pink-50'} focus:outline-none`}
+                  >
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      {mobileMenuOpen ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      ) : (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                      )}
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              {/* Logo */}
               <motion.div 
                 className="flex"
                 initial={{ opacity: 0 }}
@@ -73,21 +92,26 @@ const Dashboard = () => {
               </motion.div>
             </div>
 
-            {/* Navigation Links */}
-            {!showProfile && (
+            {/* Navigation Links - Desktop */}
+            {activeTab !== 'profile' && (
               <div className="hidden md:block">
                 <div className="ml-10 flex items-center space-x-4">
-                  {activeTab === 'products' ? (
-                    <ProductsNav 
-                      darkMode={darkMode} 
-                      setActiveTab={setActiveTab} 
-                    />
-                  ) : (
-                    <BillingNav 
-                      darkMode={darkMode} 
-                      setActiveTab={setActiveTab} 
-                    />
-                  )}
+                  <button
+                    onClick={() => navigate('/dashboard/products')}
+                    className={`px-3 py-2 rounded-md text-sm font-medium font-['Kantumruy_Pro'] ${activeTab === 'products' ? 
+                      (darkMode ? 'bg-gray-800 text-pink-400' : 'bg-pink-100 text-pink-600') : 
+                      (darkMode ? 'text-gray-300 hover:text-pink-300 hover:bg-gray-700' : 'text-gray-600 hover:text-pink-600 hover:bg-pink-50')}`}
+                  >
+                    Products
+                  </button>
+                  <button
+                    onClick={() => navigate('/dashboard/billing')}
+                    className={`px-3 py-2 rounded-md text-sm font-medium font-['Kantumruy_Pro'] ${activeTab === 'billing' ? 
+                      (darkMode ? 'bg-gray-800 text-pink-400' : 'bg-pink-100 text-pink-600') : 
+                      (darkMode ? 'text-gray-300 hover:text-pink-300 hover:bg-gray-700' : 'text-gray-600 hover:text-pink-600 hover:bg-pink-50')}`}
+                  >
+                    Billing
+                  </button>
                 </div>
               </div>
             )}
@@ -111,7 +135,7 @@ const Dashboard = () => {
               </button>
 
               {/* Profile dropdown */}
-              {!showProfile && (
+              {activeTab !== 'profile' && (
                 <div className="ml-3 relative">
                   <div>
                     <button
@@ -144,7 +168,8 @@ const Dashboard = () => {
                       <button
                         onClick={() => {
                           setIsProfileOpen(false);
-                          setShowProfile(true);
+                          navigate('/dashboard/profile');
+                          setMobileMenuOpen(false);
                         }}
                         className={`block w-full text-left px-4 py-2 text-sm ${darkMode ? 'text-pink-300 hover:bg-gray-700' : 'text-pink-600 hover:bg-pink-50'}`}
                         role="menuitem"
@@ -172,16 +197,54 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && activeTab !== 'profile' && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className={`md:hidden ${darkMode ? 'bg-gray-900/90' : 'bg-white/90'}`}
+          >
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              <button
+                onClick={() => {
+                  navigate('/dashboard/products');
+                  setMobileMenuOpen(false);
+                }}
+                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium font-['Kantumruy_Pro'] ${activeTab === 'products' ? 
+                  (darkMode ? 'text-pink-300 hover:bg-gray-700' : 'text-pink-600 hover:bg-pink-50') : 
+                  (darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-pink-50')}`}
+              >
+                Products
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/dashboard/billing');
+                  setMobileMenuOpen(false);
+                }}
+                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium font-['Kantumruy_Pro'] ${activeTab === 'billing' ? 
+                  (darkMode ? 'text-pink-300 hover:bg-gray-700' : 'text-pink-600 hover:bg-pink-50') : 
+                  (darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-pink-50')}`}
+              >
+                Billing
+              </button>
+            </div>
+          </motion.div>
+        )}
       </nav>
 
       {/* Main Content */}
       <main className="flex-1 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {showProfile ? (
+          {activeTab === 'profile' ? (
             <Profile 
               darkMode={darkMode} 
               user={user} 
-              onBack={() => setShowProfile(false)} 
+              onBack={() => {
+                navigate('/dashboard/products');
+                setMobileMenuOpen(false);
+              }} 
             />
           ) : (
             <motion.div
@@ -192,18 +255,13 @@ const Dashboard = () => {
                 `rounded-xl shadow-lg p-8 relative overflow-hidden ${darkMode ? 'bg-gray-900/70 border border-pink-900' : 'bg-white/90 border border-pink-200'}`,
               )}
             >
-              {/* Border Beam Effect */}
               <BorderBeam
                 duration={6}
                 size={300}
                 className={`from-transparent ${darkMode ? 'via-pink-500' : 'via-pink-400'} to-transparent`}
               />
-
-              {activeTab === 'products' ? (
-                <ProductsNav darkMode={darkMode} />
-              ) : (
-                <BillingNav darkMode={darkMode} />
-              )}
+              
+              <Outlet context={{ darkMode }} />
             </motion.div>
           )}
         </div>
