@@ -12,6 +12,8 @@ import authRouter from "./routes/authRouter.js";
 
 import { errorHandler, notFound } from "./middlewares/errorMiddlware.js";
 
+import shopRouter from "./routes/shopRouter.js"
+
 dotenv.config();
 
 const app = express();
@@ -34,6 +36,7 @@ sequelize.sync({ force: false })
 
 // Routes
 app.use("/api/auth/", authRouter);
+app.use("/api/shops",shopRouter)
 
 app.get("/", (req, res) => {
   res.send("API is running!");

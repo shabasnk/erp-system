@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { Particles } from '@/components/magicui/particles';
@@ -11,10 +11,23 @@ import '@fontsource/kantumruy-pro/400.css';
 import '@fontsource/kantumruy-pro/600.css';
 import '@fontsource/kantumruy-pro/700.css';
 
+interface User {
+  name: string;
+  email: string;
+  avatar: string;
+  phone?: string;
+}
+
 const Dashboard = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User>({
+    name: "",
+    email: "",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg"
+  });
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -22,18 +35,38 @@ const Dashboard = () => {
   const activeTab = location.pathname.includes('billing') ? 'billing' : 
                    location.pathname.includes('profile') ? 'profile' : 'products';
 
-  // Mock user data
-  const user = {
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "https://randomuser.me/api/portraits/men/1.jpg"
-  };
+  // Get user data when component mounts
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser({
+          name: userData.name || userData.email.split('@')[0],
+          email: userData.email,
+          avatar: userData.avatar || "https://randomuser.me/api/portraits/men/1.jpg",
+          phone: userData.phone
+        });
+      } catch (e) {
+        console.error("Failed to parse user data", e);
+      }
+    }
+    setLoading(false);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
   };
+
+  if (loading) {
+    return (
+      <div className={`flex items-center justify-center min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className={`relative min-h-screen w-full flex flex-col overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-b from-white to-pink-50/30'}`}>
