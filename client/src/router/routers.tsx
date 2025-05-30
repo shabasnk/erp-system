@@ -62,6 +62,11 @@
 
 
 
+
+
+
+
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/credintials/login";
 import Register from "../pages/credintials/register";
@@ -71,7 +76,7 @@ import { useAuth } from "@/hooks/useAuth";
 import ProtectedRoute from '@/routes/protectedRoute';
 import ProductsNav from "@/pages/dashboard/navbar/products";
 import BillingNav from "@/pages/dashboard/navbar/billing";
-import Profile from "@/pages/dashboard/profile"; // Import the Profile component
+import Profile from "@/pages/dashboard/profile";
 
 function Routers() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -81,37 +86,38 @@ function Routers() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Home Page (Public) */}
+        {/* Home Page (Public) - Redirect to dashboard if authenticated */}
         <Route
           path="/"
           element={
-            isAuthenticated ? <Navigate to="/dashboard/products" replace /> : <HomePage />
+            isAuthenticated ? (
+              <Navigate to="/dashboard/products" replace />
+            ) : (
+              <HomePage />
+            )
           }
         />
 
-        {/* Public Routes */}
-
+        {/* Public Routes - Redirect to dashboard if authenticated */}
         <Route
           path="/login"
           element={
-            isAuthenticated ? <Navigate to="/dashboard/products" replace /> : <Login />
+            isAuthenticated ? (
+              <Navigate to="/dashboard/products" replace />
+            ) : (
+              <Login />
+            )
           }
         />
 
-        {/* <Route
-  path="/login"
-  element={
-    isAuthenticated ? (
-      <Navigate to="/dashboard/products" replace />
-    ) : (
-      <Login onSuccess={() => navigate("/dashboard/products", { replace: true })} />
-    )
-  }
-/> */}
         <Route
           path="/register"
           element={
-            isAuthenticated ? <Navigate to="/dashboard/products" replace /> : <Register />
+            isAuthenticated ? (
+              <Navigate to="/dashboard/products" replace />
+            ) : (
+              <Register />
+            )
           }
         />
 
@@ -127,11 +133,20 @@ function Routers() {
           <Route index element={<Navigate to="products" replace />} />
           <Route path="products" element={<ProductsNav />} />
           <Route path="billing" element={<BillingNav />} />
-          <Route path="profile" element={<Profile />} /> {/* Add profile route */}
+          <Route path="profile" element={<Profile />} />
         </Route>
 
-        {/* Fallback route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Fallback route - Redirect based on auth status */}
+        <Route 
+          path="*" 
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard/products" replace />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
       </Routes>
     </BrowserRouter>
   );
