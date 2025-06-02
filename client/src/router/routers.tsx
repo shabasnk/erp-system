@@ -1,69 +1,41 @@
-// import React from 'react'
-// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import Login from "../pages/credintials/login" // ✅ Create this component
-// import Register from "../pages/credintials/register";
-// import HomePage from "../pages/homePage";
-
-// function Routers() {
-//   return (
-//        <Routes>
-//       <div className="min-h-screen flex flex-col">
-//         <Routes>
-//           <Route path="/" element={<HomePage />} />
-//           <Route path="/login" element={<Login />} />
-//           <Route path="/register" element={<Register/>}/>
-//         </Routes>
-//       </div>
-//     </Routes>
-//   )
-// }
-
-// export default Routers
-
-
-
-
-
-// src/routes/routers.tsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/credintials/login";
 import Register from "../pages/credintials/register";
 import HomePage from "../pages/homePage";
-import Dashboard from "@/pages/dashboard";
+import Dashboard from "@/pages/dashboard/dashboard";
 import { useAuth } from "@/hooks/useAuth";
 import ProtectedRoute from '@/routes/protectedRoute';
+import PublicRoute from '@/routes/publicRoute'; // Add this import
+import ProductsNav from "@/pages/dashboard/navbar/products";
+import BillingNav from "@/pages/dashboard/navbar/billing";
+import Profile from "@/pages/dashboard/profile";
 
 function Routers() {
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isLoading } = useAuth();
 
   if (isLoading) return <div>Loading...</div>;
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* Home Page (Public) */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? <Navigate to="/dashboard" /> : <HomePage />
-          }
-        />
+        {/* Public Routes - wrapped with PublicRoute */}
+        <Route path="/" element={
+          <PublicRoute>
+            <HomePage />
+          </PublicRoute>
+        } />
+        <Route path="/login" element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        } />
+        <Route path="/register" element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        } />
 
-        {/* Public Routes */}
-        <Route
-          path="/login"
-          element={
-            isAuthenticated ? <Navigate to="/dashboard" /> : <Login />
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            isAuthenticated ? <Navigate to="/dashboard" /> : <Register />
-          }
-        />
-
-        {/* Protected Route */}
+        {/* Protected Dashboard Routes */}
         <Route
           path="/dashboard"
           element={
@@ -71,7 +43,15 @@ function Routers() {
               <Dashboard />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Navigate to="products" replace />} />
+          <Route path="products" element={<ProductsNav />} />
+          <Route path="billing" element={<BillingNav />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

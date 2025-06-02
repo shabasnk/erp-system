@@ -21,7 +21,6 @@ const RegisterPage: React.FC = () => {
       navigate('/verify-email'); // Adjust this to your verification route
     }, 1500);
   };
-
   return (
     <div className={`relative min-h-screen w-full flex items-center justify-center overflow-hidden ${darkMode ? 'bg-black' : 'bg-gradient-to-b from-white to-gray-50/30'}`}>
       {/* Background Effects */}
@@ -44,7 +43,6 @@ const RegisterPage: React.FC = () => {
           }}
         />
       </div>
-
       {/* Dark Mode Toggle */}
       <button
         onClick={() => setDarkMode(!darkMode)}
