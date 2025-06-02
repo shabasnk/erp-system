@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
 import sequelize from '../connect/connect.js';
 
 
@@ -55,4 +55,3 @@ const Shop = sequelize.define('Shops', {
 });
 
 export default Shop;
-

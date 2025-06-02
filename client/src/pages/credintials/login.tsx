@@ -211,10 +211,7 @@ function LoginForm({
       )}
       {...props}
     >
-
-      <div className="relative z-10 p-8">
-        <div className="flex flex-col items-center mb-8">
-        <BorderBeam
+      <BorderBeam
         duration={6}
         size={300}
         className="from-transparent via-[#ea384c] to-transparent"
@@ -225,6 +222,9 @@ function LoginForm({
         size={300}
         className="from-transparent via-[#FF719A] to-transparent"
       />
+
+      <div className="relative z-10 p-8">
+        <div className="flex flex-col items-center mb-8">
           <motion.div 
             className="flex justify-center"
             initial={{ opacity: 0 }}
