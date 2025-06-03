@@ -4,11 +4,12 @@ import Register from "../pages/credintials/register";
 import HomePage from "../pages/homePage";
 import Dashboard from "@/pages/dashboard/dashboard";
 import { useAuth } from "@/hooks/useAuth";
-import ProtectedRoute from '@/routes/protectedRoute';
-import PublicRoute from '@/routes/publicRoute'; // Add this import
+import ProtectedRoute from "@/routes/protectedRoute";
+import PublicRoute from "@/routes/publicRoute"; // Add this import
 import ProductsNav from "@/pages/dashboard/navbar/products";
 import BillingNav from "@/pages/dashboard/navbar/billing";
 import Profile from "@/pages/dashboard/profile";
+import AddProduct from "@/pages/product/AddProduct";
 
 function Routers() {
   const { isLoading } = useAuth();
@@ -19,21 +20,30 @@ function Routers() {
     <BrowserRouter>
       <Routes>
         {/* Public Routes - wrapped with PublicRoute */}
-        <Route path="/" element={
-          <PublicRoute>
-            <HomePage />
-          </PublicRoute>
-        } />
-        <Route path="/login" element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        } />
-        <Route path="/register" element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        } />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <HomePage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
 
         {/* Protected Dashboard Routes */}
         <Route
@@ -46,6 +56,8 @@ function Routers() {
         >
           <Route index element={<Navigate to="products" replace />} />
           <Route path="products" element={<ProductsNav />} />
+          <Route path="products/addProduct" element={<AddProduct />} />
+
           <Route path="billing" element={<BillingNav />} />
           <Route path="profile" element={<Profile />} />
         </Route>
