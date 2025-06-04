@@ -37,6 +37,7 @@ sequelize.sync({ force: false })
 // Routes
 app.use("/api/auth/", authRouter);
 app.use("/api/shops",shopRouter)
+app.use("/api/product",productRouter)
 
 app.get("/", (req, res) => {
   res.send("API is running!");
