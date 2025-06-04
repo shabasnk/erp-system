@@ -1,3 +1,5 @@
+
+
 import { memo, useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -7,6 +9,10 @@ import { Particles } from "@/components/magicui/particles";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import { cn } from "@/lib/utils";
+
+const MemoizedTextAnimate = memo(() => (
+  <TextAnimate className="text-center mb-6">Add New Product</TextAnimate>
+));
 
 const AddProduct = () => {
   const [product, setProduct] = useState({
@@ -29,12 +35,14 @@ const AddProduct = () => {
     isActive: true,
   });
 
-const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setProduct((prev) => ({ ...prev, [name]: value }));
-  }, []);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setProduct((prev) => ({ ...prev, [name]: value }));
+    },
+    []
+  );
 
-  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitting Product:", {
@@ -44,9 +52,6 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
     // Send data to backend
   };
 
-  const MemoizedTextAnimate = memo(() => (
-    <TextAnimate className="text-center mb-6">Add New Product</TextAnimate>
-  ));
   return (
     <main className="relative min-h-screen w-full bg-background flex items-center justify-center px-4 py-8 overflow-hidden">
       <Particles
@@ -62,7 +67,7 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
           "relative z-10 w-full max-w-2xl rounded-2xl border border-neutral-800 bg-background p-6 shadow-2xl"
         )}
       >
-      <MemoizedTextAnimate />
+        <MemoizedTextAnimate />
         <form onSubmit={handleSubmit} className="grid gap-4">
           <Input
             label="Product Name"
@@ -70,6 +75,7 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
             value={product.name}
             onChange={handleChange}
             required
+            className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <Input
             label="Price"
@@ -78,6 +84,7 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
             value={product.price}
             onChange={handleChange}
             required
+            className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <Input
             label="Discount Price"
@@ -85,6 +92,7 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
             name="discountPrice"
             value={product.discountPrice}
             onChange={handleChange}
+            className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <Textarea
             label="Description"
@@ -100,6 +108,7 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
             value={product.categoryId}
             onChange={handleChange}
             required
+            className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <Input
             label="Unit ID"
@@ -108,6 +117,7 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
             value={product.unitId}
             onChange={handleChange}
             required
+            className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <Input
             label="Stock Quantity"
@@ -116,6 +126,7 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
             value={product.stockQuantity}
             onChange={handleChange}
             required
+            className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <Input
             label="Image URL"
@@ -153,6 +164,7 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
             name="weight"
             value={product.weight}
             onChange={handleChange}
+            className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <Input
             label="Dimensions (LxWxH)"
