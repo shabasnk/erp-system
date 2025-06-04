@@ -1,35 +1,6 @@
-
-// import { DataTypes } from 'sequelize';
-// import sequelize from '../connect/connect.js';
-
-// const Shop = sequelize.define('Shop', {
-//   id: {
-//     type: DataTypes.INTEGER,
-//     primaryKey: true,
-//     autoIncrement: true,
-//   },
-//   name: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-//   type: {
-//     type: DataTypes.ENUM('Retail', 'Wholesale', 'Both'),
-//     allowNull: false,
-//   },
-//   address: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-// });
-
-// export default Shop;
-
-
-
-
 import { Sequelize, DataTypes } from 'sequelize';
 import sequelize from '../connect/connect.js';
-import bcrypt from 'bcrypt';
+
 
 const Shop = sequelize.define('Shops', {
   id: {
@@ -84,4 +55,3 @@ const Shop = sequelize.define('Shops', {
 });
 
 export default Shop;
-

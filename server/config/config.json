@@ -1,8 +1,8 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "shbs81",
-    "database": "wez_erp",
+    "username": "root",
+    "password": "root8281",
+    "database": "wez_ERP",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
