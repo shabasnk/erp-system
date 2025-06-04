@@ -255,3 +255,256 @@ function Profile({ darkMode = false, user = defaultUser, onBack = () => {} }: Pr
 }
 
 export default Profile;
+
+
+
+
+
+
+
+
+
+
+// import { useState } from 'react';
+// import { cn } from "@/lib/utils";
+// import { motion } from 'framer-motion';
+// import PersonalInformation from './tabs/personalInformation';
+// import CompanyInformation from './tabs/companyInformation';
+// import { Button } from "@/components/ui/button";
+// import { ChevronLeft, Edit2 } from 'lucide-react';
+// import { BorderBeam } from '@/components/magicui/border-beam';
+
+// interface User {
+//   name: string;
+//   email: string;
+//   avatar: string;
+//   phone?: string;
+//   ownerName?: string;
+// }
+
+// interface ProfileProps {
+//   darkMode?: boolean;
+//   user?: User;
+//   onBack?: () => void;
+// }
+
+// const defaultUser: User = {
+//   name: "Guest User",
+//   email: "guest@example.com",
+//   avatar: "/default-avatar.png",
+//   phone: "",
+//   ownerName: "Guest"
+// };
+
+// function Profile({ darkMode = false, user = defaultUser, onBack = () => {} }: ProfileProps) {
+//   const [activeTab, setActiveTab] = useState<'personal' | 'company'>('personal');
+
+//   const shopData = {
+//     ownerName: user.ownerName || user.name,
+//     phoneNumber: user.phone || '',
+//     email: user.email
+//   };
+
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0 }}
+//       animate={{ opacity: 1 }}
+//       transition={{ duration: 0.6 }}
+//       className="flex items-center justify-center min-h-screen p-4"
+//     >
+//       <motion.div
+//         initial={{ opacity: 0, y: 20, scale: 0.98 }}
+//         animate={{ opacity: 1, y: 0, scale: 1 }}
+//         transition={{ 
+//           duration: 0.8,
+//           ease: [0.16, 1, 0.3, 1]
+//         }}
+//         className={cn(
+//           "rounded-xl shadow-lg p-8 relative overflow-hidden w-full max-w-4xl",
+//           darkMode ? "bg-gray-900/70 border border-pink-900" : "bg-white/90 border border-pink-200",
+//         )}
+//       >
+//         {/* Border Beam Effects */}
+//         <BorderBeam
+//           duration={6}
+//           size={300}
+//           delay={0.3}
+//           className={`from-transparent ${darkMode ? 'via-pink-500' : 'via-pink-400'} to-transparent`}
+//         />
+//         <BorderBeam
+//           duration={8}
+//           size={350}
+//           delay={1.5}
+//           className={`from-transparent ${darkMode ? 'via-purple-500' : 'via-purple-300'} to-transparent`}
+//         />
+
+//         {/* Static background color instead of moving particles */}
+//         <div className="absolute inset-0 overflow-hidden">
+//           <div 
+//             className="absolute inset-0"
+//             style={{
+//               background: darkMode 
+//                 ? "rgba(17, 24, 39, 0.7)" 
+//                 : "rgba(255, 255, 255, 0.9)",
+//             }}
+//           />
+//         </div>
+
+//         {/* Content */}
+//         <div className="relative z-10">
+//           {/* Back button with smooth hover */}
+//           <motion.div
+//             initial={{ opacity: 0, x: -10 }}
+//             animate={{ opacity: 1, x: 0 }}
+//             transition={{ delay: 0.3 }}
+//           >
+//             <Button 
+//               onClick={onBack}
+//               variant="ghost"
+//               className={cn(
+//                 "absolute top-0 left-0 rounded-full font-['Kantumruy_Pro']",
+//                 darkMode 
+//                   ? "text-gray-300 hover:bg-gray-800 hover:text-pink-400" 
+//                   : "text-gray-600 hover:bg-pink-50 hover:text-pink-600"
+//               )}
+//             >
+//               <ChevronLeft className="w-5 h-5" />
+//               <span className="ml-2">Back</span>
+//             </Button>
+//           </motion.div>
+
+//           {/* Profile header with enhanced animations */}
+//           <div className="flex flex-col items-center pt-10 pb-6">
+//             <motion.div 
+//               className="relative mb-8"
+//               initial={{ opacity: 0, y: 20 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               transition={{ delay: 0.2, type: "spring", stiffness: 400, damping: 20 }}
+//             >
+//               <img 
+//                 className={cn(
+//                   "h-32 w-32 rounded-full border-4 shadow-lg",
+//                   darkMode ? "border-pink-900" : "border-pink-200"
+//                 )} 
+//                 src={user.avatar} 
+//                 alt="User Avatar" 
+//               />
+//               <div>
+//                 <Button 
+//                   size="icon"
+//                   className={cn(
+//                     "absolute bottom-0 right-0 text-white p-2 rounded-full shadow-lg",
+//                     "bg-gradient-to-r from-[#ea384c] to-[#FF719A]",
+//                     darkMode 
+//                       ? "hover:shadow-pink-500/20" 
+//                       : "hover:shadow-pink-400/20"
+//                   )}
+//                 >
+//                   <Edit2 className="h-5 w-5" />
+//                 </Button>
+//               </div>
+//             </motion.div>
+            
+//             <motion.h2 
+//               className="text-4xl font-bold mb-3 font-['Kantumruy_Pro'] bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent"
+//               initial={{ opacity: 0, y: 10 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               transition={{ delay: 0.25, type: "spring", stiffness: 300 }}
+//             >
+//               {user.name}
+//             </motion.h2>
+//             <motion.p 
+//               className={cn(
+//                 "mb-10 text-xl font-['Kantumruy_Pro']",
+//                 darkMode ? "text-gray-300/90" : "text-gray-600"
+//               )}
+//               initial={{ opacity: 0, y: 10 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               transition={{ delay: 0.3, type: "spring", stiffness: 300 }}
+//             >
+//               {user.email}
+//             </motion.p>
+            
+//             {/* Tabs Navigation with enhanced indicator animation */}
+//             <motion.div 
+//               className={cn(
+//                 "w-full max-w-3xl mx-auto flex border-b mb-10",
+//                 darkMode ? "border-pink-900" : "border-pink-200"
+//               )}
+//               initial={{ opacity: 0 }}
+//               animate={{ opacity: 1 }}
+//               transition={{ delay: 0.35 }}
+//             >
+//               <motion.button
+//                 onClick={() => setActiveTab('personal')}
+//                 className={cn(
+//                   "px-8 py-4 font-medium text-base flex-1 text-center relative font-['Kantumruy_Pro']",
+//                   activeTab === 'personal'
+//                     ? darkMode
+//                       ? "text-pink-400"
+//                       : "text-pink-600"
+//                     : darkMode
+//                       ? "text-gray-400 hover:text-pink-300"
+//                       : "text-gray-500 hover:text-pink-500"
+//                 )}
+//                 whileHover={{ scale: 1.05 }}
+//               >
+//                 Personal Information
+//                 {activeTab === 'personal' && (
+//                   <motion.div 
+//                     className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#ea384c] to-[#FF719A]"
+//                     layoutId="tabIndicator"
+//                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+//                   />
+//                 )}
+//               </motion.button>
+//               <motion.button
+//                 onClick={() => setActiveTab('company')}
+//                 className={cn(
+//                   "px-8 py-4 font-medium text-base flex-1 text-center relative font-['Kantumruy_Pro']",
+//                   activeTab === 'company'
+//                     ? darkMode
+//                       ? "text-pink-400"
+//                       : "text-pink-600"
+//                     : darkMode
+//                       ? "text-gray-400 hover:text-pink-300"
+//                       : "text-gray-500 hover:text-pink-500"
+//                 )}
+//                 whileHover={{ scale: 1.05 }}
+//               >
+//                 Company Information
+//                 {activeTab === 'company' && (
+//                   <motion.div 
+//                     className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#ea384c] to-[#FF719A]"
+//                     layoutId="tabIndicator"
+//                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+//                   />
+//                 )}
+//               </motion.button>
+//             </motion.div>
+//           </div>
+          
+//           {/* Form Content Area with smooth transition */}
+//           <motion.div
+//             key={activeTab}
+//             initial={{ opacity: 0, y: 10 }}
+//             animate={{ opacity: 1, y: 0 }}
+//             transition={{ 
+//               duration: 0.4,
+//               ease: [0.16, 1, 0.3, 1]
+//             }}
+//             className="w-full max-w-3xl mx-auto"
+//           >
+//             {activeTab === 'personal' ? (
+//               <PersonalInformation darkMode={darkMode} initialData={shopData} />
+//             ) : (
+//               <CompanyInformation darkMode={darkMode} />
+//             )}
+//           </motion.div>
+//         </div>
+//       </motion.div>
+//     </motion.div>
+//   );
+// }
+
+// export default Profile;
