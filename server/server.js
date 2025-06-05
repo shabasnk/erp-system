@@ -14,6 +14,8 @@ import { errorHandler, notFound } from "./middlewares/errorMiddlware.js";
 
 import shopRouter from "./routes/shopRouter.js"
 
+import productRouter from "./routes/productRouter.js";
+
 dotenv.config();
 
 const app = express();

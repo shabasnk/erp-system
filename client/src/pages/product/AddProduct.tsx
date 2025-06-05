@@ -60,8 +60,9 @@ const AddProduct = () => {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  // Validation rules
   const validateField = useCallback((name: string, value: string): string => {
     switch (name) {
       case "name":
@@ -183,7 +184,6 @@ const AddProduct = () => {
   const validateForm = useCallback((): boolean => {
     const newErrors: ValidationErrors = {};
     
-    // Validate all fields
     Object.keys(product).forEach(key => {
       if (key !== "isActive") {
         const error = validateField(key, product[key as keyof ProductFormData] as string);
@@ -203,12 +203,10 @@ const AddProduct = () => {
       
       setProduct((prev) => ({ ...prev, [name]: value }));
       
-      // Clear error when user starts typing
       if (errors[name]) {
         setErrors(prev => ({ ...prev, [name]: "" }));
       }
       
-      // Validate field on change if it was already touched
       if (touched[name]) {
         const error = validateField(name, value);
         setErrors(prev => ({ ...prev, [name]: error }));
@@ -232,8 +230,9 @@ const AddProduct = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
     
-    // Mark all fields as touched
     const allTouched = Object.keys(product).reduce((acc, key) => ({
       ...acc,
       [key]: true
@@ -242,10 +241,7 @@ const AddProduct = () => {
 
     if (validateForm()) {
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        console.log("Submitting Product:", {
+        const submissionData = {
           ...product,
           tags: product.tags ? product.tags.split(",").map((t) => t.trim()) : [],
           price: parseFloat(product.price),
@@ -254,9 +250,27 @@ const AddProduct = () => {
           unitId: parseInt(product.unitId),
           stockQuantity: parseInt(product.stockQuantity),
           weight: product.weight ? parseFloat(product.weight) : null,
+          isActive: product.isActive,
+        };
+
+        const response = await fetch("http://localhost:8080/api/product/product", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Add authorization header if needed
+            // "Authorization": "Bearer YOUR_TOKEN",
+          },
+          body: JSON.stringify(submissionData),
         });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to submit product");
+        }
+
+        const responseData = await response.json();
+        console.log("Product submitted successfully:", responseData);
         
-        // Reset form on successful submission
         setProduct({
           name: "",
           price: "",
@@ -278,11 +292,10 @@ const AddProduct = () => {
         });
         setTouched({});
         setErrors({});
-        
-        alert("Product added successfully!");
+        setSubmitSuccess(true);
       } catch (error) {
         console.error("Error submitting product:", error);
-        alert("Error submitting product. Please try again.");
+        setSubmitError(error instanceof Error ? error.message : "Error submitting product. Please try again.");
       }
     }
     
@@ -313,6 +326,16 @@ const AddProduct = () => {
         )}
       >
         <MemoizedTextAnimate />
+        {submitSuccess && (
+          <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
+            Product added successfully!
+          </div>
+        )}
+        {submitError && (
+          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+            {submitError}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="grid gap-4" noValidate>
           <div className="space-y-1">
             <Input
@@ -322,10 +345,7 @@ const AddProduct = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={cn(
-                "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                isFieldInvalid("name") && "border-red-500 focus:border-red-500"
-              )}
+              className={isFieldInvalid("name") ? "border-red-500 focus:border-red-500" : ""}
               aria-invalid={isFieldInvalid("name")}
             />
             {getFieldError("name") && (
@@ -343,10 +363,7 @@ const AddProduct = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={cn(
-                "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                isFieldInvalid("price") && "border-red-500 focus:border-red-500"
-              )}
+              className={isFieldInvalid("price") ? "border-red-500 focus:border-red-500" : ""}
               aria-invalid={isFieldInvalid("price")}
             />
             {getFieldError("price") && (
@@ -363,10 +380,7 @@ const AddProduct = () => {
               value={product.discountPrice}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={cn(
-                "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                isFieldInvalid("discountPrice") && "border-red-500 focus:border-red-500"
-              )}
+              className={isFieldInvalid("discountPrice") ? "border-red-500 focus:border-red-500" : ""}
               aria-invalid={isFieldInvalid("discountPrice")}
             />
             {getFieldError("discountPrice") && (
@@ -400,10 +414,7 @@ const AddProduct = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 required
-                className={cn(
-                  "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                  isFieldInvalid("categoryId") && "border-red-500 focus:border-red-500"
-                )}
+                className={isFieldInvalid("categoryId") ? "border-red-500 focus:border-red-500" : ""}
                 aria-invalid={isFieldInvalid("categoryId")}
               />
               {getFieldError("categoryId") && (
@@ -420,10 +431,7 @@ const AddProduct = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 required
-                className={cn(
-                  "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                  isFieldInvalid("unitId") && "border-red-500 focus:border-red-500"
-                )}
+                className={isFieldInvalid("unitId") ? "border-red-500 focus:border-red-500" : ""}
                 aria-invalid={isFieldInvalid("unitId")}
               />
               {getFieldError("unitId") && (
@@ -441,10 +449,7 @@ const AddProduct = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={cn(
-                "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                isFieldInvalid("stockQuantity") && "border-red-500 focus:border-red-500"
-              )}
+              className={isFieldInvalid("stockQuantity") ? "border-red-500 focus:border-red-500" : ""}
               aria-invalid={isFieldInvalid("stockQuantity")}
             />
             {getFieldError("stockQuantity") && (
@@ -540,10 +545,7 @@ const AddProduct = () => {
                 value={product.weight}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={cn(
-                  "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                  isFieldInvalid("weight") && "border-red-500 focus:border-red-500"
-                )}
+                className={isFieldInvalid("weight") ? "border-red-500 focus:border-red-500" : ""}
                 aria-invalid={isFieldInvalid("weight")}
               />
               {getFieldError("weight") && (
