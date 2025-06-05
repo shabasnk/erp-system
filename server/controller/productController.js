@@ -5,8 +5,15 @@ import { Op } from 'sequelize';
 // @desc    Create a new product
 // @route   POST /api/product/product
 // @access  Private/Admin
+console.log("under controller");
+
+
 const createProduct = async (req, res) => {
+    console.log("under create product");
+    
   try {
+    console.log("under try");
+    
     const {
       name,
       price,
