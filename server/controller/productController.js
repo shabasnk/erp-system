@@ -1,4 +1,3 @@
-// controllers/productController.js
 import Product from '../models/ProductModel.js';
 import { Op } from 'sequelize';
 
@@ -7,13 +6,51 @@ import { Op } from 'sequelize';
 // @access  Private/Admin
 console.log("under controller");
 
+  // Add this new function to your productController.js
+// @desc    Check if a field value is unique
+// @route   GET /api/product/check-unique
+// @access  Public
+const checkUniqueField = async (req, res) => {
+  try {
+    const { field, value } = req.query;
+    
+    if (!value) {
+
+      return res.json({ exists: false });
+    }
+
+    // List of allowed fields to check
+    const allowedFields = ['sku', 'serialNumber', 'barcode',];
+    
+    if (!allowedFields.includes(field)) {
+      return res.status(400).json({ 
+        error: 'Invalid field',
+        message: `Can only check uniqueness for: ${allowedFields.join(', ')}`
+      });
+    }
+
+    const product = await Product.findOne({ 
+      where: { 
+        [field]: value 
+      } 
+    });
+
+    res.json({ 
+      exists: !!product,
+      field,
+      value
+    });
+  } catch (error) {
+    console.error('Error checking unique field:', error);
+    res.status(500).json({
+      error: 'Server error',
+      details: error.message
+    });
+  }
+};
 
 const createProduct = async (req, res) => {
-    console.log("under create product");
-    
   try {
-    console.log("under try");
-    
     const {
       name,
       price,
@@ -33,20 +70,34 @@ const createProduct = async (req, res) => {
       unitId,
     } = req.body;
 
-    // Check if product with same name or SKU already exists
+    // Build the where clause conditionally
+    const whereClause = { [Op.or]: [] };
+    
+    // Always check for name
+    whereClause[Op.or].push({ name });
+    
+    // Only check SKU if it has a value
+    if (sku) {
+      whereClause[Op.or].push({ sku });
+    }
+    
+    // Only check barcode if it has a value
+    if (barcode) {
+      whereClause[Op.or].push({ barcode });
+    }
+
+    // Check if product with same name or SKU or barcode already exists
     const existingProduct = await Product.findOne({
-      where: {
-        [Op.or]: [
-          { name },
-          { sku: sku || null },
-          { barcode: barcode || null }
-        ]
-      }
+      where: whereClause
     });
 
     if (existingProduct) {
+      let conflictField = 'name';
+      if (existingProduct.sku === sku) conflictField = 'SKU';
+      if (existingProduct.barcode === barcode) conflictField = 'barcode';
+      
       return res.status(400).json({
-        error: 'Product with this name, SKU or barcode already exists'
+        error: `Product with this ${conflictField} already exists`
       });
     }
 
@@ -84,196 +135,7 @@ const createProduct = async (req, res) => {
   }
 };
 
-// @desc    Get all products
-// @route   GET /api/product/products
-// @access  Public
-const getProducts = async (req, res) => {
-  try {
-    const { page = 1, limit = 10, search, categoryId } = req.query;
-    const offset = (page - 1) * limit;
-
-    const whereClause = {};
-    if (search) {
-      whereClause[Op.or] = [
-        { name: { [Op.iLike]: `%${search}%` } },
-        { description: { [Op.iLike]: `%${search}%` } },
-        { brand: { [Op.iLike]: `%${search}%` } }
-      ];
-    }
-    if (categoryId) {
-      whereClause.categoryId = categoryId;
-    }
-
-    const { count, rows } = await Product.findAndCountAll({
-      where: whereClause,
-      limit: parseInt(limit),
-      offset: parseInt(offset),
-      order: [['createdAt', 'DESC']]
-    });
-
-    res.json({
-      success: true,
-      products: rows,
-      totalProducts: count,
-      totalPages: Math.ceil(count / limit),
-      currentPage: parseInt(page)
-    });
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({
-      error: 'Server error',
-      details: error.message
-    });
-  }
-};
-
-// @desc    Get single product
-// @route   GET /api/product/:id
-// @access  Public
-const getProductById = async (req, res) => {
-  try {
-    const product = await Product.findByPk(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({
-        error: 'Product not found'
-      });
-    }
-
-    res.json({
-      success: true,
-      product
-    });
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    res.status(500).json({
-      error: 'Server error',
-      details: error.message
-    });
-  }
-};
-
-// @desc    Update product
-// @route   PUT /api/product/:id
-// @access  Private/Admin
-const updateProduct = async (req, res) => {
-  try {
-    const product = await Product.findByPk(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({
-        error: 'Product not found'
-      });
-    }
-
-    const {
-      name,
-      price,
-      description,
-      categoryId,
-      stockQuantity,
-      image,
-      discountPrice,
-      sku,
-      serialNumber,
-      barcode,
-      brand,
-      weight,
-      dimensions,
-      expirationDate,
-      tags,
-      unitId,
-      isActive
-    } = req.body;
-
-    // Check if another product with the same name or SKU exists
-    if (name || sku || barcode) {
-      const whereClause = {
-        id: { [Op.ne]: product.id },
-        [Op.or]: []
-      };
-
-      if (name) whereClause[Op.or].push({ name });
-      if (sku) whereClause[Op.or].push({ sku });
-      if (barcode) whereClause[Op.or].push({ barcode });
-
-      const existingProduct = await Product.findOne({
-        where: whereClause
-      });
-
-      if (existingProduct) {
-        return res.status(400).json({
-          error: 'Another product with this name, SKU or barcode already exists'
-        });
-      }
-    }
-
-    const updatedProduct = await product.update({
-      name: name || product.name,
-      price: price || product.price,
-      description: description || product.description,
-      categoryId: categoryId || product.categoryId,
-      stockQuantity: stockQuantity || product.stockQuantity,
-      image: image || product.image,
-      discountPrice: discountPrice !== undefined ? discountPrice : product.discountPrice,
-      sku: sku || product.sku,
-      serialNumber: serialNumber || product.serialNumber,
-      barcode: barcode || product.barcode,
-      brand: brand || product.brand,
-      weight: weight || product.weight,
-      dimensions: dimensions || product.dimensions,
-      expirationDate: expirationDate || product.expirationDate,
-      tags: tags ? tags.split(',').map(tag => tag.trim()) : product.tags,
-      unitId: unitId || product.unitId,
-      isActive: isActive !== undefined ? isActive : product.isActive
-    });
-
-    res.json({
-      success: true,
-      message: 'Product updated successfully',
-      product: updatedProduct
-    });
-  } catch (error) {
-    console.error('Error updating product:', error);
-    res.status(500).json({
-      error: 'Server error',
-      details: error.message
-    });
-  }
-};
-
-// @desc    Delete product
-// @route   DELETE /api/product/:id
-// @access  Private/Admin
-const deleteProduct = async (req, res) => {
-  try {
-    const product = await Product.findByPk(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({
-        error: 'Product not found'
-      });
-    }
-
-    await product.destroy();
-
-    res.json({
-      success: true,
-      message: 'Product removed'
-    });
-  } catch (error) {
-    console.error('Error deleting product:', error);
-    res.status(500).json({
-      error: 'Server error',
-      details: error.message
-    });
-  }
-};
-
 export {
   createProduct,
-  getProducts,
-  getProductById,
-  updateProduct,
-  deleteProduct
+  checkUniqueField // Add this to your exports
 };
