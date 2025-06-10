@@ -7,6 +7,7 @@ import { Particles } from "@/components/magicui/particles";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import { cn } from "@/lib/utils";
+import axios from "axios";
 
 interface ProductFormData {
   name: string;
@@ -261,24 +262,16 @@ const AddProduct = () => {
   isActive: product.isActive,
 };
 
-        const response = await fetch("http://localhost:8080/api/product/product", {
-          method: "POST",
+        const response = await axios.post(
+        "http://localhost:8080/api/product/product",
+        submissionData,
+        {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(submissionData),
-        });
-
-        if (!response.ok) {
-    const errorData = await response.json();
-    if (errorData.constraint === 'products_sku_key') {
-      throw new Error("SKU already exists. Please leave it blank or use a different SKU.");
-    }
-    throw new Error(errorData.message || "Failed to submit product");
-  }
-
-        const responseData = await response.json();
-        console.log("Product submitted successfully:", responseData);
+        }
+      );
+        console.log("Product submitted successfully:", response.data);
         
         setProduct({
           name: "",
