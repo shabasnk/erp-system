@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import sanitizedConfig from '../config.js';
 
+
 // Middleware to verify JWT
 export function verifyToken(req, res, next) {
     const token = req.headers['authorization']?.split(' ')[1]; // Extract JWT token

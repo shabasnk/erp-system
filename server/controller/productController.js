@@ -51,6 +51,14 @@ const checkUniqueField = async (req, res) => {
 
 const createProduct = async (req, res) => {
   try {
+
+     if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+        message: 'No user information found in request'
+      })}
+
     const {
       name,
       price,
@@ -128,14 +136,36 @@ const createProduct = async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating product:', error);
+    
+    // Enhanced error handling
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication failed',
+        message: 'Invalid token'
+      });
+    }
+    
     res.status(500).json({
+      success: false,
       error: 'Server error',
       details: error.message
     });
   }
+
 };
 
 export {
   createProduct,
   checkUniqueField // Add this to your exports
 };
+
+
+
+
+
+
+
+
+
+
