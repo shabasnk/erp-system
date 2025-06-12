@@ -1,9 +1,8 @@
-import React, {useState } from 'react';
+import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
-import { motion, MotionProps } from 'framer-motion';
+import { motion, MotionProps, AnimatePresence } from 'framer-motion';
 import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
-import { TextAnimate } from '@/components/magicui/text-animate';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
@@ -196,6 +195,34 @@ function LoginForm({
     }
   };
 
+  // Animation variants for text
+  const titleVariants = {
+    hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      filter: 'blur(0px)',
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const characterVariants = {
+    hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: {
+        delay: i * 0.05,
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    })
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -231,29 +258,48 @@ function LoginForm({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
           >
-            <TextAnimate
-              animation="blurInUp"
-              by="character"
-              duration={5}
+            <motion.div
               className="text-2xl font-['Kantumruy_Pro'] font-bold text-[#ea384c]"
+              initial="hidden"
+              animate="visible"
+              variants={titleVariants}
             >
-              WEZ-ERP
-            </TextAnimate>
+              {"WEZ-ERP".split('').map((char, i) => (
+                <motion.span
+                  key={i}
+                  custom={i}
+                  variants={characterVariants}
+                  style={{ display: 'inline-block' }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </motion.div>
           </motion.div>
+          
           <motion.h1 
             className={`text-2xl font-bold text-center mt-4 font-['Kantumruy_Pro']`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <TextAnimate
-              animation="blurInUp"
-              by="word"
-              duration={3}
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={titleVariants}
               className={darkMode ? 'text-white' : 'text-gray-900'}
             >
-              Login Your Account
-            </TextAnimate>
+              {"Login Your Account".split(' ').map((word, i) => (
+                <motion.span 
+                  key={i}
+                  custom={i}
+                  variants={characterVariants}
+                  style={{ display: 'inline-block', marginRight: '0.25em' }}
+                >
+                  {word + (i < "Login Your Account".split(' ').length - 1 ? ' ' : '')}
+                </motion.span>
+              ))}
+            </motion.div>
             <motion.div 
               className={cn(
                 "h-1 mt-1 rounded-full bg-gradient-to-r from-[#ea384c] to-[#FF719A]"
@@ -423,3 +469,4 @@ function LoginForm({
     </motion.div>
   );
 }
+
