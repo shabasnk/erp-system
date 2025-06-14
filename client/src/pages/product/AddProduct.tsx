@@ -1,16 +1,29 @@
-import { memo, useCallback, useState, useEffect } from "react";
+
+
+import React, { memo, useCallback, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/Textarea";
-import { Button } from "@/components/ui/button";
-import { Particles } from "@/components/magicui/particles";
-import { BorderBeam } from "@/components/magicui/border-beam";
-import { TextAnimate } from "@/components/magicui/text-animate";
-import { cn } from "@/lib/utils";
+import { useOutletContext } from "react-router-dom";
+import { 
+  Package, 
+  DollarSign, 
+  FileText, 
+  Hash, 
+  Barcode, 
+  Weight, 
+  Calendar, 
+  Tag, 
+  Image,
+  Sparkles,
+  CheckCircle,
+  Plus
+} from "lucide-react";
+import { Particles } from '@/components/magicui/particles';
+import { BorderBeam } from '@/components/magicui/border-beam';
 import axios from "axios";
 import { useAuth } from "@/hooks/useAuth";
 
-interface ProductFormData {
+// TypeScript Interfaces
+interface ProductData {
   name: string;
   price: string;
   description: string;
@@ -34,13 +47,259 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-const MemoizedTextAnimate = memo(() => (
-  <TextAnimate className="text-center mb-6">Add New Product</TextAnimate>
-));
+interface InputFieldProps {
+  label: string;
+  name: keyof ProductData;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  type?: string;
+  required?: boolean;
+  icon?: React.ComponentType<{ size?: number }>;
+  rows?: number;
+  isTextarea?: boolean;
+  placeholder?: string;
+  darkMode?: boolean;
+  error?: string;
+  touched?: boolean;
+}
 
-const AddProduct = () => {
+interface SubmitButtonProps {
+  isSubmitting: boolean;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  darkMode?: boolean;
+}
+
+interface FormField {
+  name: keyof ProductData;
+  label: string;
+  icon?: React.ComponentType<{ size?: number }>;
+  type?: string;
+  required?: boolean;
+  rows?: number;
+  isTextarea?: boolean;
+  placeholder?: string;
+}
+
+interface FormSection {
+  title: string;
+  fields: FormField[];
+}
+
+const InputField = memo<InputFieldProps>(({ 
+  label, 
+  name, 
+  value, 
+  onChange, 
+  onBlur,
+  type = "text", 
+  required = false, 
+  icon: Icon,
+  rows,
+  isTextarea = false,
+  placeholder,
+  darkMode = false,
+  error,
+  touched
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+  
+  const InputComponent = isTextarea ? "textarea" : "input";
+  
+  const placeholderText = placeholder || " ";
+  
+  const hasError = touched && error;
+  
+  return (
+    <motion.div
+      className="relative group"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="relative">
+        <InputComponent
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          required={required}
+          rows={rows}
+          onFocus={() => setIsFocused(true)}
+          onBlurCapture={() => setIsFocused(false)}
+          className={`
+            w-full px-4 py-3 pl-12 rounded-2xl border transition-all duration-300
+            ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white/10 backdrop-blur-md border-white/20'}
+            ${darkMode ? 'text-white placeholder-gray-400' : 'text-gray-800 placeholder-gray-500'}
+            focus:outline-none focus:ring-2 focus:ring-[#ea384c]/20
+            ${darkMode ? 'focus:bg-gray-700/60 focus:border-[#ea384c]/50' : 'focus:bg-white/20 focus:border-[#ea384c]/50'}
+            ${darkMode ? 'hover:bg-gray-700/40 hover:border-gray-600' : 'hover:bg-white/15 hover:border-white/30'}
+            ${isTextarea ? 'resize-none min-h-[100px]' : ''}
+            ${hasError ? (darkMode ? 'border-red-500 focus:border-red-500' : 'border-red-400 focus:border-red-400') : ''}
+          `}
+          placeholder={placeholderText}
+        />
+        
+        {Icon && (
+          <motion.div
+            className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
+              isFocused ? 'text-[#ea384c]' : 
+              hasError ? (darkMode ? 'text-red-400' : 'text-red-500') : 
+              darkMode ? 'text-gray-400' : 'text-gray-500'
+            }`}
+            animate={{ scale: isFocused ? 1.1 : 1 }}
+          >
+            <Icon size={18} />
+          </motion.div>
+        )}
+        
+        {!placeholder && (
+          <motion.label
+            className={`
+              absolute left-12 transition-all duration-300 pointer-events-none
+              ${value || isFocused 
+                ? 'text-xs -top-2 left-4 px-2 rounded-full font-medium' 
+                : 'top-1/2 transform -translate-y-1/2'
+              }
+              ${darkMode 
+                ? value || isFocused 
+                  ? hasError
+                    ? 'bg-gray-700 text-red-400'
+                    : 'bg-gray-700 text-[#ea384c]' 
+                  : hasError
+                    ? 'text-red-400'
+                    : 'text-gray-400'
+                : value || isFocused 
+                  ? hasError
+                    ? 'bg-white/80 text-red-500'
+                    : 'bg-white/80 text-[#ea384c]' 
+                  : hasError
+                    ? 'text-red-500'
+                    : 'text-gray-500'
+              }
+            `}
+            animate={{
+              y: value || isFocused ? -24 : 0,
+              x: value || isFocused ? -8 : 0,
+              scale: value || isFocused ? 0.85 : 1
+            }}
+          >
+            {label} {required && <span className="text-[#ea384c]">*</span>}
+          </motion.label>
+        )}
+        
+        {placeholder && (
+          <div className={`text-xs font-medium mb-1 px-2 ${
+            hasError ? (darkMode ? 'text-red-400' : 'text-red-500') : 'text-[#ea384c]'
+          }`}>
+            {label} {required && <span className="text-[#ea384c]">*</span>}
+          </div>
+        )}
+        
+        {hasError && (
+          <motion.p 
+            className={`text-xs mt-1 px-2 ${darkMode ? 'text-red-400' : 'text-red-500'}`}
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {error}
+          </motion.p>
+        )}
+      </div>
+      
+      <motion.div
+        className={`absolute inset-0 rounded-2xl pointer-events-none ${
+          hasError 
+            ? darkMode 
+              ? 'bg-gradient-to-r from-red-500/10 to-red-600/10' 
+              : 'bg-gradient-to-r from-red-400/10 to-red-500/10'
+            : 'bg-gradient-to-r from-[#ea384c]/20 to-[#FF719A]/20'
+        }`}
+        animate={{ opacity: isFocused ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+      />
+    </motion.div>
+  );
+});
+
+InputField.displayName = 'InputField';
+
+const SubmitButton = memo<SubmitButtonProps>(({ isSubmitting, onClick, darkMode = false }) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
+  return (
+    <motion.button
+      type="button"
+      onClick={handleClick}
+      disabled={isSubmitting}
+      className="relative w-full py-4 rounded-2xl font-semibold text-white overflow-hidden group disabled:opacity-70 disabled:cursor-not-allowed"
+      style={{
+        background: "linear-gradient(135deg, #ea384c 0%, #FF719A 100%)"
+      }}
+      whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+      whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+    >
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+        initial={{ x: "-100%" }}
+        whileHover={{ x: "100%" }}
+        transition={{ duration: 0.6 }}
+      />
+      
+      <div className="relative flex items-center justify-center gap-3">
+        <AnimatePresence mode="wait">
+          {isSubmitting ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-2"
+            >
+              <motion.div
+                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              />
+              <span>Creating Product...</span>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="submit"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-2"
+            >
+              <Plus size={20} />
+              <span>Create Product</span>
+              <Sparkles size={16} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-[#FF719A] to-[#ea384c] opacity-0"
+        whileHover={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      />
+    </motion.button>
+  );
+});
+
+SubmitButton.displayName = 'SubmitButton';
+
+const AddProduct: React.FC = () => {
+  const { darkMode } = useOutletContext<{ darkMode: boolean }>();
   const { token, getAuthHeaders } = useAuth();
-  const [product, setProduct] = useState<ProductFormData>({
+  const [product, setProduct] = useState<ProductData>({
     name: "",
     price: "",
     description: "",
@@ -120,28 +379,29 @@ const AddProduct = () => {
       case "categoryId":
         if (!value) return "Category ID is required";
         const categoryId = parseInt(value);
-        if (isNaN(categoryId) || categoryId <= 0) return "Category ID must be a positive number";
+        if (isNaN(categoryId)) return "Category ID must be a number";
+        if (categoryId <= 0) return "Category ID must be a positive number";
         return "";
 
       case "unitId":
         if (!value) return "Unit ID is required";
         const unitId = parseInt(value);
-        if (isNaN(unitId) || unitId <= 0) return "Unit ID must be a positive number";
+        if (isNaN(unitId)) return "Unit ID must be a number";
+        if (unitId <= 0) return "Unit ID must be a positive number";
         return "";
 
       case "stockQuantity":
         if (!value) return "Stock quantity is required";
         const stock = parseInt(value);
-        if (isNaN(stock)) return "Stock quantity must be a valid number";
+        if (isNaN(stock)) return "Stock quantity must be a number";
         if (stock < 0) return "Stock quantity cannot be negative";
         if (stock > 999999) return "Stock quantity must be less than 1,000,000";
         return "";
 
       case "image":
-        if (value) {
-          const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-          if (!urlPattern.test(value)) return "Please enter a valid URL";
-        }
+        if (!value.trim()) return "Image URL is required";
+        const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+        if (!urlPattern.test(value)) return "Please enter a valid URL";
         return "";
 
       case "sku":
@@ -153,7 +413,7 @@ const AddProduct = () => {
         return "";
 
       case "barcode":
-        if (value) {
+        if (value && value.trim() !== "") {
           const barcodePattern = /^[0-9]{8,13}$/;
           if (!barcodePattern.test(value)) return "Barcode must be 8-13 digits";
         }
@@ -164,16 +424,16 @@ const AddProduct = () => {
         return "";
 
       case "weight":
-        if (value) {
+        if (value && value.trim() !== "") {
           const weight = parseFloat(value);
-          if (isNaN(weight)) return "Weight must be a valid number";
+          if (isNaN(weight)) return "Weight must be a number";
           if (weight <= 0) return "Weight must be greater than 0";
           if (weight > 10000) return "Weight must be less than 10,000 kg";
         }
         return "";
 
       case "dimensions":
-        if (value) {
+        if (value && value.trim() !== "") {
           const dimensionPattern = /^\d+(\.\d+)?\s*x\s*\d+(\.\d+)?\s*x\s*\d+(\.\d+)?$/i;
           if (!dimensionPattern.test(value)) {
             return "Dimensions must be in format: LengthxWidthxHeight (e.g., 10x5x3)";
@@ -192,7 +452,7 @@ const AddProduct = () => {
         return "";
 
       case "tags":
-        if (value) {
+        if (value && value.trim() !== "") {
           const tags = value.split(",").map(tag => tag.trim());
           if (tags.some(tag => tag.length > 30)) {
             return "Each tag must be less than 30 characters";
@@ -211,7 +471,7 @@ const AddProduct = () => {
     
     Object.keys(product).forEach(key => {
       if (key !== "isActive") {
-        const error = validateField(key, product[key as keyof ProductFormData] as string);
+        const error = validateField(key, product[key as keyof ProductData] as string);
         if (error) {
           newErrors[key] = error;
         }
@@ -231,13 +491,8 @@ const AddProduct = () => {
       if (errors[name]) {
         setErrors(prev => ({ ...prev, [name]: "" }));
       }
-      
-      if (touched[name]) {
-        const error = validateField(name, value);
-        setErrors(prev => ({ ...prev, [name]: error }));
-      }
     },
-    [errors, touched, validateField]
+    [errors]
   );
 
   const handleBlur = useCallback(
@@ -252,7 +507,7 @@ const AddProduct = () => {
     [validateField]
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     if (!token) {
@@ -349,351 +604,293 @@ const AddProduct = () => {
     setIsSubmitting(false);
   };
 
-  const getFieldError = (fieldName: string): string => {
-    return touched[fieldName] ? errors[fieldName] || "" : "";
-  };
-
-  const isFieldInvalid = (fieldName: string): boolean => {
-    return touched[fieldName] && !!errors[fieldName];
-  };
+  const formSections: FormSection[] = [
+    {
+      title: "Basic Information",
+      fields: [
+        { name: "name", label: "Product Name", icon: Package, required: true },
+        { name: "description", label: "Description", icon: FileText, isTextarea: true, rows: 3 },
+        { name: "brand", label: "Brand", icon: Tag }
+      ]
+    },
+    {
+      title: "Pricing & Inventory",
+      fields: [
+        { name: "price", label: "Price", icon: DollarSign, type: "number", required: true },
+        { name: "discountPrice", label: "Discount Price", icon: DollarSign, type: "number" },
+        { name: "stockQuantity", label: "Stock Quantity", icon: Hash, type: "number", required: true }
+      ]
+    },
+    {
+      title: "Product Details",
+      fields: [
+        { name: "sku", label: "SKU", icon: Hash },
+        { name: "barcode", label: "Barcode", icon: Barcode },
+        { name: "serialNumber", label: "Serial Number", icon: Hash },
+        { name: "weight", label: "Weight (kg)", icon: Weight, type: "number" },
+        { name: "dimensions", label: "Dimensions (L×W×H)", icon: Package }
+      ]
+    },
+    {
+      title: "Additional Information",
+      fields: [
+        { name: "categoryId", label: "Category ID", icon: Hash, type: "number", required: true },
+        { name: "unitId", label: "Unit ID", icon: Hash, type: "number", required: true },
+        { name: "image", label: "Image URL", icon: Image, required: true },
+        { name: "expirationDate", label: "Expiration Date", icon: Calendar, type: "date", placeholder: "dd-mm-yyyy (Expiration Date)" },
+        { name: "tags", label: "Tags (comma separated)", icon: Tag }
+      ]
+    }
+  ];
 
   return (
-    <main className="relative min-h-screen w-full bg-background flex items-center justify-center px-4 py-8 overflow-hidden">
-      <Particles
-        className="absolute inset-0 z-0 animate-fade-in"
-        quantity={100}
-      />
-      <BorderBeam size={300} duration={12} delay={9} />
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className={cn(
-          "relative z-10 w-full max-w-2xl rounded-2xl border border-neutral-800 bg-background p-6 shadow-2xl"
-        )}
-      >
-        <MemoizedTextAnimate />
-        
-        <AnimatePresence>
-          {submitSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="mb-4 p-4 bg-green-100 text-green-700 rounded-md"
-            >
-              Product added successfully!
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {submitError && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="mb-4 p-4 bg-red-100 text-red-700 rounded-md"
-            >
-              {submitError}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <form onSubmit={handleSubmit} className="grid gap-4" noValidate>
-          <div className="space-y-1">
-            <Input
-              label="Product Name"
-              name="name"
-              value={product.name}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-              className={isFieldInvalid("name") ? "border-red-500 focus:border-red-500" : ""}
-              aria-invalid={isFieldInvalid("name")}
-            />
-            {getFieldError("name") && (
-              <p className="text-sm text-red-500 mt-1">{getFieldError("name")}</p>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            <Input
-              label="Price"
-              type="number"
-              step="0.01"
-              name="price"
-              value={product.price}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-              className={isFieldInvalid("price") ? "border-red-500 focus:border-red-500" : ""}
-              aria-invalid={isFieldInvalid("price")}
-            />
-            {getFieldError("price") && (
-              <p className="text-sm text-red-500 mt-1">{getFieldError("price")}</p>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            <Input
-              label="Discount Price (Optional)"
-              type="number"
-              step="0.01"
-              name="discountPrice"
-              value={product.discountPrice}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={isFieldInvalid("discountPrice") ? "border-red-500 focus:border-red-500" : ""}
-              aria-invalid={isFieldInvalid("discountPrice")}
-            />
-            {getFieldError("discountPrice") && (
-              <p className="text-sm text-red-500 mt-1">{getFieldError("discountPrice")}</p>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            <Textarea
-              label="Description (Optional)"
-              name="description"
-              value={product.description}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              rows={3}
-              className={isFieldInvalid("description") ? "border-red-500 focus:border-red-500" : ""}
-              aria-invalid={isFieldInvalid("description")}
-            />
-            {getFieldError("description") && (
-              <p className="text-sm text-red-500 mt-1">{getFieldError("description")}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Input
-                label="Category ID"
-                type="number"
-                name="categoryId"
-                value={product.categoryId}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                className={isFieldInvalid("categoryId") ? "border-red-500 focus:border-red-500" : ""}
-                aria-invalid={isFieldInvalid("categoryId")}
-              />
-              {getFieldError("categoryId") && (
-                <p className="text-sm text-red-500 mt-1">{getFieldError("categoryId")}</p>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <Input
-                label="Unit ID"
-                type="number"
-                name="unitId"
-                value={product.unitId}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                className={isFieldInvalid("unitId") ? "border-red-500 focus:border-red-500" : ""}
-                aria-invalid={isFieldInvalid("unitId")}
-              />
-              {getFieldError("unitId") && (
-                <p className="text-sm text-red-500 mt-1">{getFieldError("unitId")}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <Input
-              label="Stock Quantity"
-              type="number"
-              name="stockQuantity"
-              value={product.stockQuantity}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-              className={isFieldInvalid("stockQuantity") ? "border-red-500 focus:border-red-500" : ""}
-              aria-invalid={isFieldInvalid("stockQuantity")}
-            />
-            {getFieldError("stockQuantity") && (
-              <p className="text-sm text-red-500 mt-1">{getFieldError("stockQuantity")}</p>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            <Input
-              label="Image URL"
-              name="image"
-              value={product.image}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-              placeholder="https://example.com/image.jpg"
-              className={isFieldInvalid("image") ? "border-red-500 focus:border-red-500" : ""}
-              aria-invalid={isFieldInvalid("image")}
-            />
-            {getFieldError("image") && (
-              <p className="text-sm text-red-500 mt-1">{getFieldError("image")}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Input
-                label="SKU (Optional - must be unique)"
-                name="sku"
-                value={product.sku}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="Leave blank for auto-generation"
-                className={isFieldInvalid("sku") ? "border-red-500 focus:border-red-500" : ""}
-                aria-invalid={isFieldInvalid("sku")}
-              />
-              {getFieldError("sku") && (
-                <p className="text-sm text-red-500 mt-1">{getFieldError("sku")}</p>
-              )}
-              <p className="text-xs text-gray-500">Leave blank to auto-generate a unique SKU</p>
-            </div>
-
-            <div className="space-y-1">
-              <Input
-                label="Serial Number (Optional - must be unique)"
-                name="serialNumber"
-                value={product.serialNumber}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="Leave blank if not applicable"
-                className={isFieldInvalid("serialNumber") ? "border-red-500 focus:border-red-500" : ""}
-                aria-invalid={isFieldInvalid("serialNumber")}
-              />
-              {getFieldError("serialNumber") && (
-                <p className="text-sm text-red-500 mt-1">{getFieldError("serialNumber")}</p>
-              )}
-              <p className="text-xs text-gray-500">Must be unique if provided</p>
-            </div>
-
-            <div className="space-y-1">
-              <Input
-                label="Barcode (Optional - must be unique)"
-                name="barcode"
-                value={product.barcode}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="Leave blank if not applicable"
-                className={isFieldInvalid("barcode") ? "border-red-500 focus:border-red-500" : ""}
-                aria-invalid={isFieldInvalid("barcode")}
-              />
-              {getFieldError("barcode") && (
-                <p className="text-sm text-red-500 mt-1">{getFieldError("barcode")}</p>
-              )}
-              <p className="text-xs text-gray-500">8-13 digits, must be unique if provided</p>
-            </div>
-
-            <div className="space-y-1">
-              <Input
-                label="Brand (Optional)"
-                name="brand"
-                value={product.brand}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={isFieldInvalid("brand") ? "border-red-500 focus:border-red-500" : ""}
-                aria-invalid={isFieldInvalid("brand")}
-              />
-              {getFieldError("brand") && (
-                <p className="text-sm text-red-500 mt-1">{getFieldError("brand")}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Input
-                label="Weight (kg, Optional)"
-                type="number"
-                step="0.01"
-                name="weight"
-                value={product.weight}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={isFieldInvalid("weight") ? "border-red-500 focus:border-red-500" : ""}
-                aria-invalid={isFieldInvalid("weight")}
-              />
-              {getFieldError("weight") && (
-                <p className="text-sm text-red-500 mt-1">{getFieldError("weight")}</p>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <Input
-                label="Dimensions (Optional)"
-                name="dimensions"
-                value={product.dimensions}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="10x5x3 (LxWxH)"
-                className={isFieldInvalid("dimensions") ? "border-red-500 focus:border-red-500" : ""}
-                aria-invalid={isFieldInvalid("dimensions")}
-              />
-              {getFieldError("dimensions") && (
-                <p className="text-sm text-red-500 mt-1">{getFieldError("dimensions")}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <Input
-              label="Expiration Date (Optional)"
-              type="date"
-              name="expirationDate"
-              value={product.expirationDate}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={isFieldInvalid("expirationDate") ? "border-red-500 focus:border-red-500" : ""}
-              aria-invalid={isFieldInvalid("expirationDate")}
-            />
-            {getFieldError("expirationDate") && (
-              <p className="text-sm text-red-500 mt-1">{getFieldError("expirationDate")}</p>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            <Input
-              label="Tags (Optional)"
-              name="tags"
-              value={product.tags}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              placeholder="electronics, gadget, portable"
-              className={isFieldInvalid("tags") ? "border-red-500 focus:border-red-500" : ""}
-              aria-invalid={isFieldInvalid("tags")}
-            />
-            {getFieldError("tags") && (
-              <p className="text-sm text-red-500 mt-1">{getFieldError("tags")}</p>
-            )}
-            <p className="text-xs text-gray-500">Separate tags with commas</p>
-          </div>
-
-          <Button 
-            type="submit" 
-            className="w-full mt-6" 
-            disabled={isSubmitting}
+    <div className={`min-h-screen relative overflow-hidden ${
+      darkMode 
+        ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" 
+        : "bg-gradient-to-br from-pink-50 via-white to-purple-50"
+    }`}>
+      {/* Background Animation */}
+      <div className="absolute inset-0 overflow-hidden">
+        <Particles        
+          className="absolute inset-0"
+          quantity={150}
+          ease={80}
+          color={darkMode ? "#ea384c" : "#FF4B4B"}
+          refresh={false}
+        />
+        <motion.div
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          style={{
+            background: darkMode
+              ? "radial-gradient(circle at center, transparent, rgba(234, 56, 76, 0.08))"
+              : "radial-gradient(circle at center, transparent, rgba(234, 56, 76, 0.05))",
+            filter: "blur(80px)",
+            transform: "translateZ(0)",
+          }}
+        />
+      </div>
+      
+      <div className="relative z-10 container mx-auto px-4 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <motion.div
+            className={`inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full border shadow-lg ${
+              darkMode 
+                ? "bg-gray-800/60 border-gray-700" 
+                : "bg-white/60 border-white/30"
+            }`}
+            whileHover={{ scale: 1.05 }}
           >
-            {isSubmitting ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Submitting...
-              </span>
-            ) : "Submit Product"}
-          </Button>
-        </form>
-      </motion.div>
-    </main>
+            <Sparkles className="w-4 h-4 text-[#ea384c]" />
+            <span className="text-sm font-medium bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent">
+              Product Management
+            </span>
+          </motion.div>
+          
+          <motion.h1 
+            className="text-4xl md:text-5xl font-bold mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <span className="bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent">
+              Add New Product
+            </span>
+          </motion.h1>
+          
+          <motion.p 
+            className={`text-lg max-w-2xl mx-auto ${
+              darkMode ? "text-gray-400" : "text-gray-600"
+            }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            Create and manage your products with our intuitive form system
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className={`rounded-3xl border shadow-2xl p-8 relative overflow-hidden ${
+            darkMode 
+              ? "bg-gray-800/50 border-gray-700 shadow-[#ea384c]/10" 
+              : "bg-white/40 border-white/30 shadow-[#ea384c]/5"
+          }`}>
+            {/* Border Beam Effects */}
+            <BorderBeam
+              duration={6}
+              size={300}
+              delay={0.3}
+              className="from-transparent via-[#ea384c] to-transparent"
+            />
+            <BorderBeam
+              duration={8}
+              size={350}
+              delay={1.5}
+              className="from-transparent via-[#FF719A] to-transparent"
+            />
+
+            {/* Error/Success Messages */}
+            <AnimatePresence>
+              {submitSuccess && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className={`mb-6 p-4 rounded-md ${
+                    darkMode ? "bg-green-900/50 text-green-300" : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  Product added successfully!
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className={`mb-6 p-4 rounded-md ${
+                    darkMode ? "bg-red-900/50 text-red-300" : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {submitError}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="space-y-8 relative z-10">
+              {formSections.map((section, sectionIndex) => (
+                <motion.div
+                  key={section.title}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: sectionIndex * 0.1 }}
+                  className="space-y-6"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#ea384c] to-[#FF719A] flex items-center justify-center text-white text-sm font-bold">
+                      {sectionIndex + 1}
+                    </div>
+                    <h3 className={`text-xl font-semibold ${
+                      darkMode ? "text-gray-200" : "text-gray-800"
+                    }`}>
+                      {section.title}
+                    </h3>
+                    <div className={`flex-1 h-px ${
+                      darkMode 
+                        ? "bg-gradient-to-r from-[#ea384c]/20 to-transparent" 
+                        : "bg-gradient-to-r from-[#ea384c]/10 to-transparent"
+                    }`} />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {section.fields.map((field) => (
+                      <div key={field.name} className={field.isTextarea ? "md:col-span-2" : ""}>
+                        <InputField
+                          label={field.label}
+                          name={field.name}
+                          value={product[field.name] as string}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          type={field.type}
+                          required={field.required}
+                          icon={field.icon}
+                          rows={field.rows}
+                          isTextarea={field.isTextarea}
+                          placeholder={field.placeholder}
+                          darkMode={darkMode}
+                          error={errors[field.name]}
+                          touched={touched[field.name]}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.6 }}
+                className="pt-6"
+              >
+                <SubmitButton 
+                  isSubmitting={isSubmitting} 
+                  onClick={handleSubmit}
+                  darkMode={darkMode}
+                />
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Success Modal */}
+      <AnimatePresence>
+        {submitSuccess && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className={`rounded-3xl p-8 max-w-md mx-4 text-center border relative overflow-hidden ${
+                darkMode 
+                  ? "bg-gray-800/90 border-gray-700" 
+                  : "bg-white/90 border-white/30"
+              }`}
+            >
+              {/* Border Beam for modal */}
+              <BorderBeam
+                duration={6}
+                size={200}
+                delay={0.3}
+                className="from-transparent via-[#ea384c] to-transparent"
+              />
+              
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="w-16 h-16 bg-gradient-to-r from-[#ea384c] to-[#FF719A] rounded-full flex items-center justify-center mx-auto mb-4"
+              >
+                <CheckCircle className="w-8 h-8 text-white" />
+              </motion.div>
+              
+              <h3 className={`text-2xl font-bold mb-2 ${
+                darkMode ? "text-gray-200" : "text-gray-800"
+              }`}>
+                Success!
+              </h3>
+              <p className={darkMode ? "text-gray-400" : "text-gray-600"}>
+                Your product has been created successfully.
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
