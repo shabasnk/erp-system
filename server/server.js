@@ -4,7 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import pkg from 'pg';
 
-import { sequelize } from "./models/index.js"; // ✅ centralized import
+import { sequelize } from "./models/index.js"; 
 
 import sanitizedConfig from "./config.js";
 
