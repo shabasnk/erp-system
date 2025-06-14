@@ -1,4 +1,3 @@
-// import React, { useState } from 'react';
 import { useState } from 'react';
 import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
@@ -255,4 +254,3 @@ function Profile({ darkMode = false, user = defaultUser, onBack = () => {} }: Pr
 }
 
 export default Profile;
-
