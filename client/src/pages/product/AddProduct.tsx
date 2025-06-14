@@ -1,5 +1,3 @@
-
-
 import React, { memo, useCallback, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOutletContext } from "react-router-dom";
