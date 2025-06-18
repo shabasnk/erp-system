@@ -94,8 +94,8 @@ const handleChange = useCallback((e:React.ChangeEvent<HTMLInputElement | HTMLTex
             rows={3}
           />
           <Input
-            label="Category ID"
-            type="number"
+            label="Category"
+            type="text"
             name="categoryId"
             value={product.categoryId}
             onChange={handleChange}
