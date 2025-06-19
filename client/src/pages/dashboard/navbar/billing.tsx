@@ -1,8 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description?: string;
+  // Add other product fields as needed
+}
 
 const BillingNav: React.FC = () => {
   const { darkMode } = useOutletContext<{ darkMode: boolean }>();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/product/products'); // Adjust this endpoint as needed
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        setProducts(data.products || data); // Adjust based on your API response structure
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div>
@@ -17,105 +47,48 @@ const BillingNav: React.FC = () => {
 
       <div>
         <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-800/50 border border-pink-900' : 'bg-pink-50 border border-pink-100'}`}>
-          <h2 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-            Billing Information
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Billing Summary */}
-            <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900 hover:border-pink-500' : 'bg-white border border-pink-200 hover:border-pink-300'} transition-all duration-300 shadow-sm`}>
-              <h3 className={`font-medium font-['Kantumruy_Pro'] mb-3 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-                Current Plan
-              </h3>
-              <div className={`p-3 rounded-md ${darkMode ? 'bg-gray-700' : 'bg-pink-100'} mb-4`}>
-                <div className="flex justify-between items-center">
-                  <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>Premium Plan</span>
-                  <span className={`font-bold ${darkMode ? 'text-pink-400' : 'text-pink-600'}`}>$29.99/month</span>
-                </div>
-              </div>
-              <button
-                className={`w-full py-2 rounded-md font-medium ${darkMode 
-                  ? 'bg-gray-700 hover:bg-gray-600 text-white border border-pink-900 hover:border-pink-500' 
-                  : 'bg-white hover:bg-gray-50 text-gray-800 border border-pink-200 hover:border-pink-300'} shadow-sm transition-all duration-300`}
-              >
-                Change Plan
-              </button>
-            </div>
+          {/* ... existing billing sections ... */}
 
-            {/* Payment Method */}
-            <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900 hover:border-pink-500' : 'bg-white border border-pink-200 hover:border-pink-300'} transition-all duration-300 shadow-sm`}>
-              <h3 className={`font-medium font-['Kantumruy_Pro'] mb-3 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-                Payment Method
-              </h3>
-              <div className={`p-3 rounded-md ${darkMode ? 'bg-gray-700' : 'bg-pink-100'} mb-4 flex items-center justify-between`}>
-                <div className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full ${darkMode ? 'bg-blue-900' : 'bg-blue-100'} flex items-center justify-center mr-3`}>
-                    <svg className={`w-5 h-5 ${darkMode ? 'text-blue-300' : 'text-blue-500'}`} fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                      <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>Visa ending in 4242</p>
-                    <p className={`text-xs ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>Expires 12/2024</p>
-                  </div>
-                </div>
-                <button className={`text-sm ${darkMode ? 'text-pink-400 hover:text-pink-300' : 'text-pink-600 hover:text-pink-700'}`}>
-                  Edit
-                </button>
+          {/* Add a new section for Products */}
+          <div className="mt-8">
+            <h2 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+              Your Products
+            </h2>
+            
+            {loading ? (
+              <div className="text-center py-4">
+                <p className={darkMode ? 'text-pink-300' : 'text-pink-600'}>Loading products...</p>
               </div>
-              <button
-                className={`w-full py-2 rounded-md font-medium ${darkMode 
-                  ? 'bg-gray-700 hover:bg-gray-600 text-white border border-pink-900 hover:border-pink-500' 
-                  : 'bg-white hover:bg-gray-50 text-gray-800 border border-pink-200 hover:border-pink-300'} shadow-sm transition-all duration-300`}
-              >
-                Add Payment Method
-              </button>
-            </div>
-          </div>
-
-          {/* Billing History */}
-          <div className="mt-6">
-            <h3 className={`font-medium font-['Kantumruy_Pro'] mb-3 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-              Billing History
-            </h3>
-            <div className={`rounded-lg overflow-hidden border ${darkMode ? 'border-pink-900 hover:border-pink-500' : 'border-pink-200 hover:border-pink-300'} transition-all duration-300`}>
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-pink-900">
-                <thead className={`${darkMode ? 'bg-gray-800' : 'bg-pink-50'}`}>
-                  <tr>
-                    <th scope="col" className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
-                      Date
-                    </th>
-                    <th scope="col" className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
-                      Description
-                    </th>
-                    <th scope="col" className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
-                      Amount
-                    </th>
-                    <th scope="col" className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className={`divide-y divide-gray-200 dark:divide-pink-900 ${darkMode ? 'bg-gray-800/50' : 'bg-white'}`}>
-                  {[1, 2, 3].map((invoice) => (
-                    <tr key={invoice} className={`${darkMode ? 'hover:bg-gray-700' : 'hover:bg-pink-50'} transition-colors duration-200`}>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
-                        {new Date().toLocaleDateString()}
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        Premium Plan Subscription
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
-                        $29.99
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
-                        Paid
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            ) : error ? (
+              <div className={`p-4 rounded-md ${darkMode ? 'bg-red-900/50' : 'bg-red-100'} mb-4`}>
+                <p className={darkMode ? 'text-red-300' : 'text-red-600'}>Error: {error}</p>
+              </div>
+            ) : products.length === 0 ? (
+              <div className={`p-4 rounded-md ${darkMode ? 'bg-gray-700' : 'bg-pink-100'} mb-4`}>
+                <p className={darkMode ? 'text-pink-300' : 'text-pink-600'}>No products found</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {products.map((product) => (
+                  <div 
+                    key={product.id} 
+                    className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900 hover:border-pink-500' : 'bg-white border border-pink-200 hover:border-pink-300'} transition-all duration-300 shadow-sm`}
+                  >
+                    <h3 className={`font-medium font-['Kantumruy_Pro'] mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                      {product.name}
+                    </h3>
+                    <p className={`text-sm mb-2 ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
+                      ${product.price.toFixed(2)}
+                    </p>
+                    {product.description && (
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {product.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
