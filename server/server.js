@@ -16,6 +16,9 @@ import shopRouter from "./routes/shopRouter.js"
 
 import productRouter from "./routes/productRouter.js";
 
+import billingRouter from "./routes/billingRouter.js";
+
+
 dotenv.config();
 
 const app = express();
@@ -40,6 +43,9 @@ sequelize.sync({ force: false })
 app.use("/api/auth/", authRouter);
 app.use("/api/shops",shopRouter)
 app.use("/api/product",productRouter)
+app.use("/api/billing",billingRouter)
+
+
 
 app.get("/", (req, res) => {
   res.send("API is running!");
