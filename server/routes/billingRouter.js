@@ -16,9 +16,6 @@ import { searchProducts, createInvoice } from '../controller/billingController.j
 import { verifyToken } from '../middlewares/tokenVerification.js';
 
 
-console.log("under billingRoutes");
-
-
 const router = express.Router();
 
 router.use(verifyToken)
