@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import ProtectedRoute from "@/routes/protectedRoute";
 import PublicRoute from "@/routes/publicRoute"; // Add this import
 import ProductsNav from "@/pages/dashboard/navbar/products";
-import BillingNav from "@/pages/dashboard/navbar/billing";
+import BillingNav from "@/pages/dashboard/navbar/billing/billing";
 import Profile from "@/pages/dashboard/profile";
 import AddProduct from "@/pages/product/AddProduct";
 

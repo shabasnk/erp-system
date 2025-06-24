@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { debounce } from 'lodash';
 import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
+import InputFields from '../billing/inputField';
 
 interface Product {
   id: number;
@@ -17,10 +18,15 @@ interface SelectedProduct extends Product {
 }
 
 interface CustomerInfo {
+  companyName: string;
   name: string;
   email: string;
   phone: string;
+  whatsappNumber: string;
+  useSameAsPhone: boolean;
   address: string;
+  gstNumber: string;
+  gstPercentage: string;
 }
 
 interface InvoiceData {
@@ -32,7 +38,6 @@ interface InvoiceData {
   createdAt: string;
 }
 
-// Currency formatter for Indian Rupees
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -50,17 +55,24 @@ const BillingNav: React.FC = () => {
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
+    companyName: '',
     name: '',
     email: '',
     phone: '',
-    address: ''
+    whatsappNumber: '',
+    useSameAsPhone: true,
+    address: '',
+    gstNumber: '',
+    gstPercentage: '18.00'
   });
   const [paymentMethod, setPaymentMethod] = useState<string>('cash');
   const [isCreatingInvoice, setIsCreatingInvoice] = useState<boolean>(false);
   const [invoiceCreated, setInvoiceCreated] = useState<boolean>(false);
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [showCheckoutModal, setShowCheckoutModal] = useState<boolean>(false);
+  const [showValidation, setShowValidation] = useState<boolean>(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const authAxios = axios.create({
     baseURL: '/api',
@@ -94,6 +106,9 @@ const BillingNav: React.FC = () => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setShowCheckoutModal(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -109,6 +124,15 @@ const BillingNav: React.FC = () => {
 
     return () => debouncedSearch.cancel();
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (customerInfo.useSameAsPhone) {
+      setCustomerInfo(prev => ({
+        ...prev,
+        whatsappNumber: prev.phone
+      }));
+    }
+  }, [customerInfo.phone, customerInfo.useSameAsPhone]);
 
   const handleProductSelect = (product: Product) => {
     const existingProduct = selectedProducts.find(p => p.id === product.id);
@@ -151,17 +175,52 @@ const BillingNav: React.FC = () => {
   };
 
   const validateCustomerInfo = (): boolean => {
-    if (!customerInfo.name.trim()) {
-      alert('Please enter customer name');
+    // Required fields validation
+    if (!customerInfo.companyName.trim()) return false;
+    if (!customerInfo.name.trim()) return false;
+    if (!customerInfo.phone.trim()) return false;
+    if (!customerInfo.address.trim()) return false;
+    
+    // Email validation
+    if (customerInfo.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) {
       return false;
     }
     
-    if (customerInfo.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) {
-      alert('Please enter a valid email address');
+    // Phone validation
+    if (!/^[0-9]{10}$/.test(customerInfo.phone)) return false;
+    
+    // WhatsApp validation
+    if (!customerInfo.useSameAsPhone && !/^[0-9]{10}$/.test(customerInfo.whatsappNumber)) {
       return false;
+    }
+    
+    // GST validation
+    if (customerInfo.gstNumber && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(customerInfo.gstNumber)) {
+      return false;
+    }
+    
+    // GST percentage validation
+    if (customerInfo.gstNumber) {
+      const percentage = parseFloat(customerInfo.gstPercentage);
+      if (isNaN(percentage)) return false;
+      if (percentage < 0 || percentage > 100) return false;
     }
     
     return true;
+  };
+
+  const calculateTotal = () => {
+    const subtotal = selectedProducts.reduce((sum, product) => 
+      sum + (product.discountPrice || product.price) * product.quantity, 0
+    );
+
+    if (customerInfo.gstNumber) {
+      const gstPercentage = parseFloat(customerInfo.gstPercentage) || 0;
+      const gstAmount = subtotal * (gstPercentage / 100);
+      return subtotal + gstAmount;
+    }
+
+    return subtotal;
   };
 
   const handleCheckout = async (): Promise<void> => {
@@ -175,6 +234,10 @@ const BillingNav: React.FC = () => {
       return;
     }
     
+    // Show validation messages
+    setShowValidation(true);
+    
+    // Validate all fields
     if (!validateCustomerInfo()) {
       return;
     }
@@ -185,7 +248,9 @@ const BillingNav: React.FC = () => {
       const response = await authAxios.post('/billing/create', {
         products: selectedProducts,
         customerInfo,
-        paymentMethod
+        paymentMethod,
+        total: calculateTotal(),
+        gstPercentage: customerInfo.gstNumber ? customerInfo.gstPercentage : null
       });
 
       const data = response.data;
@@ -195,6 +260,7 @@ const BillingNav: React.FC = () => {
         setInvoiceCreated(true);
         setSelectedProducts([]);
         setShowCheckoutModal(false);
+        setShowValidation(false);
       } else {
         alert(data.message || 'Failed to create invoice');
       }
@@ -211,43 +277,22 @@ const BillingNav: React.FC = () => {
   };
 
   const renderCheckoutModal = () => (
-    <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50`}>
-      <div className={`p-6 rounded-lg w-full max-w-md ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+    <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto`}>
+      <div 
+        ref={modalRef}
+        className={`p-6 rounded-lg w-full max-w-md max-h-[90vh] ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+      >
         <h3 className={`text-xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
           Customer Information
         </h3>
         
-        <div className="space-y-4">
-          <div>
-            <label className={`block mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Name *</label>
-            <input
-              type="text"
-              value={customerInfo.name}
-              onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-              className={`w-full p-2 rounded border ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              required
-            />
-          </div>
-          
-          <div>
-            <label className={`block mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Email</label>
-            <input
-              type="email"
-              value={customerInfo.email}
-              onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
-              className={`w-full p-2 rounded border ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-            />
-          </div>
-          
-          <div>
-            <label className={`block mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Phone</label>
-            <input
-              type="tel"
-              value={customerInfo.phone}
-              onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-              className={`w-full p-2 rounded border ${darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-            />
-          </div>
+        <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-2">
+          <InputFields 
+            customerInfo={customerInfo}
+            setCustomerInfo={setCustomerInfo}
+            darkMode={darkMode}
+            showValidation={showValidation}
+          />
           
           <div>
             <label className={`block mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Payment Method</label>
@@ -259,13 +304,17 @@ const BillingNav: React.FC = () => {
               <option value="cash">Cash</option>
               <option value="card">Credit Card</option>
               <option value="transfer">Bank Transfer</option>
+              <option value="upi">UPI</option>
             </select>
           </div>
         </div>
         
         <div className="mt-6 flex justify-end space-x-3">
           <button
-            onClick={() => setShowCheckoutModal(false)}
+            onClick={() => {
+              setShowCheckoutModal(false);
+              setShowValidation(false);
+            }}
             className={`px-4 py-2 rounded ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'}`}
           >
             Cancel
@@ -305,6 +354,18 @@ const BillingNav: React.FC = () => {
             onClick={() => {
               setInvoiceCreated(false);
               setInvoiceData(null);
+              setCustomerInfo(prev => ({
+                companyName: '',
+                name: '',
+                email: '',
+                phone: '',
+                whatsappNumber: '',
+                useSameAsPhone: true,
+                address: '',
+                gstNumber: prev.gstNumber,
+                gstPercentage: '18.00'
+              }));
+              setShowValidation(false);
             }}
             className={`w-full px-4 py-2 rounded bg-pink-600 text-white hover:bg-pink-700`}
           >
@@ -471,13 +532,25 @@ const BillingNav: React.FC = () => {
                       ))}
                     </span>
                   </div>
+                  {customerInfo.gstNumber && (
+                    <>
+                      <div className="flex justify-between mb-2">
+                        <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>GST ({customerInfo.gstPercentage}%):</span>
+                        <span className={darkMode ? 'text-white' : 'text-gray-800'}>
+                          {formatCurrency(
+                            selectedProducts.reduce((sum, product) => 
+                              sum + (product.discountPrice || product.price) * product.quantity, 0
+                            ) * (parseFloat(customerInfo.gstPercentage) || 0) / 100
+                          )}
+                        </span>
+                      </div>
+                    </>
+                  )}
                   <div className="border-t pt-3 mt-3 border-pink-900/50">
                     <div className="flex justify-between font-bold">
                       <span className={darkMode ? 'text-white' : 'text-gray-800'}>Total:</span>
                       <span className="text-lg text-pink-600">
-                        {formatCurrency(selectedProducts.reduce((sum, product) => 
-                          sum + (product.discountPrice || product.price) * product.quantity, 0
-                        ))}
+                        {formatCurrency(calculateTotal())}
                       </span>
                     </div>
                   </div>
@@ -505,4 +578,3 @@ const BillingNav: React.FC = () => {
 };
 
 export default BillingNav;
-
