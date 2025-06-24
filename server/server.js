@@ -19,6 +19,8 @@ import productRouter from "./routes/productRouter.js";
 import billingRouter from "./routes/billingRouter.js";
 
 
+
+
 dotenv.config();
 
 const app = express();
@@ -44,7 +46,7 @@ app.use("/api/auth/", authRouter);
 app.use("/api/shops",shopRouter)
 app.use("/api/product",productRouter)
 app.use("/api/billing",billingRouter)
-
+app.use("/api/customer",customerRouter)
 
 
 app.get("/", (req, res) => {
