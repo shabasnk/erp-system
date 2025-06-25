@@ -1,32 +1,33 @@
-const Customer = require('../models/customerModel');
+import Customer from '../models/customerModel.js';
 
 // Create a new customer
-exports.createCustomer = async (req, res) => {
+export const createCustomer = async (req, res) => {
   try {
-    // If whatsapp number is same as phone, set it
-    if (req.body.useSameAsPhone) {
-      req.body.whatsappNumber = req.body.phone;
-    }
+    const { useSameAsPhone, phone, ...customerData } = req.body;
 
-    const customer = await Customer.create(req.body);
-    
+    // If WhatsApp number is same as phone, set it
+    const whatsappNumber = useSameAsPhone ? phone : customerData.whatsappNumber;
+
+    const customer = await Customer.create({
+      ...customerData,
+      whatsappNumber,
+    });
+
     res.status(201).json({
-      status: 'success',
-      data: {
-        customer
-      }
+      success: true,
+      data: customer,
     });
   } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({
-        status: 'fail',
-        message: 'Email already exists'
+        success: false,
+        message: 'Email or phone number already exists.',
       });
     }
-    
-    res.status(400).json({
-      status: 'fail',
-      message: error.message
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create customer.',
+      error: error.message,
     });
   }
 };

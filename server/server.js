@@ -18,6 +18,7 @@ import productRouter from "./routes/productRouter.js";
 
 import billingRouter from "./routes/billingRouter.js";
 
+import customerRouter from "./routes/customerRouter.js"
 
 
 

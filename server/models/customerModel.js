@@ -1,5 +1,6 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // You'll need to set this up
+import { DataTypes } from 'sequelize';
+import sequelize from '../connect/connect.js';
+
 
 const Customer = sequelize.define('Customer', {
   id: {
@@ -80,4 +81,4 @@ const Customer = sequelize.define('Customer', {
   updatedAt: 'updatedAt'
 });
 
-module.exports = Customer;
+export default Customer;
