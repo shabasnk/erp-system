@@ -1,15 +1,3 @@
-// import express from 'express';
-// import { searchProducts } from '../controller/billingController.js';
-
-// const router = express.Router();
-
-// // Search products by name
-// router.get('/search', searchProducts);
-
-// export default router;
-
-
-
 // routes/billingRouter.js
 import express from 'express';
 import { searchProducts, createInvoice } from '../controller/billingController.js';
