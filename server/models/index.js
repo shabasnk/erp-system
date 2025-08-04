@@ -8,3 +8,4 @@ import Shops from "./shopModel.js";
 
 // Export all models + sequelize instance
 export { sequelize, Shops };
+

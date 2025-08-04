@@ -19,3 +19,10 @@ export const calculateGst = (subtotal: number, gstPercentage: string) => {
   const percentage = parseFloat(gstPercentage) || 0;
   return subtotal * (percentage / 100);
 };
+
+
+
+
+
+
+

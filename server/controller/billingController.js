@@ -5,9 +5,10 @@ import Invoice from '../models/invoiceModel.js';
 import InvoiceItem from '../models/invoiceItemModel.js';
 import sequelize from '../connect/connect.js';
 import Customer from '../models/customerModel.js';
+// import { generateInvoicePDF } from '../services/pdfService.js';
+// import WhatsAppService from '../services/whatsappService.js';
 
 
-console.log("under billing controller");
 
 export const searchProducts = async (req, res) => {
     console.log("under search products");
@@ -275,3 +276,9 @@ const calculatedTotal = parseFloat((subtotal + gstAmount).toFixed(2));
     });
   }
 };
+
+
+
+
+
+
