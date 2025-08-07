@@ -90,6 +90,7 @@
 
 
 // for green api after 12 digit invoice issue solving
+//C:\coding\WEZ-ERP-APP\server\models\invoiceModel.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../connect/connect.js';
 import Customer from './customerModel.js';

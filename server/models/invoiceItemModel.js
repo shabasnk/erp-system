@@ -1,3 +1,4 @@
+//C:\coding\WEZ-ERP-APP\server\models\invoiceItemModel.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../connect/connect.js';
 import Invoice from './invoiceModel.js';

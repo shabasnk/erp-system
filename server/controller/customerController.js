@@ -63,7 +63,7 @@
 
 
 
-// for green api
+// for green api (12 dgt i thnk)
 
 import Customer from '../models/customerModel.js';
 
