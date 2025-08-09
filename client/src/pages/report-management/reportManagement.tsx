@@ -1,0 +1,979 @@
+
+
+// //C:\coding\WEZ-ERP-APP\client\src\pages\report-management\reportManagement.tsx
+// import React, { useState, useEffect } from 'react';
+// import { useOutletContext } from 'react-router-dom';
+// import { 
+//   Activity,
+//   BarChart as BarChartIcon,
+//   Calendar as CalendarIcon,
+//   Clock,
+//   CreditCard,
+//   DollarSign,
+//   Package,
+//   ShoppingCart,
+//   TrendingUp,
+//   Users
+// } from 'lucide-react';
+// import { DateRange } from 'react-day-picker';
+// import { addDays, format, subDays, subMonths, subHours } from 'date-fns';
+// import { cn } from '@/lib/utils';
+// import { Button } from '@/components/ui/button';
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+// import { CalendarDateRangePicker } from '@/pages/report-management/date-range-picker';
+// import { RecentSales } from '@/pages/report-management/recent-sales';
+// import { SalesChart } from '@/pages/report-management/sales-chart';
+// import { InventoryStatus } from '@/pages/report-management/inventory-status';
+// // import { RevenueBarChart } from '@/pages/report-management/revenue-bar-chart';
+// // import { RevenueBarChart } from '@/pages/report-management/revenue-bar-chart';
+// import { RevenueBarChart } from '@/pages/report-management/bar-chart';
+
+
+
+
+// // TypeScript interfaces
+// interface SalesData {
+//   date: string;
+//   totalSales: number;
+//   totalOrders: number;
+// }
+
+// interface RevenueData {
+//   month: string;
+//   revenue: number;
+// }
+
+// interface InventoryItem {
+//   id: number;
+//   name: string;
+//   sku: string;
+//   currentStock: number;
+//   lowStockThreshold: number;
+//   status: 'In Stock' | 'Low Stock' | 'Out of Stock';
+// }
+
+// interface Order {
+//   id: number;
+//   customerName: string;
+//   totalAmount: number;
+//   status: 'Completed' | 'Pending' | 'Cancelled';
+//   date: string;
+// }
+
+// interface ReportData {
+//   dailySales: number;
+//   monthlySales: number;
+//   yearlySales: number;
+//   totalRevenue: number;
+//   pendingOrders: number;
+//   inventoryStatus: InventoryItem[];
+//   recentOrders: Order[];
+//   salesTrend: SalesData[];
+//   revenueTrend: RevenueData[];
+// }
+
+// // Mock data generator
+// const generateMockReportData = (dateRange: DateRange | undefined): ReportData => {
+//   const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+  
+//   // Generate sales trend based on date range
+//   const days = dateRange?.from && dateRange?.to ? 
+//     Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) : 30;
+  
+//   const salesTrend = Array.from({ length: days }, (_, i) => ({
+//     date: subDays(dateRange?.to || new Date(), days - i - 1).toISOString(),
+//     totalSales: randomInRange(1000, 5000),
+//     totalOrders: randomInRange(5, 25)
+//   }));
+
+//   // Revenue trend for last 12 months
+//   const revenueTrend = Array.from({ length: 12 }, (_, i) => ({
+//     month: format(subMonths(new Date(), 11 - i), 'MMM yyyy'),
+//     revenue: randomInRange(30000, 100000)
+//   }));
+
+//   // Inventory data
+//   const inventoryStatus = Array.from({ length: 15 }, (_, i) => {
+//     const stock = randomInRange(0, 50);
+//     let status: 'In Stock' | 'Low Stock' | 'Out of Stock' = 'In Stock';
+//     if (stock === 0) status = 'Out of Stock';
+//     else if (stock < 10) status = 'Low Stock';
+    
+//     return {
+//       id: i + 1,
+//       name: `Product ${String.fromCharCode(65 + i)}`,
+//       sku: `PROD${1000 + i}`,
+//       currentStock: stock,
+//       lowStockThreshold: 10,
+//       status
+//     };
+//   });
+
+//   // Recent orders
+//   const recentOrders = Array.from({ length: 10 }, (_, i) => {
+//     const statuses: ('Completed' | 'Pending' | 'Cancelled')[] = ['Completed', 'Pending', 'Cancelled'];
+//     return {
+//       id: 1000 + i,
+//       customerName: ['John', 'Jane', 'Bob', 'Alice'][randomInRange(0, 3)] + ' ' + 
+//                    ['Doe', 'Smith', 'Johnson', 'Williams'][randomInRange(0, 3)],
+//       totalAmount: randomInRange(50, 500) + 0.99,
+//       status: statuses[randomInRange(0, 2)],
+//       date: subHours(new Date(), randomInRange(1, 48)).toISOString()
+//     };
+//   });
+
+//   return {
+//     dailySales: randomInRange(1000, 5000),
+//     monthlySales: randomInRange(30000, 100000),
+//     yearlySales: randomInRange(300000, 1200000),
+//     totalRevenue: randomInRange(1000000, 5000000),
+//     pendingOrders: randomInRange(1, 10),
+//     inventoryStatus,
+//     recentOrders,
+//     salesTrend,
+//     revenueTrend
+//   };
+// };
+
+// function ReportManagement() {
+//   const { darkMode } = useOutletContext<{ darkMode: boolean }>();
+//   const [date, setDate] = useState<DateRange | undefined>({
+//     from: subDays(new Date(), 7),
+//     to: new Date(),
+//   });
+//   const [reportData, setReportData] = useState<ReportData | null>(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+
+//   useEffect(() => {
+//     const fetchReportData = async () => {
+//       try {
+//         setLoading(true);
+        
+//         // Generate mock data instead of API call
+//         const mockData = generateMockReportData(date);
+//         setReportData(mockData);
+        
+//         // Simulate network delay
+//         await new Promise(resolve => setTimeout(resolve, 500));
+        
+//       } catch (err) {
+//         console.error('Error generating mock data:', err);
+//         setError('Failed to load report data. Please try again.');
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchReportData();
+//   }, [date]);
+
+//   if (loading) {
+//     return (
+//       <div className={`flex items-center justify-center min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+//         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#ea384c]"></div>
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className={`flex items-center justify-center min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+//         <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
+//           <p className={darkMode ? 'text-red-400' : 'text-red-600'}>{error}</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (!reportData) {
+//     return null;
+//   }
+
+//   return (
+//     <div className={`min-h-screen p-4 md:p-8 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+//       <div className="flex flex-col">
+//         <div className="flex-1 space-y-4">
+//           <div className="flex items-center justify-between space-y-2">
+//             <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+//               Sales & Inventory Dashboard
+//             </h2>
+//             <div className="flex items-center space-x-2">
+//               <CalendarDateRangePicker 
+//                 date={date}
+//                 setDate={setDate}
+//                 darkMode={darkMode}
+//               />
+//             </div>
+//           </div>
+
+//           <Tabs defaultValue="overview" className="space-y-4">
+//             <TabsList className={`${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+//               <TabsTrigger value="overview">Overview</TabsTrigger>
+//               <TabsTrigger value="sales">Sales</TabsTrigger>
+//               <TabsTrigger value="inventory">Inventory</TabsTrigger>
+//               <TabsTrigger value="orders">Orders</TabsTrigger>
+//             </TabsList>
+            
+//             <TabsContent value="overview" className="space-y-4">
+//               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+//                 <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+//                     <CardTitle className="text-sm font-medium">
+//                       Total Revenue
+//                     </CardTitle>
+//                     <DollarSign className="h-4 w-4 text-muted-foreground" />
+//                   </CardHeader>
+//                   <CardContent>
+//                     <div className="text-2xl font-bold">
+//                       ${reportData.totalRevenue.toLocaleString()}
+//                     </div>
+//                     <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+//                       All-time revenue
+//                     </p>
+//                   </CardContent>
+//                 </Card>
+                
+//                 <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+//                     <CardTitle className="text-sm font-medium">
+//                       Today's Sales
+//                     </CardTitle>
+//                     <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+//                   </CardHeader>
+//                   <CardContent>
+//                     <div className="text-2xl font-bold">
+//                       ${reportData.dailySales.toLocaleString()}
+//                     </div>
+//                     <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+//                       +12% from yesterday
+//                     </p>
+//                   </CardContent>
+//                 </Card>
+                
+//                 <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+//                     <CardTitle className="text-sm font-medium">
+//                       Monthly Sales
+//                     </CardTitle>
+//                     <TrendingUp className="h-4 w-4 text-muted-foreground" />
+//                   </CardHeader>
+//                   <CardContent>
+//                     <div className="text-2xl font-bold">
+//                       ${reportData.monthlySales.toLocaleString()}
+//                     </div>
+//                     <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+//                       +8% from last month
+//                     </p>
+//                   </CardContent>
+//                 </Card>
+                
+//                 <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+//                     <CardTitle className="text-sm font-medium">
+//                       Pending Orders
+//                     </CardTitle>
+//                     <Clock className="h-4 w-4 text-muted-foreground" />
+//                   </CardHeader>
+//                   <CardContent>
+//                     <div className="text-2xl font-bold">
+//                       {reportData.pendingOrders}
+//                     </div>
+//                     <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+//                       +2 since last hour
+//                     </p>
+//                   </CardContent>
+//                 </Card>
+//               </div>
+
+//               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+//                 <Card className={`col-span-4 ${darkMode ? 'bg-gray-800 border-gray-700' : ''}`}>
+//                   <CardHeader>
+//                     <CardTitle>Sales Overview</CardTitle>
+//                   </CardHeader>
+//                   <CardContent className="pl-2">
+//                     <SalesChart 
+//                       data={reportData.salesTrend} 
+//                       darkMode={darkMode}
+//                     />
+//                   </CardContent>
+//                 </Card>
+                
+//                 <Card className={`col-span-3 ${darkMode ? 'bg-gray-800 border-gray-700' : ''}`}>
+//                   <CardHeader>
+//                     <CardTitle>Recent Sales</CardTitle>
+//                   </CardHeader>
+//                   <CardContent>
+//                     <RecentSales 
+//                       orders={reportData.recentOrders} 
+//                       darkMode={darkMode}
+//                     />
+//                   </CardContent>
+//                 </Card>
+//               </div>
+//             </TabsContent>
+            
+//             <TabsContent value="sales" className="space-y-4">
+//               <div className="grid gap-4 md:grid-cols-2">
+//                 <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                   <CardHeader>
+//                     <CardTitle>Sales Trend</CardTitle>
+//                   </CardHeader>
+//                   <CardContent>
+//                     <SalesChart 
+//                       data={reportData.salesTrend} 
+//                       darkMode={darkMode}
+//                     />
+//                   </CardContent>
+//                 </Card>
+                
+//                 <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                   <CardHeader>
+//                     <CardTitle>Revenue by Month</CardTitle>
+//                   </CardHeader>
+//                   <CardContent>
+//                     <div className="h-[300px]">
+//                      <RevenueBarChart 
+//                         data={reportData.revenueTrend} 
+//                         darkMode={darkMode}
+//                       />
+//                     </div>
+//                   </CardContent>
+//                 </Card>
+//               </div>
+              
+//               <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                 <CardHeader>
+//                   <CardTitle>Detailed Sales Report</CardTitle>
+//                 </CardHeader>
+//                 <CardContent>
+//                   <Table>
+//                     <TableHeader>
+//                       <TableRow>
+//                         <TableHead>Date</TableHead>
+//                         <TableHead>Orders</TableHead>
+//                         <TableHead>Revenue</TableHead>
+//                         <TableHead>Avg. Order Value</TableHead>
+//                       </TableRow>
+//                     </TableHeader>
+//                     <TableBody>
+//                       {reportData.salesTrend.map((day) => (
+//                         <TableRow key={day.date}>
+//                           <TableCell>{format(new Date(day.date), 'MMM dd')}</TableCell>
+//                           <TableCell>{day.totalOrders}</TableCell>
+//                           <TableCell>${day.totalSales.toFixed(2)}</TableCell>
+//                           <TableCell>${(day.totalSales / day.totalOrders).toFixed(2)}</TableCell>
+//                         </TableRow>
+//                       ))}
+//                     </TableBody>
+//                   </Table>
+//                 </CardContent>
+//               </Card>
+//             </TabsContent>
+            
+//             <TabsContent value="inventory" className="space-y-4">
+//               <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                 <CardHeader>
+//                   <CardTitle>Inventory Status</CardTitle>
+//                 </CardHeader>
+//                 <CardContent>
+//                   <InventoryStatus 
+//                     items={reportData.inventoryStatus} 
+//                     darkMode={darkMode}
+//                   />
+//                 </CardContent>
+//               </Card>
+              
+//               <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                 <CardHeader>
+//                   <CardTitle>Low Stock Items</CardTitle>
+//                 </CardHeader>
+//                 <CardContent>
+//                   <Table>
+//                     <TableHeader>
+//                       <TableRow>
+//                         <TableHead>Product</TableHead>
+//                         <TableHead>SKU</TableHead>
+//                         <TableHead>Current Stock</TableHead>
+//                         <TableHead>Threshold</TableHead>
+//                         <TableHead>Status</TableHead>
+//                       </TableRow>
+//                     </TableHeader>
+//                     <TableBody>
+//                       {reportData.inventoryStatus
+//                         .filter(item => item.status === 'Low Stock')
+//                         .map((item) => (
+//                           <TableRow key={item.id}>
+//                             <TableCell>{item.name}</TableCell>
+//                             <TableCell>{item.sku}</TableCell>
+//                             <TableCell>{item.currentStock}</TableCell>
+//                             <TableCell>{item.lowStockThreshold}</TableCell>
+//                             <TableCell>
+//                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+//                                 Low Stock
+//                               </span>
+//                             </TableCell>
+//                           </TableRow>
+//                         ))}
+//                     </TableBody>
+//                   </Table>
+//                 </CardContent>
+//               </Card>
+//             </TabsContent>
+            
+//             <TabsContent value="orders" className="space-y-4">
+//               <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+//                 <CardHeader>
+//                   <CardTitle>Recent Orders</CardTitle>
+//                 </CardHeader>
+//                 <CardContent>
+//                   <Table>
+//                     <TableHeader>
+//                       <TableRow>
+//                         <TableHead>Order ID</TableHead>
+//                         <TableHead>Customer</TableHead>
+//                         <TableHead>Date</TableHead>
+//                         <TableHead>Amount</TableHead>
+//                         <TableHead>Status</TableHead>
+//                       </TableRow>
+//                     </TableHeader>
+//                     <TableBody>
+//                       {reportData.recentOrders.map((order) => (
+//                         <TableRow key={order.id}>
+//                           <TableCell>#{order.id}</TableCell>
+//                           <TableCell>{order.customerName}</TableCell>
+//                           <TableCell>{format(new Date(order.date), 'MMM dd, yyyy')}</TableCell>
+//                           <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
+//                           <TableCell>
+//                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+//                               order.status === 'Completed' 
+//                                 ? 'bg-green-100 text-green-800' 
+//                                 : order.status === 'Pending'
+//                                   ? 'bg-yellow-100 text-yellow-800'
+//                                   : 'bg-red-100 text-red-800'
+//                             }`}>
+//                               {order.status}
+//                             </span>
+//                           </TableCell>
+//                         </TableRow>
+//                       ))}
+//                     </TableBody>
+//                   </Table>
+//                 </CardContent>
+//               </Card>
+//             </TabsContent>
+//           </Tabs>
+          
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default ReportManagement;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// //C:\coding\WEZ-ERP-APP\client\src\pages\report-management\reportManagement.tsx
+import React, { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
+import { 
+  Activity,
+  BarChart as BarChartIcon,
+  Calendar as CalendarIcon,
+  Clock,
+  CreditCard,
+  DollarSign,
+  Package,
+  ShoppingCart,
+  TrendingUp,
+  Users
+} from 'lucide-react';
+import { DateRange } from 'react-day-picker';
+import { addDays, format, subDays, subMonths, subHours } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { CalendarDateRangePicker } from '@/pages/report-management/date-range-picker';
+import { RecentSales } from '@/pages/report-management/recent-sales';
+import { SalesChart } from '@/pages/report-management/sales-chart';
+import { InventoryStatus } from '@/pages/report-management/inventory-status';
+import { RevenueBarChart } from '@/pages/report-management/bar-chart';
+
+// TypeScript interfaces
+interface SalesData {
+  date: string;
+  totalSales: number;
+  totalOrders: number;
+}
+
+interface RevenueData {
+  month: string;
+  revenue: number;
+}
+
+interface InventoryItem {
+  id: number;
+  name: string;
+  sku: string;
+  currentStock: number;
+  lowStockThreshold: number;
+  status: 'In Stock' | 'Low Stock' | 'Out of Stock';
+}
+
+interface Order {
+  id: number;
+  customerName: string;
+  totalAmount: number;
+  status: 'Completed' | 'Pending' | 'Cancelled';
+  date: string;
+}
+
+interface ReportData {
+  dailySales: number;
+  monthlySales: number;
+  yearlySales: number;
+  totalRevenue: number;
+  pendingOrders: number;
+  inventoryStatus: InventoryItem[];
+  recentOrders: Order[];
+  salesTrend: SalesData[];
+  revenueTrend: RevenueData[];
+}
+
+// Mock data generator
+const generateMockReportData = (dateRange: DateRange | undefined): ReportData => {
+  const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+  
+  // Generate sales trend based on date range
+  const days = dateRange?.from && dateRange?.to ? 
+    Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) : 30;
+  
+  const salesTrend = Array.from({ length: days }, (_, i) => ({
+    date: subDays(dateRange?.to || new Date(), days - i - 1).toISOString(),
+    totalSales: randomInRange(1000, 5000),
+    totalOrders: randomInRange(5, 25)
+  }));
+
+  // Revenue trend for last 12 months
+  const revenueTrend = Array.from({ length: 12 }, (_, i) => ({
+    month: format(subMonths(new Date(), 11 - i), 'MMM yyyy'),
+    revenue: randomInRange(30000, 100000)
+  }));
+
+  // Inventory data
+  const inventoryStatus = Array.from({ length: 15 }, (_, i) => {
+    const stock = randomInRange(0, 50);
+    let status: 'In Stock' | 'Low Stock' | 'Out of Stock' = 'In Stock';
+    if (stock === 0) status = 'Out of Stock';
+    else if (stock < 10) status = 'Low Stock';
+    
+    return {
+      id: i + 1,
+      name: `Product ${String.fromCharCode(65 + i)}`,
+      sku: `PROD${1000 + i}`,
+      currentStock: stock,
+      lowStockThreshold: 10,
+      status
+    };
+  });
+
+  // Recent orders
+  const recentOrders = Array.from({ length: 10 }, (_, i) => {
+    const statuses: ('Completed' | 'Pending' | 'Cancelled')[] = ['Completed', 'Pending', 'Cancelled'];
+    return {
+      id: 1000 + i,
+      customerName: ['John', 'Jane', 'Bob', 'Alice'][randomInRange(0, 3)] + ' ' + 
+                   ['Doe', 'Smith', 'Johnson', 'Williams'][randomInRange(0, 3)],
+      totalAmount: randomInRange(50, 500) + 0.99,
+      status: statuses[randomInRange(0, 2)],
+      date: subHours(new Date(), randomInRange(1, 48)).toISOString()
+    };
+  });
+
+  return {
+    dailySales: randomInRange(1000, 5000),
+    monthlySales: randomInRange(30000, 100000),
+    yearlySales: randomInRange(300000, 1200000),
+    totalRevenue: randomInRange(1000000, 5000000),
+    pendingOrders: randomInRange(1, 10),
+    inventoryStatus,
+    recentOrders,
+    salesTrend,
+    revenueTrend
+  };
+};
+
+function ReportManagement() {
+  const { darkMode } = useOutletContext<{ darkMode: boolean }>();
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 7),
+    to: new Date(),
+  });
+  const [reportData, setReportData] = useState<ReportData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchReportData = async () => {
+      try {
+        setLoading(true);
+        
+        // Generate mock data instead of API call
+        const mockData = generateMockReportData(date);
+        setReportData(mockData);
+        
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+      } catch (err) {
+        console.error('Error generating mock data:', err);
+        setError('Failed to load report data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReportData();
+  }, [date]);
+
+  if (loading) {
+    return (
+      <div className={`flex items-center justify-center min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#ea384c]"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`flex items-center justify-center min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-800/50 border border-pink-900' : 'bg-pink-50 border border-pink-100'} shadow-lg`}>
+          <p className={darkMode ? 'text-red-400' : 'text-red-600'}>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!reportData) {
+    return null;
+  }
+
+  return (
+    <div>
+      {/* Header Section */}
+      <div className="mb-8">
+        <h1 className={`text-3xl font-bold font-['Kantumruy_Pro'] bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent`}>
+          Sales & Inventory Dashboard
+        </h1>
+        <p className={`mt-2 ${darkMode ? "text-pink-200" : "text-pink-700"}`}>
+          Monitor your business performance and inventory status
+        </p>
+      </div>
+
+      <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-800/50 border border-pink-900' : 'bg-pink-50 border border-pink-100'}`}>
+        {/* Date Range Picker */}
+        <div className="mb-6 flex justify-end">
+          <CalendarDateRangePicker 
+            date={date}
+            setDate={setDate}
+            darkMode={darkMode}
+          />
+        </div>
+
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className={`${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'} p-1`}>
+            <TabsTrigger 
+              value="overview" 
+              className={`${darkMode ? 'data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white' : 'data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white'}`}
+            >
+              Overview
+            </TabsTrigger>
+            <TabsTrigger 
+              value="sales"
+              className={`${darkMode ? 'data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white' : 'data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white'}`}
+            >
+              Sales
+            </TabsTrigger>
+            <TabsTrigger 
+              value="inventory"
+              className={`${darkMode ? 'data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white' : 'data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white'}`}
+            >
+              Inventory
+            </TabsTrigger>
+            <TabsTrigger 
+              value="orders"
+              className={`${darkMode ? 'data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white' : 'data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white'}`}
+            >
+              Orders
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview" className="space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900 hover:border-pink-500' : 'bg-white border border-pink-200 hover:border-pink-300'} transition-all duration-300 shadow-sm`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className={`p-2 rounded-lg ${darkMode ? 'bg-pink-900/50' : 'bg-pink-100'}`}>
+                    <DollarSign className={`h-5 w-5 ${darkMode ? 'text-pink-400' : 'text-pink-600'}`} />
+                  </div>
+                  <span className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Total Revenue
+                  </span>
+                </div>
+                <div className={`text-2xl font-bold font-['Kantumruy_Pro'] ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  ${reportData.totalRevenue.toLocaleString()}
+                </div>
+                <p className={`text-sm mt-1 ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
+                  All-time revenue
+                </p>
+              </div>
+              
+              <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900 hover:border-pink-500' : 'bg-white border border-pink-200 hover:border-pink-300'} transition-all duration-300 shadow-sm`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className={`p-2 rounded-lg ${darkMode ? 'bg-pink-900/50' : 'bg-pink-100'}`}>
+                    <ShoppingCart className={`h-5 w-5 ${darkMode ? 'text-pink-400' : 'text-pink-600'}`} />
+                  </div>
+                  <span className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Today's Sales
+                  </span>
+                </div>
+                <div className={`text-2xl font-bold font-['Kantumruy_Pro'] ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  ${reportData.dailySales.toLocaleString()}
+                </div>
+                <p className={`text-sm mt-1 ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
+                  +12% from yesterday
+                </p>
+              </div>
+              
+              <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900 hover:border-pink-500' : 'bg-white border border-pink-200 hover:border-pink-300'} transition-all duration-300 shadow-sm`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className={`p-2 rounded-lg ${darkMode ? 'bg-pink-900/50' : 'bg-pink-100'}`}>
+                    <TrendingUp className={`h-5 w-5 ${darkMode ? 'text-pink-400' : 'text-pink-600'}`} />
+                  </div>
+                  <span className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Monthly Sales
+                  </span>
+                </div>
+                <div className={`text-2xl font-bold font-['Kantumruy_Pro'] ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  ${reportData.monthlySales.toLocaleString()}
+                </div>
+                <p className={`text-sm mt-1 ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
+                  +8% from last month
+                </p>
+              </div>
+              
+              <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900 hover:border-pink-500' : 'bg-white border border-pink-200 hover:border-pink-300'} transition-all duration-300 shadow-sm`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className={`p-2 rounded-lg ${darkMode ? 'bg-pink-900/50' : 'bg-pink-100'}`}>
+                    <Clock className={`h-5 w-5 ${darkMode ? 'text-pink-400' : 'text-pink-600'}`} />
+                  </div>
+                  <span className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Pending Orders
+                  </span>
+                </div>
+                <div className={`text-2xl font-bold font-['Kantumruy_Pro'] ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  {reportData.pendingOrders}
+                </div>
+                <p className={`text-sm mt-1 ${darkMode ? 'text-pink-300' : 'text-pink-600'}`}>
+                  +2 since last hour
+                </p>
+              </div>
+            </div>
+
+            {/* Charts Section */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+              <div className={`col-span-4 p-6 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'} shadow-sm`}>
+                <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  Sales Overview
+                </h3>
+                <SalesChart 
+                  data={reportData.salesTrend} 
+                  darkMode={darkMode}
+                />
+              </div>
+              
+              <div className={`col-span-3 p-6 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'} shadow-sm`}>
+                <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  Recent Sales
+                </h3>
+                <RecentSales 
+                  orders={reportData.recentOrders} 
+                  darkMode={darkMode}
+                />
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="sales" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'} shadow-sm`}>
+                <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  Sales Trend
+                </h3>
+                <SalesChart 
+                  data={reportData.salesTrend} 
+                  darkMode={darkMode}
+                />
+              </div>
+              
+              <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'} shadow-sm`}>
+                <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  Revenue by Month
+                </h3>
+                <div className="h-[300px]">
+                 <RevenueBarChart 
+                    data={reportData.revenueTrend} 
+                    darkMode={darkMode}
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'} shadow-sm`}>
+              <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                Detailed Sales Report
+              </h3>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className={darkMode ? 'border-pink-900' : 'border-pink-200'}>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Date</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Orders</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Revenue</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Avg. Order Value</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {reportData.salesTrend.map((day) => (
+                      <TableRow key={day.date} className={darkMode ? 'border-pink-900/50' : 'border-pink-200/50'}>
+                        <TableCell className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{format(new Date(day.date), 'MMM dd')}</TableCell>
+                        <TableCell className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{day.totalOrders}</TableCell>
+                        <TableCell className={`font-bold ${darkMode ? 'text-pink-400' : 'text-pink-600'}`}>${day.totalSales.toFixed(2)}</TableCell>
+                        <TableCell className={darkMode ? 'text-gray-300' : 'text-gray-700'}>${(day.totalSales / day.totalOrders).toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="inventory" className="space-y-6">
+            <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'} shadow-sm`}>
+              <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                Inventory Status
+              </h3>
+              <InventoryStatus 
+                items={reportData.inventoryStatus} 
+                darkMode={darkMode}
+              />
+            </div>
+            
+            <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'} shadow-sm`}>
+              <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                Low Stock Items
+              </h3>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className={darkMode ? 'border-pink-900' : 'border-pink-200'}>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Product</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>SKU</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Current Stock</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Threshold</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {reportData.inventoryStatus
+                      .filter(item => item.status === 'Low Stock')
+                      .map((item) => (
+                        <TableRow key={item.id} className={darkMode ? 'border-pink-900/50' : 'border-pink-200/50'}>
+                          <TableCell className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.name}</TableCell>
+                          <TableCell className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{item.sku}</TableCell>
+                          <TableCell className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{item.currentStock}</TableCell>
+                          <TableCell className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{item.lowStockThreshold}</TableCell>
+                          <TableCell>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800">
+                              Low Stock
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="orders" className="space-y-6">
+            <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-800 border border-pink-900' : 'bg-white border border-pink-200'} shadow-sm`}>
+              <h3 className={`text-xl font-bold font-['Kantumruy_Pro'] mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                Recent Orders
+              </h3>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className={darkMode ? 'border-pink-900' : 'border-pink-200'}>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Order ID</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Customer</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Date</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Amount</TableHead>
+                      <TableHead className={`font-['Kantumruy_Pro'] ${darkMode ? 'text-pink-300' : 'text-pink-700'}`}>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {reportData.recentOrders.map((order) => (
+                      <TableRow key={order.id} className={darkMode ? 'border-pink-900/50' : 'border-pink-200/50'}>
+                        <TableCell className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>#{order.id}</TableCell>
+                        <TableCell className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{order.customerName}</TableCell>
+                        <TableCell className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{format(new Date(order.date), 'MMM dd, yyyy')}</TableCell>
+                        <TableCell className={`font-bold ${darkMode ? 'text-pink-400' : 'text-pink-600'}`}>${order.totalAmount.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            order.status === 'Completed' 
+                              ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800' 
+                              : order.status === 'Pending'
+                                ? 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800'
+                                : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800'
+                          }`}>
+                            {order.status}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
+
+export default ReportManagement;

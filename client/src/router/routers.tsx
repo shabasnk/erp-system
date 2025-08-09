@@ -10,6 +10,7 @@ import ProductsNav from "@/pages/dashboard/navbar/products";
 import BillingNav from "@/pages/dashboard/navbar/billing/billing";
 import Profile from "@/pages/dashboard/profile";
 import AddProduct from "@/pages/product/AddProduct";
+import ReportManagement from "@/pages/report-management/reportManagement";
 
 function Routers() {
   const { isLoading } = useAuth();
@@ -45,6 +46,7 @@ function Routers() {
           }
         />
 
+
         {/* Protected Dashboard Routes */}
         <Route
           path="/dashboard"
@@ -60,6 +62,8 @@ function Routers() {
 
           <Route path="billing" element={<BillingNav />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="report" element={<ReportManagement />} />
+
         </Route>
 
         {/* Fallback route */}
