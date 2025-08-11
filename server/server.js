@@ -20,6 +20,9 @@ import billingRouter from "./routes/billingRouter.js";
 
 import customerRouter from "./routes/customerRouter.js"
 
+import reportRouter from "./routes/reportRouter.js";
+
+
 
 
 dotenv.config();
@@ -48,6 +51,8 @@ app.use("/api/shops",shopRouter)
 app.use("/api/product",productRouter)
 app.use("/api/billing",billingRouter)
 app.use("/api/customer",customerRouter)
+app.use("/api/reports", reportRouter);
+
 
 
 app.get("/", (req, res) => {
