@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 import Order from '../models/orderModel.js';
-import Product from '../models/productModel.js';
+import Product from '../models/ProductModel.js';
 import Customer from '../models/customerModel.js';
 
 // Helper function to format date ranges
