@@ -1091,6 +1091,8 @@ import { SalesChart } from '@/pages/report-management/sales-chart';
 import { InventoryStatus } from '@/pages/report-management/inventory-status';
 import { RevenueBarChart } from '@/pages/report-management/bar-chart';
 import { ProfitBarChart } from '@/pages/report-management/profit-chart';
+import { useAuth } from '@/hooks/useAuth'; // Adjust the import path as needed
+
 import {
   fetchSalesReport,
   fetchInventoryReport,
