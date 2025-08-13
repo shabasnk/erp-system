@@ -1,3 +1,4 @@
+//C:\coding\WEZ-ERP-APP\server\models\orderModel.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../connect/connect.js';
 
