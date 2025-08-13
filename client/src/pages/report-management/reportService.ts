@@ -162,9 +162,6 @@
 
 
 
-
-
-
 import axios from 'axios';
 import { log } from 'console';
 
@@ -176,8 +173,7 @@ interface DateRange {
 }
 
 export const fetchSalesReport = async (dateRange: DateRange, token: string) => {
-
-  console.log('Making request with token:', token); // Verify token exists
+  console.log("token:",token);
   
   try {
     const params = {
