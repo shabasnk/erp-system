@@ -1,10 +1,4 @@
-
-
-
-
-
-
-
+// // for green api
 // // models/CustomerModel.js
 // import { DataTypes } from 'sequelize';
 // import sequelize from '../connect/connect.js';
@@ -46,27 +40,27 @@
 //         }
 //     },
 //     phone: {
-//         type: DataTypes.STRING(10),
-//         allowNull: false,
-//         validate: {
-//             is: {
-//                 args: /^[0-9]{10}$/,
-//                 msg: 'Please enter a valid 10-digit phone number'
-//             },
-//             notEmpty: {
-//                 msg: 'Phone number is required'
-//             }
+//     type: DataTypes.STRING(12),
+//     allowNull: false,
+//     validate: {
+//         is: {
+//             args: /^[0-9]{12}$/, // Changed from /^[0-11]{12}$/
+//             msg: 'Please enter a valid 12-digit phone number (including country code)' // Updated message
+//         },
+//         notEmpty: {
+//             msg: 'Phone number is required'
 //         }
+//     }
 //     },
 //     whatsappNumber: {
-//         type: DataTypes.STRING(10),
-//         allowNull: true,
-//         validate: {
-//             is: {
-//                 args: /^[0-9]{10}$/,
-//                 msg: 'Please enter a valid 10-digit WhatsApp number'
-//             }
+//     type: DataTypes.STRING(12),
+//     allowNull: true,
+//     validate: {
+//         is: {
+//             args: /^[0-9]{12}$/, // Changed from /^[0-11]{12}$/
+//             msg: 'Please enter a valid 12-digit WhatsApp number (including country code)' // Updated message
 //         }
+//     }
 //     },
 //     useSameAsPhone: {
 //         type: DataTypes.BOOLEAN,
@@ -135,11 +129,7 @@
 
 
 
-
-
-
-
-// for green api
+// customer model after the association with order model for reportManagement for sales tacking.
 // models/CustomerModel.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../connect/connect.js';
@@ -181,27 +171,27 @@ const Customer = sequelize.define('Customer', {
         }
     },
     phone: {
-    type: DataTypes.STRING(12),
-    allowNull: false,
-    validate: {
-        is: {
-            args: /^[0-9]{12}$/, // Changed from /^[0-11]{12}$/
-            msg: 'Please enter a valid 12-digit phone number (including country code)' // Updated message
-        },
-        notEmpty: {
-            msg: 'Phone number is required'
+        type: DataTypes.STRING(12),
+        allowNull: false,
+        validate: {
+            is: {
+                args: /^[0-9]{12}$/,
+                msg: 'Please enter a valid 12-digit phone number (including country code)'
+            },
+            notEmpty: {
+                msg: 'Phone number is required'
+            }
         }
-    }
     },
     whatsappNumber: {
-    type: DataTypes.STRING(12),
-    allowNull: true,
-    validate: {
-        is: {
-            args: /^[0-9]{12}$/, // Changed from /^[0-11]{12}$/
-            msg: 'Please enter a valid 12-digit WhatsApp number (including country code)' // Updated message
+        type: DataTypes.STRING(12),
+        allowNull: true,
+        validate: {
+            is: {
+                args: /^[0-9]{12}$/,
+                msg: 'Please enter a valid 12-digit WhatsApp number (including country code)'
+            }
         }
-    }
     },
     useSameAsPhone: {
         type: DataTypes.BOOLEAN,
@@ -262,5 +252,15 @@ const Customer = sequelize.define('Customer', {
         }
     }
 });
+
+// Define associations
+Customer.associate = function(models) {
+    Customer.hasMany(models.Order, {
+        foreignKey: 'customerId',
+        as: 'Orders',
+        onDelete: 'SET NULL', // or 'CASCADE' based on your requirements
+        onUpdate: 'CASCADE'
+    });
+};
 
 export default Customer;
