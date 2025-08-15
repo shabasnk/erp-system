@@ -488,6 +488,7 @@ export const getRecentOrders = async (req, res) => {
         const orders = await Order.findAll({
             include: [{
                 model: Customer,
+                as: 'Customer',
                 attributes: ['name']
             }],
             order: [['createdAt', 'DESC']],
