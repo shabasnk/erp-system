@@ -1,4 +1,3 @@
-// src/routes/publicRoute.tsx
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { JSX } from "react";

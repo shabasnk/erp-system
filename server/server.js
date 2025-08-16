@@ -4,7 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import pkg from 'pg';
 
-import { sequelize } from "./models/index.js"; // ✅ centralized import
+import { sequelize } from "./models/index.js"; 
 
 import sanitizedConfig from "./config.js";
 
@@ -13,6 +13,8 @@ import authRouter from "./routes/authRouter.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddlware.js";
 
 import shopRouter from "./routes/shopRouter.js"
+
+import productRouter from "./routes/productRouter.js";
 
 dotenv.config();
 
@@ -37,6 +39,7 @@ sequelize.sync({ force: false })
 // Routes
 app.use("/api/auth/", authRouter);
 app.use("/api/shops",shopRouter)
+app.use("/api/product",productRouter)
 
 app.get("/", (req, res) => {
   res.send("API is running!");
