@@ -16,6 +16,15 @@ import shopRouter from "./routes/shopRouter.js"
 
 import productRouter from "./routes/productRouter.js";
 
+import billingRouter from "./routes/billingRouter.js";
+
+import customerRouter from "./routes/customerRouter.js"
+
+import reportRouter from "./routes/reportRouter.js";
+
+
+
+
 dotenv.config();
 
 const app = express();
@@ -40,6 +49,11 @@ sequelize.sync({ force: false })
 app.use("/api/auth/", authRouter);
 app.use("/api/shops",shopRouter)
 app.use("/api/product",productRouter)
+app.use("/api/billing",billingRouter)
+app.use("/api/customer",customerRouter)
+app.use("/api/reports", reportRouter);
+
+
 
 app.get("/", (req, res) => {
   res.send("API is running!");
@@ -50,3 +64,4 @@ app.use(errorHandler);
 
 const PORT = sanitizedConfig.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

@@ -1,3 +1,4 @@
+// the successful add product model before adding status field for reportManagement.
 // product.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../connect/connect.js';
@@ -91,13 +92,3 @@ const Product = sequelize.define('Product', {
 });
 
 export default Product;
-
-
-
-
-
-
-
-
-
-
