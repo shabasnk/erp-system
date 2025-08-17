@@ -46,59 +46,59 @@ const getDateRange = (range) => {
 };
 
 // Get sales report
-export const getInventoryReport = async (req, res) => {
-    try {
-        // Get threshold from query or use default (10)
-        const lowStockThreshold = req.query.threshold ? 
-            parseInt(req.query.threshold) : 10;
+// export const getInventoryReport = async (req, res) => {
+//     try {
+//         // Get threshold from query or use default (10)
+//         const lowStockThreshold = req.query.threshold ? 
+//             parseInt(req.query.threshold) : 10;
         
-        // Get all products with their stock quantities
-        const products = await Product.findAll({
-            attributes: [
-                'id',
-                'name',
-                'sku',
-                'stockQuantity',
-                'createdAt',
-                'updatedAt'
-            ],
-            order: [['stockQuantity', 'ASC']] // Sort by stock quantity (lowest first)
-        });
+//         // Get all products with their stock quantities
+//         const products = await Product.findAll({
+//             attributes: [
+//                 'id',
+//                 'name',
+//                 'sku',
+//                 'stockQuantity',
+//                 'createdAt',
+//                 'updatedAt'
+//             ],
+//             order: [['stockQuantity', 'ASC']] // Sort by stock quantity (lowest first)
+//         });
 
-        // Add status to each product
-        const inventoryItems = products.map(product => ({
-            id: product.id,
-            name: product.name,
-            sku: product.sku,
-            currentStock: product.stockQuantity,
-            lowStockThreshold, // Using the same threshold for all products
-            status: getInventoryStatus(product.stockQuantity, lowStockThreshold),
-            lastUpdated: product.updatedAt
-        }));
+//         // Add status to each product
+//         const inventoryItems = products.map(product => ({
+//             id: product.id,
+//             name: product.name,
+//             sku: product.sku,
+//             currentStock: product.stockQuantity,
+//             lowStockThreshold, // Using the same threshold for all products
+//             status: getInventoryStatus(product.stockQuantity, lowStockThreshold),
+//             lastUpdated: product.updatedAt
+//         }));
 
-        // Calculate status counts
-        const statusCounts = inventoryItems.reduce((acc, item) => {
-            acc[item.status] = (acc[item.status] || 0) + 1;
-            return acc;
-        }, {});
+//         // Calculate status counts
+//         const statusCounts = inventoryItems.reduce((acc, item) => {
+//             acc[item.status] = (acc[item.status] || 0) + 1;
+//             return acc;
+//         }, {});
 
-        res.json({
-            success: true,
-            data: {
-                statusCounts,
-                inventoryItems,
-                totalProducts: products.length,
-                thresholdUsed: lowStockThreshold
-            }
-        });
-    } catch (error) {
-        console.error('Error fetching inventory report:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch inventory report'
-        });
-    }
-};
+//         res.json({
+//             success: true,
+//             data: {
+//                 statusCounts,
+//                 inventoryItems,
+//                 totalProducts: products.length,
+//                 thresholdUsed: lowStockThreshold
+//             }
+//         });
+//     } catch (error) {
+//         console.error('Error fetching inventory report:', error);
+//         res.status(500).json({
+//             success: false,
+//             error: 'Failed to fetch inventory report'
+//         });
+//     }
+// };
 
 // Get inventory report with dynamic status calculation
 export const getInventoryReport = async (req, res) => {
@@ -312,53 +312,53 @@ export const getRecentOrders = async (req, res) => {
 // };
 
 // // Get sales report
-// export const getSalesReport = async (req, res) => {
-//     try {
-//         const { range, startDate, endDate } = req.query;
+export const getSalesReport = async (req, res) => {
+    try {
+        const { range, startDate, endDate } = req.query;
         
-//         let dateFilter = {};
-//         if (startDate && endDate) {
-//             dateFilter = {
-//                 createdAt: {
-//                     [Op.between]: [new Date(startDate), new Date(endDate)]
-//                 }
-//             };
-//         } else if (range) {
-//             const { start, end } = getDateRange(range);
-//             dateFilter = {
-//                 createdAt: {
-//                     [Op.between]: [start, end]
-//                 }
-//             };
-//         }
+        let dateFilter = {};
+        if (startDate && endDate) {
+            dateFilter = {
+                createdAt: {
+                    [Op.between]: [new Date(startDate), new Date(endDate)]
+                }
+            };
+        } else if (range) {
+            const { start, end } = getDateRange(range);
+            dateFilter = {
+                createdAt: {
+                    [Op.between]: [start, end]
+                }
+            };
+        }
 
-//         const salesData = await Order.findAll({
-//             where: dateFilter,
-//             attributes: [
-//                 [sequelize.fn('date_trunc', 'day', sequelize.col('createdAt')), 'date'],
-//                 [sequelize.fn('count', '*'), 'totalOrders'],
-//                 [sequelize.fn('sum', sequelize.col('totalAmount')), 'totalSales']
-//             ],
-//             group: ['date'],
-//             order: [['date', 'ASC']]
-//         });
+        const salesData = await Order.findAll({
+            where: dateFilter,
+            attributes: [
+                [sequelize.fn('date_trunc', 'day', sequelize.col('createdAt')), 'date'],
+                [sequelize.fn('count', '*'), 'totalOrders'],
+                [sequelize.fn('sum', sequelize.col('totalAmount')), 'totalSales']
+            ],
+            group: ['date'],
+            order: [['date', 'ASC']]
+        });
 
-//         res.json({
-//             success: true,
-//             data: salesData.map(item => ({
-//                 date: item.get('date'),
-//                 totalOrders: item.get('totalOrders'),
-//                 totalSales: item.get('totalSales')
-//             }))
-//         });
-//     } catch (error) {
-//         console.error('Error fetching sales report:', error);
-//         res.status(500).json({
-//             success: false,
-//             error: 'Failed to fetch sales report'
-//         });
-//     }
-// };
+        res.json({
+            success: true,
+            data: salesData.map(item => ({
+                date: item.get('date'),
+                totalOrders: item.get('totalOrders'),
+                totalSales: item.get('totalSales')
+            }))
+        });
+    } catch (error) {
+        console.error('Error fetching sales report:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch sales report'
+        });
+    }
+};
 
 // // Single inventory report function (removed the duplicate)
 // export const getInventoryReport = async (req, res) => {
