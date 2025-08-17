@@ -36,6 +36,8 @@ import {
   getRecentOrders
 } from '../controller/reportController.js';
 
+console.log("from report Router.js");
+
 const router = express.Router();
 
 router.use(verifyToken);

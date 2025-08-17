@@ -358,11 +358,16 @@ interface DateRange {
 }
 
 export const fetchSalesReport = async (dateRange: DateRange, token: string) => {
+  console.log( "fetchSalesReport", fetchSalesReport);
+  
   try {
     const params = {
       startDate: dateRange.from.toISOString().split('T')[0],
       endDate: dateRange.to.toISOString().split('T')[0]
     };
+
+        console.log('Fetching sales with params:', params);
+
 
     const response = await axios.get(`${API_URL}/reports/sales`, {
       params,
@@ -370,8 +375,11 @@ export const fetchSalesReport = async (dateRange: DateRange, token: string) => {
         Authorization: `Bearer ${token}`
       }
     });
+        console.log('Sales response:', response.data); // Add this line
+
     return response.data.data;
   } catch (error) {
+        console.error('Sales report error:', error);
     if (axios.isAxiosError(error)) {
       console.error('Error fetching sales report:', error.response?.status, error.message);
       throw new Error(error.response?.data?.message || 'Failed to fetch sales report');
@@ -382,6 +390,8 @@ export const fetchSalesReport = async (dateRange: DateRange, token: string) => {
 };
 
 export const fetchInventoryReport = async (token: string) => {
+    console.log( "fetchInventoryReport", fetchInventoryReport);
+
   try {
     const response = await axios.get(`${API_URL}/reports/inventory`, {
       headers: {
@@ -400,6 +410,9 @@ export const fetchInventoryReport = async (token: string) => {
 };
 
 export const fetchRevenueReport = async (token: string) => {
+      console.log( "fetchRevenueReport", fetchRevenueReport);
+
+  
   try {
     const response = await axios.get(`${API_URL}/reports/revenue`, {
       headers: {
@@ -418,6 +431,8 @@ export const fetchRevenueReport = async (token: string) => {
 };
 
 export const fetchProfitReport = async (token: string) => {
+        console.log( "fetchProfitReport", fetchProfitReport);
+
   try {
     const response = await axios.get(`${API_URL}/reports/profit`, {
       headers: {
@@ -436,6 +451,8 @@ export const fetchProfitReport = async (token: string) => {
 };
 
 export const fetchRecentOrders = async (token: string) => {
+          console.log( "fetchRecentOrders", fetchRecentOrders);
+
   try {
     const response = await axios.get(`${API_URL}/reports/recent-orders`, {
       headers: {
