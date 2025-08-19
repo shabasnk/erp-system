@@ -630,92 +630,95 @@ function ReportManagement() {
     if (!token) return;
 
     const fetchReportData = async () => {
-      try {
-        setLoading(true);
-        
-        const [
-          salesTrend, 
-          revenueTrend, 
-          profitTrend,
-          inventoryData,
-          recentOrders
-        ] = await Promise.all([
-          fetchSalesReport(date, token),
-          fetchRevenueReport(token),
-          fetchProfitReport(token),
-          fetchInventoryReport(token),
-          fetchRecentOrders(token)
-        ]);
+  try {
+    setLoading(true);
+    
+    const [
+      salesTrend, 
+      revenueTrend, 
+      profitTrend,
+      inventoryData,
+      recentOrders
+    ] = await Promise.all([
+      fetchSalesReport(date, token),
+      fetchRevenueReport(token),
+      fetchProfitReport(token),
+      fetchInventoryReport(token),
+      fetchRecentOrders(token)
+    ]);
 
-        const dailySales = salesTrend.length > 0 ? 
-          salesTrend[salesTrend.length - 1].totalSales : 0;
-        
-        const monthlySales = revenueTrend.length > 0 ? 
-          revenueTrend[revenueTrend.length - 1].revenue : 0;
-        
-        const yearlySales = revenueTrend.reduce(
-          (sum: number, item: RevenueData) => sum + item.revenue, 
-          0
-        );
-        
-        const monthlyProfit = profitTrend.length > 0 ? 
-          profitTrend[profitTrend.length - 1].profit : 0;
-        
-        const totalProfit = profitTrend.reduce(
-          (sum: number, item: ProfitData) => sum + item.profit, 
-          0
-        );
-        
-        const pendingOrders = recentOrders.filter(
-          (order: ApiOrder) => order.status === 'Pending'
-        ).length;
+    // Convert all numeric values from strings to numbers
+    const transformedData: ReportData = {
+      dailySales: salesTrend.length > 0 ? 
+        Number(salesTrend[salesTrend.length - 1].totalSales) : 0,
+      
+      monthlySales: revenueTrend.length > 0 ? 
+        Number(revenueTrend[revenueTrend.length - 1].revenue) : 0,
+      
+      yearlySales: revenueTrend.reduce(
+        (sum: number, item: RevenueData) => sum + Number(item.revenue), 
+        0
+      ),
+      
+      totalRevenue: revenueTrend.reduce(
+        (sum: number, item: RevenueData) => sum + Number(item.revenue),
+        0
+      ),
+      
+      totalProfit: profitTrend.reduce(
+        (sum: number, item: ProfitData) => sum + Number(item.profit),
+        0
+      ),
+      
+      monthlyProfit: profitTrend.length > 0 ? 
+        Number(profitTrend[profitTrend.length - 1].profit) : 0,
+      
+      pendingOrders: recentOrders.filter(
+        (order: ApiOrder) => order.status === 'Pending'
+      ).length,
 
-        const transformedData: ReportData = {
-          dailySales,
-          monthlySales,
-          yearlySales,
-          totalRevenue: yearlySales,
-          totalProfit,
-          monthlyProfit,
-          pendingOrders,
-          inventoryStatus: inventoryData.statusCounts.map((item: ApiInventoryItem) => ({
-            id: item.id,
-            name: item.name,
-            sku: item.sku,
-            currentStock: item.currentStock,
-            lowStockThreshold: item.lowStockThreshold,
-            status: item.status
-          })),
-          recentOrders: recentOrders.map((order: ApiOrder) => ({
-            id: order.id,
-            customerName: order.customer?.name || 'Unknown Customer',
-            totalAmount: order.totalAmount,
-            status: order.status,
-            date: order.createdAt
-          })),
-          salesTrend: salesTrend.map((item: ApiSalesData) => ({
-            date: item.date,
-            totalSales: item.totalSales,
-            totalOrders: item.totalOrders
-          })),
-          revenueTrend: revenueTrend.map((item: RevenueData) => ({
-            month: format(new Date(item.month), 'MMM yyyy'),
-            revenue: item.revenue
-          })),
-          profitTrend: profitTrend.map((item: ProfitData) => ({
-            month: format(new Date(item.month), 'MMM yyyy'),
-            profit: item.profit
-          }))
-        };
+      inventoryStatus: inventoryData.inventoryItems.map((item: ApiInventoryItem) => ({
+        id: item.id,
+        name: item.name,
+        sku: item.sku,
+        currentStock: item.currentStock,
+        lowStockThreshold: item.lowStockThreshold,
+        status: item.status
+      })),
 
-        setReportData(transformedData);
-      } catch (err) {
-        console.error('Error fetching report data:', err);
-        setError('Failed to load report data. Please try again.');
-      } finally {
-        setLoading(false);
-      }
+      recentOrders: recentOrders.map((order: ApiOrder) => ({
+        id: order.id,
+        customerName: order.customer?.name || 'Unknown Customer',
+        totalAmount: Number(order.totalAmount),
+        status: order.status,
+        date: order.createdAt
+      })),
+
+      salesTrend: salesTrend.map((item: ApiSalesData) => ({
+        date: item.date,
+        totalSales: Number(item.totalSales),
+        totalOrders: Number(item.totalOrders)
+      })),
+
+      revenueTrend: revenueTrend.map((item: RevenueData) => ({
+        month: format(new Date(item.month), 'MMM yyyy'),
+        revenue: Number(item.revenue)
+      })),
+
+      profitTrend: profitTrend.map((item: ProfitData) => ({
+        month: format(new Date(item.month), 'MMM yyyy'),
+        profit: Number(item.profit)
+      }))
     };
+
+    setReportData(transformedData);
+  } catch (err) {
+    console.error('Error fetching report data:', err);
+    setError('Failed to load report data. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
 
     fetchReportData();
   }, [date, token, authLoading, isAuthenticated]);
