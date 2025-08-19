@@ -1,81 +1,73 @@
 // controller/billingController.js
-import Product from '../models/ProductModel.js';
-import { Op } from 'sequelize';
-import Invoice from '../models/invoiceModel.js';
-import InvoiceItem from '../models/invoiceItemModel.js';
-import sequelize from '../connect/connect.js';
-import Customer from '../models/customerModel.js';
+import Product from "../models/ProductModel.js";
+import { Op } from "sequelize";
+import Invoice from "../models/invoiceModel.js";
+import InvoiceItem from "../models/invoiceItemModel.js";
+import sequelize from "../connect/connect.js";
+import Customer from "../models/customerModel.js";
 // import { generateInvoicePDF } from '../services/pdfService.js';
 // import WhatsAppService from '../services/whatsappService.js';
 
-
-
 export const searchProducts = async (req, res) => {
-    console.log("under search products");
-    
-  try {
+  console.log("under search products");
 
+  try {
     console.log("under Try");
-    
+
     const { query } = req.query;
 
-    console.log("query:",query);
-    
-    
+    console.log("query:", query);
+
     if (!query || query.length < 2) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'Search query must be at least 2 characters long'
+        message: "Search query must be at least 2 characters long",
       });
     }
 
     const products = await Product.findAll({
       where: {
         name: {
-          [Op.iLike]: `%${query}%`
+          [Op.iLike]: `%${query}%`,
         },
-        isActive: true
+        isActive: true,
       },
       limit: 10,
-      attributes: ['id', 'name', 'price', 'description', 'discountPrice']
+      attributes: ["id", "name", "price", "description", "discountPrice"],
     });
 
     res.status(200).json({
       success: true,
-      products
+      products,
     });
   } catch (error) {
-    console.error('Error searching products:', error);
+    console.error("Error searching products:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: "Internal server error",
     });
   }
 };
 
-
-
-
-
-
-
-
 export const createInvoice = async (req, res) => {
   console.log("Starting invoice creation");
-  
+
   let transaction;
   try {
     transaction = await sequelize.transaction();
-    const invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const invoiceNumber = `INV-${Date.now()}-${Math.floor(
+      Math.random() * 1000
+    )}`;
 
-    const { products, customerId, paymentMethod, total, gstPercentage } = req.body;
-    
+    const { products, customerId, paymentMethod, total, gstPercentage } =
+      req.body;
+
     // Validate required fields
     if (!products || !Array.isArray(products) || products.length === 0) {
       await transaction.rollback();
       return res.status(400).json({
         success: false,
-        message: 'Products array with at least one item is required'
+        message: "Products array with at least one item is required",
       });
     }
 
@@ -83,15 +75,18 @@ export const createInvoice = async (req, res) => {
       await transaction.rollback();
       return res.status(400).json({
         success: false,
-        message: 'Customer ID is required'
+        message: "Customer ID is required",
       });
     }
 
-    if (!paymentMethod || !['cash', 'card', 'upi', 'bank_transfer'].includes(paymentMethod)) {
+    if (
+      !paymentMethod ||
+      !["cash", "card", "upi", "bank_transfer"].includes(paymentMethod)
+    ) {
       await transaction.rollback();
       return res.status(400).json({
         success: false,
-        message: 'Valid payment method is required'
+        message: "Valid payment method is required",
       });
     }
 
@@ -101,47 +96,74 @@ export const createInvoice = async (req, res) => {
         await transaction.rollback();
         return res.status(400).json({
           success: false,
-          message: 'Invalid product data - missing ID or quantity'
+          message: "Invalid product data - missing ID or quantity",
         });
       }
-      
-      if (typeof item.price !== 'number' || item.price < 0) {
+
+      // Ensure price and discountPrice are parsed as numbers
+      const price = parseFloat(item.price);
+      const discountPrice = item.discountPrice
+        ? parseFloat(item.discountPrice)
+        : null;
+
+      if (isNaN(price) || price < 0) {
         await transaction.rollback();
         return res.status(400).json({
           success: false,
-          message: 'Invalid product price'
+          message: "Invalid product price",
         });
       }
-      
-      if (item.discountPrice && (typeof item.discountPrice !== 'number' || item.discountPrice < 0)) {
+
+      if (
+        discountPrice !== null &&
+        (isNaN(discountPrice) || discountPrice < 0)
+      ) {
         await transaction.rollback();
         return res.status(400).json({
           success: false,
-          message: 'Invalid discount price'
+          message: "Invalid discount price",
+        });
+      }
+
+      // Ensure price and discountPrice logic
+      if (discountPrice !== null && discountPrice >= price) {
+        await transaction.rollback();
+        return res.status(400).json({
+          success: false,
+          message: "Discount price cannot be higher than price",
         });
       }
     }
 
     // Calculate and validate totals
-    // Calculate and validate totals
-const subtotal = parseFloat(products.reduce((sum, item) => {
-  const price = item.discountPrice || item.price;
-  return sum + (price * item.quantity);
-}, 0).toFixed(2));
+    const subtotal = products.reduce((sum, item) => {
+      const price = parseFloat(item.discountPrice || item.price); // Ensure price is a number
+      if (isNaN(price)) {
+        return sum; // Skip if price is invalid (not a number)
+      }
+      return sum + price * item.quantity;
+    }, 0);
 
-const gstAmount = gstPercentage 
-  ? parseFloat(((subtotal * parseFloat(gstPercentage))) / 100).toFixed(2)
-  : 0;
+    // Ensure gstAmount is parsed as a number
+    const gstAmount = gstPercentage
+      ? parseFloat(((subtotal * parseFloat(gstPercentage)) / 100).toFixed(2))
+      : 0;
 
-const calculatedTotal = parseFloat((subtotal + gstAmount).toFixed(2));
+    // Ensure calculatedTotal is a number and handle decimal precision
+    const calculatedTotal = parseFloat((subtotal + gstAmount).toFixed(2));
 
+    // Validate total
     if (Math.abs(calculatedTotal - total) > 0.01) {
       await transaction.rollback();
       return res.status(400).json({
         success: false,
-        message: 'Total amount mismatch'
+        message: "Total amount mismatch",
       });
     }
+
+    console.log("Subtotal:", subtotal);
+    console.log("GST Amount:", gstAmount);
+    console.log("Calculated Total:", calculatedTotal);
 
     // Check product availability and update inventory
     for (const item of products) {
@@ -150,7 +172,7 @@ const calculatedTotal = parseFloat((subtotal + gstAmount).toFixed(2));
         await transaction.rollback();
         return res.status(400).json({
           success: false,
-          message: `Product with ID ${item.id} not found`
+          message: `Product with ID ${item.id} not found`,
         });
       }
 
@@ -158,7 +180,7 @@ const calculatedTotal = parseFloat((subtotal + gstAmount).toFixed(2));
         await transaction.rollback();
         return res.status(400).json({
           success: false,
-          message: `Insufficient stock for product ${product.name}`
+          message: `Insufficient stock for product ${product.name}`,
         });
       }
 
@@ -168,29 +190,35 @@ const calculatedTotal = parseFloat((subtotal + gstAmount).toFixed(2));
     }
 
     // Create invoice
-    const invoice = await Invoice.create({
-      invoiceNumber,
-      customerId,
-      subtotal,
-      tax: gstAmount,
-      total: calculatedTotal,
-      paymentMethod,
-      status: 'completed',
-      gstPercentage: gstPercentage || null
-    }, { transaction });
+    const invoice = await Invoice.create(
+      {
+        invoiceNumber,
+        customerId,
+        subtotal,
+        tax: gstAmount,
+        total: calculatedTotal,
+        paymentMethod,
+        status: "completed",
+        gstPercentage: gstPercentage || null,
+      },
+      { transaction }
+    );
 
     // Create invoice items
     const invoiceItems = await Promise.all(
-      products.map(async item => {
+      products.map(async (item) => {
         const product = await Product.findByPk(item.id, { transaction });
-        return InvoiceItem.create({
-          invoiceId: invoice.id,
-          productId: item.id,
-          quantity: item.quantity,
-          unitPrice: item.discountPrice || item.price,
-          totalPrice: (item.discountPrice || item.price) * item.quantity,
-          productName: product.name // Store product name for reference
-        }, { transaction });
+        return InvoiceItem.create(
+          {
+            invoiceId: invoice.id,
+            productId: item.id,
+            quantity: item.quantity,
+            unitPrice: item.discountPrice || item.price,
+            totalPrice: (item.discountPrice || item.price) * item.quantity,
+            productName: product.name, // Store product name for reference
+          },
+          { transaction }
+        );
       })
     );
 
@@ -200,7 +228,7 @@ const calculatedTotal = parseFloat((subtotal + gstAmount).toFixed(2));
       await transaction.rollback();
       return res.status(400).json({
         success: false,
-        message: 'Customer not found'
+        message: "Customer not found",
       });
     }
 
@@ -209,24 +237,26 @@ const calculatedTotal = parseFloat((subtotal + gstAmount).toFixed(2));
     // Format response to match frontend expectations
     const responseData = {
       success: true,
-      message: 'Invoice created successfully',
+      message: "Invoice created successfully",
       invoice: {
         id: invoice.id,
         invoiceNumber: invoice.invoiceNumber,
         subtotal,
         tax: gstAmount,
         total: calculatedTotal,
-        items: await Promise.all(products.map(async (item) => {
-          const product = await Product.findByPk(item.id);
-          return {
-            id: item.id,
-            name: product.name,
-            price: item.price,
-            discountPrice: item.discountPrice || null,
-            quantity: item.quantity,
-            total: (item.discountPrice || item.price) * item.quantity
-          };
-        })),
+        items: await Promise.all(
+          products.map(async (item) => {
+            const product = await Product.findByPk(item.id);
+            return {
+              id: item.id,
+              name: product.name,
+              price: item.price,
+              discountPrice: item.discountPrice || null,
+              quantity: item.quantity,
+              total: (item.discountPrice || item.price) * item.quantity,
+            };
+          })
+        ),
         customerInfo: {
           companyName: customer.companyName,
           name: customer.name,
@@ -235,44 +265,43 @@ const calculatedTotal = parseFloat((subtotal + gstAmount).toFixed(2));
           address: customer.address,
           gstNumber: customer.gstNumber,
           gstPercentage: gstPercentage || customer.gstPercentage || "0",
-          useSameAsPhone: customer.whatsappNumber === customer.phone
+          useSameAsPhone: customer.whatsappNumber === customer.phone,
         },
         paymentMethod,
-        createdAt: invoice.createdAt
-      }
+        createdAt: invoice.createdAt,
+      },
     };
 
     console.log("Invoice created successfully:", invoice.id);
     res.status(201).json(responseData);
-
   } catch (error) {
-    console.error('Error creating invoice:', error);
-    
+    console.error("Error creating invoice:", error);
+
     if (transaction) {
       await transaction.rollback();
     }
-    
-    if (error.name === 'SequelizeValidationError') {
-      console.error('Validation errors:', error.errors);
+
+    if (error.name === "SequelizeValidationError") {
+      console.error("Validation errors:", error.errors);
       return res.status(400).json({
         success: false,
-        message: 'Validation error',
-        errors: error.errors.map(err => err.message)
+        message: "Validation error",
+        errors: error.errors.map((err) => err.message),
       });
     }
 
-    if (error.name === 'SequelizeDatabaseError') {
-      console.error('Database error:', error);
+    if (error.name === "SequelizeDatabaseError") {
+      console.error("Database error:", error);
       return res.status(500).json({
         success: false,
-        message: 'Database error occurred'
+        message: "Database error occurred",
       });
     }
 
     res.status(500).json({
       success: false,
-      message: 'Failed to create invoice',
-      error: error.message
+      message: "Failed to create invoice",
+      error: error.message,
     });
   }
 };

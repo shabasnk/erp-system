@@ -1,5 +1,3 @@
-//C:\coding\WEZ-ERP-APP\client\src\pages\report-management\date-range-picker.tsx
-import * as React from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
-import { motion, MotionProps, AnimatePresence } from 'framer-motion';
+import { motion, MotionProps } from 'framer-motion';
 import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import { useNavigate, useLocation } from 'react-router-dom';
