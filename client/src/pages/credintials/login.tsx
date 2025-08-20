@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
-import { motion, MotionProps, AnimatePresence } from 'framer-motion';
+import { motion, MotionProps } from 'framer-motion';
 import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -238,7 +238,21 @@ function LoginForm({
       )}
       {...props}
     >
+      {/* <BorderBeam
+        duration={6}
+        size={300}
+        className="from-transparent via-[#ea384c] to-transparent"
+      />
       <BorderBeam
+        duration={6}
+        delay={3}
+        size={300}
+        className="from-transparent via-[#FF719A] to-transparent"
+      /> */}
+
+      <div className="relative z-10 p-8">
+        <div className="flex flex-col items-center mb-8">
+           <BorderBeam
         duration={6}
         size={300}
         className="from-transparent via-[#ea384c] to-transparent"
@@ -249,9 +263,6 @@ function LoginForm({
         size={300}
         className="from-transparent via-[#FF719A] to-transparent"
       />
-
-      <div className="relative z-10 p-8">
-        <div className="flex flex-col items-center mb-8">
           <motion.div 
             className="flex justify-center"
             initial={{ opacity: 0 }}

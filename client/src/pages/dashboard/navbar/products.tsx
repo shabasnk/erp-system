@@ -1,10 +1,74 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import axios from "axios";
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  image: string;
+  discountPrice?: number;
+  sku?: string;
+  barcode?: string;
+  categoryId: number;
+  stockQuantity: number;
+  brand?: string;
+  weight?: number;
+  dimensions?: string;
+  expirationDate?: string;
+  tags?: string[];
+  unitId: number;
+  isActive: boolean;
+}
 
 const ProductsNav: React.FC = () => {
   const { darkMode } = useOutletContext<{ darkMode: boolean }>();
-
   const navigate = useNavigate();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Fetch products from the API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.error("Token is required");
+          return;
+        }
+
+        // Make the API request with the token in the headers
+        const response = await axios.get("/api/product/product", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setProducts(response.data.products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div
+        className={`flex items-center justify-center min-h-screen ${
+          darkMode ? "bg-gray-900" : "bg-white"
+        }`}
+      >
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -35,62 +99,72 @@ const ProductsNav: React.FC = () => {
             Your Products
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((product) => (
-              <div
-                key={product}
-                className={`p-4 rounded-lg ${
-                  darkMode
-                    ? "bg-gray-800 border border-pink-900 hover:border-pink-500"
-                    : "bg-white border border-pink-200 hover:border-pink-300"
-                } transition-all duration-300 shadow-sm`}
-              >
+            {products.length > 0 ? (
+              products.map((product) => (
                 <div
-                  className={`h-40 ${
-                    darkMode ? "bg-gray-700" : "bg-gray-100"
-                  } rounded-md mb-3 flex items-center justify-center`}
+                  key={product.id}
+                  className={`p-4 rounded-lg ${
+                    darkMode
+                      ? "bg-gray-800 border border-pink-900 hover:border-pink-500"
+                      : "bg-white border border-pink-200 hover:border-pink-300"
+                  } transition-all duration-300 shadow-sm`}
                 >
-                  <span
-                    className={`${
-                      darkMode ? "text-gray-500" : "text-gray-400"
+                  <div
+                    className={`h-40 ${
+                      darkMode ? "bg-gray-700" : "bg-gray-100"
+                    } rounded-md mb-3 flex items-center justify-center`}
+                  >
+                    <span
+                      className={`${
+                        darkMode ? "text-gray-500" : "text-gray-400"
+                      }`}
+                    >
+                      Product Image
+                    </span>
+                  </div>
+                  <h3
+                    className={`font-medium font-['Kantumruy_Pro'] ${
+                      darkMode ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    Product Image
-                  </span>
-                </div>
-                <h3
-                  className={`font-medium font-['Kantumruy_Pro'] ${
-                    darkMode ? "text-white" : "text-gray-800"
-                  }`}
-                >
-                  Product {product}
-                </h3>
-                <p
-                  className={`text-sm mt-1 ${
-                    darkMode ? "text-pink-300" : "text-pink-600"
-                  }`}
-                >
-                  Description of product {product}
-                </p>
-                <div className="mt-3 flex justify-between items-center">
-                  <span
-                    className={`font-bold ${
-                      darkMode ? "text-pink-400" : "text-pink-600"
+                    {product.name}
+                  </h3>
+                  <p
+                    className={`text-sm mt-1 ${
+                      darkMode ? "text-pink-300" : "text-pink-600"
                     }`}
                   >
-                    ${(product * 19.99).toFixed(2)}
-                  </span>
-                  <button
-                    className={`px-3 py-1 rounded text-sm font-medium ${
-                      darkMode
-                        ? "bg-gradient-to-r from-[#ea384c] to-[#FF719A] hover:from-[#d83245] hover:to-[#e6688d] text-white"
-                        : "bg-gradient-to-r from-[#ea384c] to-[#FF719A] hover:from-[#d83245] hover:to-[#e6688d] text-white"
-                    } shadow-md`}
-                  >
-                    View Details
-                  </button>
+                    {product.description}
+                  </p>
+                  <div className="mt-3 flex justify-between items-center">
+                    <span
+                      className={`font-bold ${
+                        darkMode ? "text-pink-400" : "text-pink-600"
+                      }`}
+                    >
+                      ₹{product.price}
+                    </span>
+                    <button
+                      className={`px-3 py-1 rounded text-sm font-medium ${
+                        darkMode
+                          ? "bg-gradient-to-r from-[#ea384c] to-[#FF719A] hover:from-[#d83245] hover:to-[#e6688d] text-white"
+                          : "bg-gradient-to-r from-[#ea384c] to-[#FF719A] hover:from-[#d83245] hover:to-[#e6688d] text-white"
+                      } shadow-md`}
+                    >
+                      View Details
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p
+                className={`text-center ${
+                  darkMode ? "text-pink-200" : "text-pink-600"
+                }`}
+              >
+                No products available
+              </p>
+            )}
           </div>
           <div className="mt-6">
             <button

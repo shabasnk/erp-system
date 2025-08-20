@@ -9,7 +9,6 @@ import Shop from "../models/shopModel.js"; // Adjust the import path if needed
 // // @route   POST /api/Admin/auth
 // // @access  Public
 export const register = asyncHandler(async (req, res) => {
-  
 
 });
 

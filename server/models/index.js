@@ -74,7 +74,7 @@ import sequelize from "../connect/connect.js";
 import Shops from "./shopModel.js";
 import Customer from "./customerModel.js";
 import Order from "./orderModel.js";
-import Product from "./productModel.js";
+import Product from "./ProductModel.js";
 
 // Initialize models
 const models = {
