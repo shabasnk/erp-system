@@ -1402,112 +1402,112 @@ function ReportManagement() {
   return `${change >= 0 ? "+" : ""}${change.toFixed(1)}% from last month`;
 };
 
-  return (
-    <div>
-      <div className="mb-8">
-        <h1
-          className={`text-3xl font-bold font-['Kantumruy_Pro'] bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent`}
-        >
-          Sales & Inventory Dashboard
-        </h1>
-        <p className={`mt-2 ${darkMode ? "text-pink-200" : "text-pink-700"}`}>
-          Monitor your business performance and inventory status
-        </p>
+   return (
+  <div>
+    <div className="mb-8">
+      <h1
+        className={`text-3xl font-bold font-['Kantumruy_Pro'] bg-gradient-to-r from-[#ea384c] to-[#FF719A] bg-clip-text text-transparent`}
+      >
+        Sales & Inventory Dashboard
+      </h1>
+      <p className={`mt-2 ${darkMode ? "text-pink-200" : "text-pink-700"}`}>
+        Monitor your business performance and inventory status
+      </p>
+    </div>
+
+    <div
+      className={`p-6 rounded-lg ${
+        darkMode
+          ? "bg-gray-800/50 border border-pink-900"
+          : "bg-pink-50 border border-pink-100"
+      }`}
+    >
+      <div className="mb-6 flex justify-end">
+        <CalendarDateRangePicker
+          date={date}
+          setDate={setDate}
+          darkMode={darkMode}
+        />
       </div>
 
-      <div
-        className={`p-6 rounded-lg ${
-          darkMode
-            ? "bg-gray-800/50 border border-pink-900"
-            : "bg-pink-50 border border-pink-100"
-        }`}
-      >
-        <div className="mb-6 flex justify-end">
-          <CalendarDateRangePicker
-            date={date}
-            setDate={setDate}
-            darkMode={darkMode}
-          />
-        </div>
-
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList
+          className={`${
+            darkMode
+              ? "bg-gray-800 border border-pink-900"
+              : "bg-white border border-pink-200"
+          } p-1`}
+        >
+          <TabsTrigger
+            value="overview"
             className={`${
               darkMode
-                ? "bg-gray-800 border border-pink-900"
-                : "bg-white border border-pink-200"
-            } p-1`}
+                ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
+                : "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
+            }`}
           >
-            <TabsTrigger
-              value="overview"
-              className={`${
-                darkMode
-                  ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
-                  : "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
-              }`}
-            >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger
-              value="sales"
-              className={`${
-                darkMode
-                  ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
-                  : "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
-              }`}
-            >
-              Sales
-            </TabsTrigger>
-            <TabsTrigger
-              value="inventory"
-              className={`${
-                darkMode
-                  ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
-                  : "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
-              }`}
-            >
-              Inventory
-            </TabsTrigger>
-            <TabsTrigger
-              value="orders"
-              className={`${
-                darkMode
-                  ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
-                  : "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
-              }`}
-            >
-              Orders
-            </TabsTrigger>
-          </TabsList>
+            Overview
+          </TabsTrigger>
+          <TabsTrigger
+            value="sales"
+            className={`${
+              darkMode
+                ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
+                : "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
+            }`}
+          >
+            Sales
+          </TabsTrigger>
+          <TabsTrigger
+            value="inventory"
+            className={`${
+              darkMode
+                ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
+                : "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
+            }`}
+          >
+            Inventory
+          </TabsTrigger>
+          <TabsTrigger
+            value="orders"
+            className={`${
+              darkMode
+                ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
+                : "data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ea384c] data-[state=active]:to-[#FF719A] data-[state=active]:text-white"
+            }`}
+          >
+            Orders
+          </TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div
-                className={`p-4 rounded-lg ${
-                  darkMode
-                    ? "bg-gray-800 border border-pink-900 hover:border-pink-500"
-                    : "bg-white border border-pink-200 hover:border-pink-300"
-                } transition-all duration-300 shadow-sm`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div
-                    className={`p-2 rounded-lg ${
-                      darkMode ? "bg-pink-900/50" : "bg-pink-100"
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div
+              className={`p-4 rounded-lg ${
+                darkMode
+                  ? "bg-gray-800 border border-pink-900 hover:border-pink-500"
+                  : "bg-white border border-pink-200 hover:border-pink-300"
+              } transition-all duration-300 shadow-sm`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div
+                  className={`p-2 rounded-lg ${
+                    darkMode ? "bg-pink-900/50" : "bg-pink-100"
+                  }`}
+                >
+                  <DollarSign
+                    className={`h-5 w-5 ${
+                      darkMode ? "text-pink-400" : "text-pink-600"
                     }`}
-                  >
-                    <DollarSign
-                      className={`h-5 w-5 ${
-                        darkMode ? "text-pink-400" : "text-pink-600"
-                      }`}
-                    />
-                  </div>
-                  <span
-                    className={`text-sm font-medium ${
-                      darkMode ? "text-gray-400" : "text-gray-500"
-                    }`}
-                  >
-                    Total Revenue
-                  </span>
+                  />
+                </div>
+                <span
+                  className={`text-sm font-medium ${
+                    darkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  Total Revenue
+                </span>
                 </div>
                 <div
                   className={`text-2xl font-bold font-['Kantumruy_Pro'] ${
@@ -1818,60 +1818,59 @@ function ReportManagement() {
                       </TableHead>
                     </TableRow>
                   </TableHeader>
-                  // Find this section in your reportManagement.tsx:
-<TableBody>
-  {reportData.salesTrend?.map((day) => {
-    const profit = day.totalSales * 0.25; // 25% profit margin
-    const avgOrderValue = day.totalOrders > 0 ? day.totalSales / day.totalOrders : 0;
-    
-    return (
-      <TableRow
-        key={day.date}
-        className={
-          darkMode
-            ? "border-pink-900/50"
-            : "border-pink-200/50"
-        }
-      >
-        <TableCell
-          className={
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }
-        >
-          {format(new Date(day.date), "MMM dd")}
-        </TableCell>
-        <TableCell
-          className={
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }
-        >
-          {day.totalOrders}
-        </TableCell>
-        <TableCell
-          className={`font-bold ${
-            darkMode ? "text-pink-400" : "text-pink-600"
-          }`}
-        >
-          ${day.totalSales.toFixed(2)}
-        </TableCell>
-        <TableCell
-          className={`font-bold ${
-            darkMode ? "text-green-400" : "text-green-600"
-          }`}
-        >
-          ${profit.toFixed(2)}
-        </TableCell>
-        <TableCell
-          className={
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }
-        >
-          ${avgOrderValue.toFixed(2)}
-        </TableCell>
-      </TableRow>
-        );
-      })}
-    </TableBody>
+                  <TableBody>
+                    {reportData.salesTrend?.map((day) => {
+                      const profit = day.totalSales * 0.25; // 25% profit margin
+                      const avgOrderValue = day.totalOrders > 0 ? day.totalSales / day.totalOrders : 0;
+                      
+                      return (
+                        <TableRow
+                          key={day.date}
+                          className={
+                            darkMode
+                              ? "border-pink-900/50"
+                              : "border-pink-200/50"
+                          }
+                        >
+                          <TableCell
+                            className={
+                              darkMode ? "text-gray-300" : "text-gray-700"
+                            }
+                          >
+                            {format(new Date(day.date), "MMM dd")}
+                          </TableCell>
+                          <TableCell
+                            className={
+                              darkMode ? "text-gray-300" : "text-gray-700"
+                            }
+                          >
+                            {day.totalOrders}
+                          </TableCell>
+                          <TableCell
+                            className={`font-bold ${
+                              darkMode ? "text-pink-400" : "text-pink-600"
+                            }`}
+                          >
+                            ${day.totalSales.toFixed(2)}
+                          </TableCell>
+                          <TableCell
+                            className={`font-bold ${
+                              darkMode ? "text-green-400" : "text-green-600"
+                            }`}
+                          >
+                            ${profit.toFixed(2)}
+                          </TableCell>
+                          <TableCell
+                            className={
+                              darkMode ? "text-gray-300" : "text-gray-700"
+                            }
+                          >
+                            ${avgOrderValue.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
                 </Table>
               </div>
             </div>
@@ -1957,59 +1956,58 @@ function ReportManagement() {
                       </TableHead>
                     </TableRow>
                   </TableHeader>
-                   // Find this section for Low Stock Items:
-<TableBody>
-  {reportData.inventoryStatus
-    ?.filter((item) => item.status === "Low Stock")
-    ?.map((item) => (
-      <TableRow
-        key={item.id}
-        className={
-          darkMode
-            ? "border-pink-900/50"
-            : "border-pink-200/50"
-        }
-      >
-        <TableCell
-          className={`font-medium ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
-        >
-          {item.name}
-        </TableCell>
-        <TableCell
-          className={
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }
-        >
-          {item.sku}
-        </TableCell>
-        <TableCell
-          className={
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }
-        >
-          {item.currentStock}
-        </TableCell>
-        <TableCell
-          className={
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }
-        >
-          {item.lowStockThreshold}
-        </TableCell>
-        <TableCell>
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            item.status === 'Out of Stock'
-              ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800'
-              : 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800'
-          }`}>
-            {item.status}
-          </span>
-        </TableCell>
-      </TableRow>
-    ))}
-</TableBody>
+                  <TableBody>
+                    {reportData.inventoryStatus
+                      ?.filter((item) => item.status === "Low Stock")
+                      ?.map((item) => (
+                        <TableRow
+                          key={item.id}
+                          className={
+                            darkMode
+                              ? "border-pink-900/50"
+                              : "border-pink-200/50"
+                          }
+                        >
+                          <TableCell
+                            className={`font-medium ${
+                              darkMode ? "text-gray-300" : "text-gray-700"
+                            }`}
+                          >
+                            {item.name}
+                          </TableCell>
+                          <TableCell
+                            className={
+                              darkMode ? "text-gray-300" : "text-gray-700"
+                            }
+                          >
+                            {item.sku}
+                          </TableCell>
+                          <TableCell
+                            className={
+                              darkMode ? "text-gray-300" : "text-gray-700"
+                            }
+                          >
+                            {item.currentStock}
+                          </TableCell>
+                          <TableCell
+                            className={
+                              darkMode ? "text-gray-300" : "text-gray-700"
+                            }
+                          >
+                            {item.lowStockThreshold}
+                          </TableCell>
+                          <TableCell>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              item.status === 'Out of Stock'
+                                ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800'
+                                : 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800'
+                            }`}>
+                              {item.status}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
                 </Table>
               </div>
             </div>
@@ -2075,59 +2073,58 @@ function ReportManagement() {
                       </TableHead>
                     </TableRow>
                   </TableHeader>
-                  // Find this section in your reportManagement.tsx:
-<TableBody>
-  {reportData.recentOrders?.map((order) => (
-    <TableRow
-      key={order.id}
-      className={
-        darkMode ? "border-pink-900/50" : "border-pink-200/50"
-      }
-    >
-      <TableCell
-        className={`font-medium ${
-          darkMode ? "text-gray-300" : "text-gray-700"
-        }`}
-      >
-        #{order.id}
-      </TableCell>
-      <TableCell
-        className={
-          darkMode ? "text-gray-300" : "text-gray-700"
-        }
-      >
-        {order.customerName}
-      </TableCell>
-      <TableCell
-        className={
-          darkMode ? "text-gray-300" : "text-gray-700"
-        }
-      >
-        {format(new Date(order.date), "MMM dd, yyyy")}
-      </TableCell>
-      <TableCell
-        className={`font-bold ${
-          darkMode ? "text-pink-400" : "text-pink-600"
-        }`}
-      >
-        ${order.totalAmount.toFixed(2)}
-      </TableCell>
-      <TableCell>
-        <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            order.status === "Completed"
-              ? "bg-gradient-to-r from-green-100 to-green-200 text-green-800"
-              : order.status === "Pending"
-              ? "bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800"
-              : "bg-gradient-to-r from-red-100 to-red-200 text-red-800"
-          }`}
-        >
-          {order.status}
-        </span>
-      </TableCell>
-    </TableRow>
-  ))}
-</TableBody>
+                  <TableBody>
+                    {reportData.recentOrders?.map((order) => (
+                      <TableRow
+                        key={order.id}
+                        className={
+                          darkMode ? "border-pink-900/50" : "border-pink-200/50"
+                        }
+                      >
+                        <TableCell
+                          className={`font-medium ${
+                            darkMode ? "text-gray-300" : "text-gray-700"
+                          }`}
+                        >
+                          #{order.id}
+                        </TableCell>
+                        <TableCell
+                          className={
+                            darkMode ? "text-gray-300" : "text-gray-700"
+                          }
+                        >
+                          {order.customerName}
+                        </TableCell>
+                        <TableCell
+                          className={
+                            darkMode ? "text-gray-300" : "text-gray-700"
+                          }
+                        >
+                          {format(new Date(order.date), "MMM dd, yyyy")}
+                        </TableCell>
+                        <TableCell
+                          className={`font-bold ${
+                            darkMode ? "text-pink-400" : "text-pink-600"
+                          }`}
+                        >
+                          ${order.totalAmount.toFixed(2)}
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              order.status === "Completed"
+                                ? "bg-gradient-to-r from-green-100 to-green-200 text-green-800"
+                                : order.status === "Pending"
+                                ? "bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800"
+                                : "bg-gradient-to-r from-red-100 to-red-200 text-red-800"
+                            }`}
+                          >
+                            {order.status}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
                 </Table>
               </div>
             </div>

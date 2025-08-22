@@ -591,55 +591,6 @@ export const getDailySales = async (req, res) => {
 
 
 
-// export const getInventoryReport = async (req, res) => {
-//   try {
-//     const lowStockThreshold = req.query.threshold ? parseInt(req.query.threshold) : 10;
-//     const products = await Product.findAll({
-//       attributes: ['id', 'name', 'sku', 'stockQuantity'],
-//       order: [['stockQuantity', 'ASC']]
-//     });
-
-//     // Helper function to determine inventory status
-//     const getInventoryStatus = (stockQuantity, threshold) => {
-//       if (stockQuantity <= 0) return 'Out of Stock';
-//       if (stockQuantity <= threshold) return 'Low Stock';
-//       return 'In Stock';
-//     };
-
-//     const inventoryItems = products.map(product => ({
-//       id: product.id,
-//       name: product.name,
-//       sku: product.sku || '',
-//       currentStock: product.stockQuantity || 0,
-//       lowStockThreshold: lowStockThreshold,
-//       status: getInventoryStatus(product.stockQuantity, lowStockThreshold)
-//     }));
-
-//     res.json({
-//       success: true,
-//       data: {
-//         inventoryItems,
-//         totalProducts: products.length,
-//         thresholdUsed: lowStockThreshold
-//       }
-//     });
-//   } catch (error) {
-//     console.error('Error fetching inventory report:', error);
-//     res.status(500).json({
-//       success: false,
-//       error: 'Failed to fetch inventory report'
-//     });
-//   }
-// };
-
-
-
-
-
-
-
-
-
 // In reportController.js - getInventoryReport function
 export const getInventoryReport = async (req, res) => {
   try {
