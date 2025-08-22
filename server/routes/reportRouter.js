@@ -1,24 +1,32 @@
-// //C:\coding\WEZ-ERP-APP\server\routes\reportRouter.js
+
+// // reportRouter.js
 // import express from 'express';
 // import { verifyToken } from '../middlewares/tokenVerification.js';
 // import {
 //   getSalesReport,
 //   getInventoryReport,
 //   getRevenueReport,
-//   getProfitReport
+//   getProfitReport,
+//   getRecentOrders
 // } from '../controller/reportController.js';
+
+// console.log("from report Router.js");
 
 // const router = express.Router();
 
 // router.use(verifyToken);
-// console.log("hitched reprtRouter")
+
 // // Report routes
 // router.get('/sales', getSalesReport);
 // router.get('/inventory', getInventoryReport);
 // router.get('/revenue', getRevenueReport);
 // router.get('/profit', getProfitReport);
+// router.get('/recent-orders', getRecentOrders); // Add this line
 
 // export default router;
+
+
+
 
 
 
@@ -33,7 +41,9 @@ import {
   getInventoryReport,
   getRevenueReport,
   getProfitReport,
-  getRecentOrders
+  getRecentOrders,
+  getDashboardSummary,    // ADD THIS IMPORT
+  getDailySales          // ADD THIS IMPORT
 } from '../controller/reportController.js';
 
 console.log("from report Router.js");
@@ -47,6 +57,8 @@ router.get('/sales', getSalesReport);
 router.get('/inventory', getInventoryReport);
 router.get('/revenue', getRevenueReport);
 router.get('/profit', getProfitReport);
-router.get('/recent-orders', getRecentOrders); // Add this line
+router.get('/recent-orders', getRecentOrders);
+router.get('/dashboard-summary', getDashboardSummary);  // ADD THIS ROUTE
+router.get('/daily-sales', getDailySales);              // ADD THIS ROUTE
 
 export default router;
