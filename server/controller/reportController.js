@@ -262,6 +262,7 @@
 
 
 // aftr chnging frm ordrs tble
+//C:\coding\WEZ-ERP-APP\server\controller\reportController.js
 import { Op } from 'sequelize';
 import Invoice from '../models/invoiceModel.js';
 import InvoiceItem from '../models/invoiceItemModel.js';

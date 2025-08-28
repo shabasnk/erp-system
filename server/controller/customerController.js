@@ -64,7 +64,7 @@
 
 
 // for green api (12 dgt i thnk)
-
+//C:\coding\WEZ-ERP-APP\server\controller\customerController.js
 import Customer from '../models/customerModel.js';
 
 // Create a new customer

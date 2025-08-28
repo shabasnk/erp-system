@@ -129,7 +129,7 @@
 
 
 
-
+//C:\coding\WEZ-ERP-APP\client\src\pages\report-management\inventory-status.tsx
 import React from 'react';
 import {
   BarChart,
