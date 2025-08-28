@@ -472,6 +472,41 @@ const BillingNav: React.FC = () => {
     headers: getAuthHeaders()
   });
 
+
+
+  // Add this function inside the BillingNav component, after the other function declarations
+const downloadInvoicePDF = async (invoiceId: number) => {
+  try {
+    const response = await authAxios.get(`/billing/download-invoice/${invoiceId}`, {
+      responseType: 'blob' // Important for file downloads
+    });
+    
+    // Create a blob from the response
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    
+    // Create a URL for the blob
+    const url = window.URL.createObjectURL(blob);
+    
+    // Create a temporary anchor element
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `invoice_${invoiceId}.pdf`;
+    
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+    
+    // Clean up
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+  } catch (error) {
+    console.error('Error downloading invoice:', error);
+    setErrorMessage('Failed to download invoice PDF');
+    setShowErrorPopup(true);
+  }
+};
+
   // Cleanup effects
   useEffect(() => {
     return () => {
@@ -676,19 +711,25 @@ const handleCheckout = async () => {
     
     
         // Remove the error throwing for success case
-      if (invoiceResponse.status === 200 || invoiceResponse.status === 201) {
-        setInvoiceData(data.invoice);
-        setShowSuccessNotification(true);
-      
-      // Reset form
-      setSelectedProducts([]);
-      setCustomerInfo(initialCustomerInfo);
-      setPaymentMethod('cash');
-      setShowValidation(false);
-      setShowCheckoutModal(false);
-      
-      // Set auto-close timer for notification
-      setAutoCloseTimer(setTimeout(() => setShowSuccessNotification(false), 5000));
+    if (invoiceResponse.status === 200 || invoiceResponse.status === 201) {
+  setInvoiceData(data.invoice);
+  setShowSuccessNotification(true);
+  
+  // Auto-download the PDF
+  setTimeout(() => {
+    downloadInvoicePDF(data.invoice.id);
+  }, 1000); // Small delay to ensure the invoice is fully processed
+  
+  // Reset form
+  setSelectedProducts([]);
+  setCustomerInfo(initialCustomerInfo);
+  setPaymentMethod('cash');
+  setShowValidation(false);
+  setShowCheckoutModal(false);
+  
+  // Set auto-close timer for notification
+  setAutoCloseTimer(setTimeout(() => setShowSuccessNotification(false), 5000));
+
     } else {
       throw new Error(data.message || 'Failed to create invoice');
     }
