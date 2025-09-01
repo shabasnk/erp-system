@@ -9,14 +9,11 @@ import Customer from "../models/customerModel.js";
 // import WhatsAppService from '../services/whatsappService.js';
 
 export const searchProducts = async (req, res) => {
-  console.log("under search products");
 
   try {
-    console.log("under Try");
 
     const { query } = req.query;
 
-    console.log("query:", query);
 
     if (!query || query.length < 2) {
       return res.status(400).json({

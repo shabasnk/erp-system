@@ -1,3 +1,4 @@
+//C:\coding\WEZ-ERP-APP\server\middlewares\tokenVerification.js
 import jwt from 'jsonwebtoken';
 import sanitizedConfig from '../config.js';
 
