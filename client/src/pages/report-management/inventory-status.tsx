@@ -255,3 +255,13 @@ export const InventoryStatus: React.FC<InventoryStatusProps> = ({ items, darkMod
     </div>
   );
 };
+
+
+
+
+
+
+
+
+
+
