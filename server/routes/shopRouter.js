@@ -1,20 +1,3 @@
-// import express from 'express';
-// import {
-//   getShop,
-//   updateShop,
-// } from '../controller/shopController.js';
-// import { authenticate } from '../middleware/';
-
-// const router = express.Router();
-
-// // Get current shop (authenticated user's shop)
-// router.get('/me', authenticate, getShop);
-// // Update shop information
-// router.put('/me', authenticate, updateShop);
-
-// export default router;
-
-
 import express from 'express';
 import { getShop, updateShop } from '../controller/shopController.js';
 // import { verifyToken } from '../middleware/tokenVerification.js';
