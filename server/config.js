@@ -1,40 +1,23 @@
 import dotenv from "dotenv";
-
-// Load environment variables from the .env file
 dotenv.config();
 
 const getConfig = () => {
   return {
-    NODE_ENV: process.env.NODE_ENV,
-    PORT: process.env.PORT ? process.env.PORT : undefined,
-    PG_URI: process.env.PG_URI,
-    JWT_SECRET: process.env.JWT_SECRET,
-    DB_NAME: process.env.DB_NAME,
-    DB_USERNAME: process.env.DB_USERNAME,
-    DB_PASS: process.env.DB_PASS,
-    // AWS_ACCESS: process.env.AWS_ACCESS,
-    // AWS_SECRETACCESS: process.env.AWS_SECRETACCESS,
-    // S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
+    NODE_ENV: process.env.NODE_ENV || "production",
+    PORT: process.env.PORT || 8080,
+    // Railway provides DATABASE_URL - use that first
+    PG_URI: process.env.DATABASE_URL || process.env.PG_URI,
+    JWT_SECRET: process.env.JWT_SECRET || "fallback-secret-for-production",
   };
 };
 
 const getSanitizedConfig = (config) => {
-  for (const [key, value] of Object.entries(config)) {
-    if (value === undefined) {
-      throw new Error(`Missing key ${key} in config.env`);
-    }
+  // Only require JWT_SECRET and database connection
+  if (!config.PG_URI) {
+    throw new Error('Missing database connection string');
+  }
+  if (!config.JWT_SECRET) {
+    throw new Error('Missing JWT_SECRET in environment variables');
   }
   return config;
 };
-
-const config = getConfig();
-
-const sanitizedConfig = getSanitizedConfig(config);
-
-
-export default sanitizedConfig;
-
-
-
-
-
