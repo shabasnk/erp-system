@@ -1,11 +1,5 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd server && npm install"
 
-[deploy]
-startCommand = "cd server && npm start"
-
-[[services]]
-source = "server"
-name = "web"
-run = "npm start"
+[nixpacks]
+path = "./server"
