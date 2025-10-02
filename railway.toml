@@ -1,5 +1,7 @@
 [build]
 builder = "nixpacks"
+buildCommand = "cd server && npm install"
+startCommand = "cd server && npm start"
 
-[nixpacks]
-path = "./server"
+[build.args]
+NIXPACKS_BUILD_DIR = "./server"
