@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-import sanitizedConfig from '../config.js';
+import { sanitizedConfig } from '../config.js';
 
 const sequelize = new Sequelize(sanitizedConfig.PG_URI, {
   dialect: 'postgres',

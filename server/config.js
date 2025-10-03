@@ -21,3 +21,8 @@ const getSanitizedConfig = (config) => {
   }
   return config;
 };
+
+const config = getConfig();
+const sanitizedConfig = getSanitizedConfig(config);
+
+export { sanitizedConfig };
