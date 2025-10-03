@@ -7,7 +7,7 @@ import pkg from 'pg';
 
 import { sequelize } from "./models/index.js"; 
 
-import sanitizedConfig from "./config.js";
+import { sanitizedConfig } from "./config.js";
 
 import authRouter from "./routes/authRouter.js";
 

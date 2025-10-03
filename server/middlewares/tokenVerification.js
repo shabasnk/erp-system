@@ -1,7 +1,6 @@
 //C:\coding\WEZ-ERP-APP\server\middlewares\tokenVerification.js
 import jwt from 'jsonwebtoken';
-import sanitizedConfig from '../config.js';
-
+import { sanitizedConfig } from '../config.js';
 
 // Middleware to verify JWT
 export function verifyToken(req, res, next) {
