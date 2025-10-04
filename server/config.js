@@ -1,3 +1,15 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+const getConfig = () => {
+  return {
+    NODE_ENV: process.env.NODE_ENV || "production",
+    PORT: process.env.PORT || 8080,
+    PG_URI: process.env.DATABASE_URL || process.env.PG_URI,
+    JWT_SECRET: process.env.JWT_SECRET || "fallback-secret-for-production",
+  };
+};
+
 const getSanitizedConfig = (config) => {
   // Only require JWT_SECRET for now
   if (!config.JWT_SECRET) {
@@ -12,3 +24,10 @@ const getSanitizedConfig = (config) => {
   
   return config;
 };
+
+// ✅ MUST HAVE THESE LINES:
+const config = getConfig();
+const sanitizedConfig = getSanitizedConfig(config);
+
+// ✅ MUST HAVE THIS EXPORT:
+export { sanitizedConfig };
