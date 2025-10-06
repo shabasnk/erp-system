@@ -1,20 +1,3 @@
-// import path from "path"
-// import tailwindcss from "@tailwindcss/vite"
-// import react from "@vitejs/plugin-react"
-// import { defineConfig } from "vite"
-
-// // https://vite.dev/config/
-// export default defineConfig({
-//   plugins: [react(), tailwindcss()],
-//   resolve: {
-//     alias: {
-//       "@": path.resolve(__dirname, "./src"),
-//     },
-//   },
-// })
-
-
-
 import path from "path"
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
@@ -31,8 +14,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // Your Express server
+        target: 'https://erp-system-production-52ca.up.railway.app', // Your LIVE backend
         changeOrigin: true,
+        secure: false, // Add this for Railway SSL
       }
     }
   }

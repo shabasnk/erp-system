@@ -22,4 +22,3 @@ const config = getConfig();
 const sanitizedConfig = getSanitizedConfig(config);
 
 export { sanitizedConfig };
-

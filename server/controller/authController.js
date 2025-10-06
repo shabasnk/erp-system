@@ -234,6 +234,12 @@ export const register = asyncHandler(async (req, res) => {
 
 export const login = asyncHandler(async (req, res) => {
     console.log("Login request received:", req.body);
+     // === ADD DEBUG LOGS HERE ===
+    console.log('=== JWT SECRET DEBUG in LOGIN ===');
+    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    console.log('JWT_SECRET value:', process.env.JWT_SECRET ? '***HIDDEN***' : 'MISSING');
+    console.log('All environment variables:', Object.keys(process.env));
+    // === END DEBUG LOGS ===
     
     const { email, password } = req.body;
 

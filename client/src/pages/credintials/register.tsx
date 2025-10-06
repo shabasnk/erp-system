@@ -214,7 +214,7 @@ const RegisterPage: React.FC = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -233,7 +233,7 @@ const RegisterPage: React.FC = () => {
           toast.success('Registration successful! Logging you in...');
           
           try {
-            const loginResponse = await fetch('http://localhost:8080/api/auth/login', {
+            const loginResponse = await fetch('/api/auth/register', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

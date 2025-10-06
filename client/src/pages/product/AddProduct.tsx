@@ -438,7 +438,7 @@ const AddProduct: React.FC = () => {
           isActive: product.isActive
         };
 
-        await axios.post("http://localhost:8080/api/product/product", submissionData, {
+        await axios.post("/api/product/product", submissionData, {
           headers: {
             "Content-Type": "application/json",
             ...getAuthHeaders()
