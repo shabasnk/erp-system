@@ -177,11 +177,11 @@ import Shop from "../models/shopModel.js";
 
 // Helper to generate token - UPDATED
 const generateToken = (user) => {
-    console.log('=== JWT SECRET DEBUG in GENERATE TOKEN ===');
-    console.log('Using hardcoded JWT secret');
+    // Use environment variable with fallback
+    const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-dev-only";
     
-    // TEMPORARY HARDCODE - Replace with your actual JWT secret
-    const JWT_SECRET = "wez_erp_super_secure_2025_8281@!";
+    console.log('=== JWT SECRET DEBUG ===');
+    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
     
     return jwt.sign({ 
         id: user.id,
@@ -193,6 +193,7 @@ const generateToken = (user) => {
         expiresIn: "7d",
     });
 };
+
 
 // @desc    Register a new shop
 // @route   POST /api/auth/register

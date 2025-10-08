@@ -34,26 +34,24 @@
 
 
 
-
 import jwt from 'jsonwebtoken';
 
-// Middleware to verify JWT
 export function verifyToken(req, res, next) {
     const token = req.headers['authorization']?.split(' ')[1];
-  
+
     if (!token) {
-      return res.status(403).send('Token is required');
+        return res.status(403).send('Token is required');
     }
-  
-    // TEMPORARY HARDCODE - Use same secret
-    const JWT_SECRET = "wez_erp_super_secure_2025_8281@!";
+
+    // Use environment variable with fallback for development
+    const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-dev-only";
     
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return res.status(401).send('Invalid token');
-      }
-        
-      req.user = decoded;
-      next();
+        if (err) {
+            return res.status(401).send('Invalid token');
+        }
+            
+        req.user = decoded;
+        next();
     });
 }
