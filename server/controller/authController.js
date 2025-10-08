@@ -133,6 +133,12 @@ import Shop from "../models/shopModel.js";
 
 // Helper to generate token - UPDATED
 const generateToken = (user) => {
+
+    console.log('=== JWT SECRET DEBUG in GENERATE TOKEN ===');
+    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    console.log('JWT_SECRET value:', process.env.JWT_SECRET ? '***HIDDEN***' : 'MISSING');
+
+
     console.log('=== GENERATED TOKEN DEBUG ===');
     console.log('User object:', {
         id: user.id,
@@ -165,6 +171,12 @@ const generateToken = (user) => {
 // @route   POST /api/auth/register
 // @access  Public
 export const register = asyncHandler(async (req, res) => {
+     console.log('=== JWT SECRET DEBUG in REGISTER ===');
+    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    console.log('JWT_SECRET value:', process.env.JWT_SECRET ? '***HIDDEN***' : 'MISSING');
+    console.log('All environment variables:', Object.keys(process.env));
+
+
     console.log("Registration request received:", req.body);
     
     const {
