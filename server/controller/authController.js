@@ -1,11 +1,42 @@
+
+
 // import asyncHandler from "express-async-handler";
 // import bcrypt from 'bcryptjs';
 // import jwt from "jsonwebtoken";
 // import Shop from "../models/shopModel.js";
 
-// // Helper to generate token
-// const generateToken = (userId) => {
-//     return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+// // Helper to generate token - UPDATED
+// const generateToken = (user) => {
+
+//     console.log('=== JWT SECRET DEBUG in GENERATE TOKEN ===');
+//     console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+//     console.log('JWT_SECRET value:', process.env.JWT_SECRET ? '***HIDDEN***' : 'MISSING');
+
+
+//     console.log('=== GENERATED TOKEN DEBUG ===');
+//     console.log('User object:', {
+//         id: user.id,
+//         ownerName: user.ownerName,
+//         email: user.email,
+//         shopName: user.shopName
+//     });
+
+//     console.log('Generated token will contain:', {
+//         id: user.id,
+//         name: user.ownerName,
+//         email: user.email,
+//         shopId: user.id,
+//         shopName: user.shopName
+//     });
+//     console.log('=============================');
+
+//     return jwt.sign({ 
+//         id: user.id,
+//         name: user.ownerName,
+//         email: user.email,
+//         shopId: user.id,
+//         shopName: user.shopName
+//     }, process.env.JWT_SECRET, {
 //         expiresIn: "7d",
 //     });
 // };
@@ -14,6 +45,12 @@
 // // @route   POST /api/auth/register
 // // @access  Public
 // export const register = asyncHandler(async (req, res) => {
+//      console.log('=== JWT SECRET DEBUG in REGISTER ===');
+//     console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+//     console.log('JWT_SECRET value:', process.env.JWT_SECRET ? '***HIDDEN***' : 'MISSING');
+//     console.log('All environment variables:', Object.keys(process.env));
+
+
 //     console.log("Registration request received:", req.body);
     
 //     const {
@@ -61,17 +98,21 @@
 //     });
 
 //     if (user) {
-//     // Get the full user object (excluding password)
-//     const userResponse = await Shop.findByPk(user.id, {
-//         attributes: { exclude: ['password'] }
-//     });
-    
-//     res.status(201).json({
-//         user: userResponse,
-//         token: generateToken(user.id),
-//         message: "Registration successful"
-//     });
-// } else {
+//         // Convert Sequelize instance to plain object
+//         const userPlain = user.get({ plain: true });
+        
+//         res.status(201).json({
+//             user: {
+//                 id: userPlain.id,
+//                 name: userPlain.ownerName,
+//                 email: userPlain.email,
+//                 shopId: userPlain.id,
+//                 shopName: userPlain.shopName,
+//             },
+//             token: generateToken(userPlain), // Pass plain object here
+//             message: "Registration successful"
+//         });
+//     } else {
 //         res.status(400);
 //         throw new Error("Invalid user data");
 //     }
@@ -79,6 +120,12 @@
 
 // export const login = asyncHandler(async (req, res) => {
 //     console.log("Login request received:", req.body);
+//      // === ADD DEBUG LOGS HERE ===
+//     console.log('=== JWT SECRET DEBUG in LOGIN ===');
+//     console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+//     console.log('JWT_SECRET value:', process.env.JWT_SECRET ? '***HIDDEN***' : 'MISSING');
+//     console.log('All environment variables:', Object.keys(process.env));
+//     // === END DEBUG LOGS ===
     
 //     const { email, password } = req.body;
 
@@ -103,22 +150,19 @@
 //         throw new Error("Invalid email or password");
 //     }
 
-//     // Send response with token
+//     // Convert Sequelize instance to plain object
+//     const userPlain = user.get({ plain: true });
+
+//     // Send response with token AND shop information
 //     res.status(200).json({
-//         id: user.id,
-//         name: user.ownerName,
-//         email: user.email,
-//         token: generateToken(user.id),
+//         id: userPlain.id,
+//         name: userPlain.ownerName,
+//         email: userPlain.email,
+//         shopId: userPlain.id,
+//         shopName: userPlain.shopName,
+//         token: generateToken(userPlain), // Pass plain object here
 //     });
 // });
-
-
-
-
-
-
-
-
 
 
 
@@ -133,36 +177,19 @@ import Shop from "../models/shopModel.js";
 
 // Helper to generate token - UPDATED
 const generateToken = (user) => {
-
     console.log('=== JWT SECRET DEBUG in GENERATE TOKEN ===');
-    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
-    console.log('JWT_SECRET value:', process.env.JWT_SECRET ? '***HIDDEN***' : 'MISSING');
-
-
-    console.log('=== GENERATED TOKEN DEBUG ===');
-    console.log('User object:', {
-        id: user.id,
-        ownerName: user.ownerName,
-        email: user.email,
-        shopName: user.shopName
-    });
-
-    console.log('Generated token will contain:', {
-        id: user.id,
-        name: user.ownerName,
-        email: user.email,
-        shopId: user.id,
-        shopName: user.shopName
-    });
-    console.log('=============================');
-
+    console.log('Using hardcoded JWT secret');
+    
+    // TEMPORARY HARDCODE - Replace with your actual JWT secret
+    const JWT_SECRET = "wez_erp_super_secure_2025_8281@!";
+    
     return jwt.sign({ 
         id: user.id,
         name: user.ownerName,
         email: user.email,
         shopId: user.id,
         shopName: user.shopName
-    }, process.env.JWT_SECRET, {
+    }, JWT_SECRET, {
         expiresIn: "7d",
     });
 };
