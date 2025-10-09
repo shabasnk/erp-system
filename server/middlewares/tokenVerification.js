@@ -34,7 +34,30 @@
 
 
 
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken';
+
+// export function verifyToken(req, res, next) {
+//     const token = req.headers['authorization']?.split(' ')[1];
+
+//     if (!token) {
+//         return res.status(403).send('Token is required');
+//     }
+
+//     // Use environment variable with fallback for development
+//     const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-dev-only";
+    
+//     jwt.verify(token, JWT_SECRET, (err, decoded) => {
+//         if (err) {
+//             return res.status(401).send('Invalid token');
+//         }
+            
+//         req.user = decoded;
+//         next();
+//     });
+// }
+
+
+
 
 export function verifyToken(req, res, next) {
     const token = req.headers['authorization']?.split(' ')[1];
@@ -43,11 +66,12 @@ export function verifyToken(req, res, next) {
         return res.status(403).send('Token is required');
     }
 
-    // Use environment variable with fallback for development
-    const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-dev-only";
+    // Use the SAME secret as in config.js
+    const JWT_SECRET = "wez_erp_super_secure_2025_8281@!";
     
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) {
+            console.log('Token verification error:', err);
             return res.status(401).send('Invalid token');
         }
             
