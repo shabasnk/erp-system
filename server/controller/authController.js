@@ -177,11 +177,12 @@ import Shop from "../models/shopModel.js";
 
 // Helper to generate token - UPDATED
 const generateToken = (user) => {
-    // Use environment variable with fallback
-    const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-dev-only";
+    // Use environment variable OR hardcoded as fallback
+    const JWT_SECRET = process.env.JWT_SECRET || "wez_erp_super_secure_2025_8281@!";
     
     console.log('=== JWT SECRET DEBUG ===');
-    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    console.log('JWT_SECRET env exists:', !!process.env.JWT_SECRET);
+    console.log('JWT_SECRET value:', process.env.JWT_SECRET ? 'SET' : 'MISSING');
     
     return jwt.sign({ 
         id: user.id,
