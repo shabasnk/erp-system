@@ -12,3 +12,4 @@ router.post("/login", login);
 // router.get("/verify-email/:token", verifyEmail); // Different endpoint
 
 export default router;
+
