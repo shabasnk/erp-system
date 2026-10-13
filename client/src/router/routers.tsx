@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/credintials/login";
 import Register from "../pages/credintials/register";
 import HomePage from "../pages/homePage";
@@ -18,8 +18,7 @@ function Routers() {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
         {/* Public Routes - wrapped with PublicRoute */}
         <Route
           path="/"
@@ -68,8 +67,7 @@ function Routers() {
 
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    </Routes>
   );
 }
 
