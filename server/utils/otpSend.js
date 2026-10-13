@@ -1,3 +1,4 @@
+//dbt for docker
 import AWS from 'aws-sdk';
 import sanitizedConfig from '../config.js';
 

@@ -1,33 +1,26 @@
-import {
-  BenefitsSection1,
-  BenefitsSection2,
-  // BenefitsSection3,
-} from "./components/BenefitsSection";
-import CtaSection from "./components/CtaSection";
-import FaqSection from "./components/FaqSection";
-import FeaturesSection from "./components/FeaturesSection";
-import Footer from "./components/Footer";
-import HeroSection from "./components/Herosection";
-import Navbar from "./components/Navbar";
-import ProblemSection from "./components/ProblemSection";
-import SolutionSection from "./components/SolutionSection";
+// import Routers from "./router/routers";
+
+// function App() {
+//   return (
+//     <Routers />
+//   )
+// }
+
+// export default App;
+
+
+
+// App.tsx
+import Routers from "./router/routers";
+import ToastProvider from "@/components/ToastProvider"; // Import the ToastProvider
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <HeroSection />
-      <ProblemSection />
-      <SolutionSection />
-      <BenefitsSection1 />
-      <BenefitsSection2 />
-      {/* <BenefitsSection3 /> */}
-      <FeaturesSection />
-      <FaqSection />
-      <CtaSection />
-      <Footer /> {/* */}
-    </div>
-  );
+    <>
+      <Routers />
+      <ToastProvider /> {/* Add ToastProvider here */}
+    </>
+  )
 }
 
 export default App;
