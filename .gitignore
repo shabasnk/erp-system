@@ -21,6 +21,9 @@ yarn.lock
 .env.development
 .env.test
 .env.production
+# These frontend files contain public API URLs only; never put secrets in VITE_* variables.
+!client/.env.development
+!client/.env.production
 
 # IDE specific files
 .idea/

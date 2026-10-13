@@ -626,6 +626,7 @@ import { useNavigate } from 'react-router-dom';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
+import api, { isAxiosError } from '@/services/api';
 
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -639,7 +640,7 @@ const RegisterPage: React.FC = () => {
     password: '',
     confirmPassword: ''
   });
-  
+
   const [errors, setErrors] = useState({
     shopName: '',
     ownerName: '',
@@ -832,60 +833,56 @@ const RegisterPage: React.FC = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
-        method: 'POST',
+      const response = await api.post('auth/register', formData, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
-        if (data.token && data.user) {
-          handleRegisterSuccess(data.user, data.token);
-          toast.success('Registration successful!');
-          navigate('/dashboard/products');
-        } else if (data.id) {
-          toast.success('Registration successful! Logging you in...');
+      if (data.token && data.user) {
+        handleRegisterSuccess(data.user, data.token);
+        toast.success('Registration successful!');
+        navigate('/dashboard/products');
+      } else if (data.id) {
+        toast.success('Registration successful! Logging you in...');
+
+        try {
+          const loginResponse = await api.post('auth/login', {
+            email: formData.email,
+            password: formData.password
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const loginData = loginResponse.data;
           
-          try {
-            const loginResponse = await fetch('http://localhost:8080/api/auth/login', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                email: formData.email,
-                password: formData.password
-              }),
-            });
-            
-            const loginData = await loginResponse.json();
-            
-            if (loginResponse.ok && loginData.token && loginData.user) {
-              handleRegisterSuccess(loginData.user, loginData.token);
-              navigate('/dashboard/products');
-            } else {
-              toast.success('Registration successful! Please login.');
-              navigate('/login');
-            }
-          } catch (loginError) {
-            console.error('Auto-login error:', loginError);
+          if (loginData.token && loginData.user) {
+            handleRegisterSuccess(loginData.user, loginData.token);
+            navigate('/dashboard/products');
+          } else {
             toast.success('Registration successful! Please login.');
             navigate('/login');
           }
-        } else {
+        } catch (loginError) {
+          console.error('Auto-login error:', loginError);
           toast.success('Registration successful! Please login.');
           navigate('/login');
         }
       } else {
-        toast.error(data.message || 'Registration failed');
+        toast.success('Registration successful! Please login.');
+        navigate('/login');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      toast.error('Network error. Please try again.');
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data?.message || (error.request ? 'Network error. Please try again.' : 'Registration failed'));
+      } else {
+        toast.error('Network error. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

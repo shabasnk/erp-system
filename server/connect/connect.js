@@ -24,17 +24,17 @@
 
 
 
-// config/database.js
 import { Sequelize } from 'sequelize';
 import sanitizedConfig from '../config.js';
 
-// Connect to the PostgreSQL database
-const sequelize = new Sequelize({
+const sequelize = new Sequelize(sanitizedConfig.PG_URI, {
   dialect: 'postgres',
-  host: 'localhost',  
-  username: sanitizedConfig.DB_USERNAME, // Database username
-  password: sanitizedConfig.DB_PASS, // Database password
-  database: sanitizedConfig.DB_NAME,     // Database name
+  logging: false,
+  dialectOptions: {
+    ssl: sanitizedConfig.NODE_ENV === 'production'
+      ? { require: true, rejectUnauthorized: false }
+      : false,
+  },
 });
 
 export default sequelize;

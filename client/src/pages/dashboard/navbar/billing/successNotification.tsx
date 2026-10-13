@@ -88,10 +88,9 @@
 
 // src/components/billing/SuccessNotification.tsx
 import React, { useEffect } from 'react';
-import axios from 'axios';
+import api from '@/services/api';
 import { InvoiceData } from './types';
 import { formatCurrency } from './utils';
-import { useAuth } from '@/hooks/useAuth';
 
 interface SuccessNotificationProps {
   invoiceData: InvoiceData;
@@ -104,8 +103,6 @@ export const SuccessNotification: React.FC<SuccessNotificationProps> = ({
   darkMode, 
   onClose 
 }) => {
-  const { getAuthHeaders } = useAuth();
-
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -117,9 +114,8 @@ export const SuccessNotification: React.FC<SuccessNotificationProps> = ({
   // Add download function
   const handleDownload = async () => {
     try {
-      const response = await axios.get(`/api/billing/download-invoice/${invoiceData.id}`, {
+      const response = await api.get(`billing/download-invoice/${invoiceData.id}`, {
         responseType: 'blob',
-        headers: getAuthHeaders()
       });
       
       const blob = new Blob([response.data], { type: 'application/pdf' });

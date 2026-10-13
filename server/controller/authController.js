@@ -174,23 +174,17 @@ import asyncHandler from "express-async-handler";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import Shop from "../models/shopModel.js";
+import sanitizedConfig from "../config.js";
 
 // Helper to generate token - UPDATED
 const generateToken = (user) => {
-    // Use environment variable OR hardcoded as fallback
-    const JWT_SECRET = process.env.JWT_SECRET || "wez_erp_super_secure_2025_8281@!";
-    
-    console.log('=== JWT SECRET DEBUG ===');
-    console.log('JWT_SECRET env exists:', !!process.env.JWT_SECRET);
-    console.log('JWT_SECRET value:', process.env.JWT_SECRET ? 'SET' : 'MISSING');
-    
     return jwt.sign({ 
         id: user.id,
         name: user.ownerName,
         email: user.email,
         shopId: user.id,
         shopName: user.shopName
-    }, JWT_SECRET, {
+    }, sanitizedConfig.JWT_SECRET, {
         expiresIn: "7d",
     });
 };
@@ -200,14 +194,6 @@ const generateToken = (user) => {
 // @route   POST /api/auth/register
 // @access  Public
 export const register = asyncHandler(async (req, res) => {
-     console.log('=== JWT SECRET DEBUG in REGISTER ===');
-    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
-    console.log('JWT_SECRET value:', process.env.JWT_SECRET ? '***HIDDEN***' : 'MISSING');
-    console.log('All environment variables:', Object.keys(process.env));
-
-
-    console.log("Registration request received:", req.body);
-    
     const {
         shopName,
         ownerName,
@@ -274,14 +260,6 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 export const login = asyncHandler(async (req, res) => {
-    console.log("Login request received:", req.body);
-     // === ADD DEBUG LOGS HERE ===
-    console.log('=== JWT SECRET DEBUG in LOGIN ===');
-    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
-    console.log('JWT_SECRET value:', process.env.JWT_SECRET ? '***HIDDEN***' : 'MISSING');
-    console.log('All environment variables:', Object.keys(process.env));
-    // === END DEBUG LOGS ===
-    
     const { email, password } = req.body;
 
     if (!email || !password) {

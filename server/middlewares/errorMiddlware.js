@@ -9,7 +9,7 @@ export const notFound = (req, res, next) => {
   
     res.status(statusCode).json({
       success: false,
-      message: err.message,
+      message: err.message || 'Internal server error',
       errors: err.errors || null, // Include validation errors if any
       stack: process.env.NODE_ENV === 'production' ? null : err.stack,
     });

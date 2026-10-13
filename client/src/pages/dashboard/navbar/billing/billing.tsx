@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { debounce } from 'lodash';
-import axios from 'axios';
+import api, { isAxiosError } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { ProductSearch } from './productSearch';
 import { ProductTable } from './productTable';
@@ -17,7 +17,7 @@ import { calculateSubtotal, calculateGst } from './utils';
 
 const BillingNav: React.FC = () => {
   const { darkMode } = useOutletContext<{ darkMode: boolean }>();
-  const { getAuthHeaders, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   
   // State management
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,16 +41,10 @@ const BillingNav: React.FC = () => {
   const searchRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // API client
-  const authAxios = axios.create({
-    baseURL: '/api',
-    headers: getAuthHeaders()
-  });
-
   // Download invoice PDF
   const downloadInvoicePDF = async (invoiceId: number) => {
     try {
-      const response = await authAxios.get(`/billing/download-invoice/${invoiceId}`, {
+      const response = await api.get(`billing/download-invoice/${invoiceId}`, {
         responseType: 'blob'
       });
       
@@ -98,7 +92,7 @@ const BillingNav: React.FC = () => {
       }
 
       try {
-        const response = await authAxios.get(`/billing/search?query=${encodeURIComponent(query)}`);
+        const response = await api.get(`billing/search?query=${encodeURIComponent(query)}`);
         setSearchResults(response.data.products || []);
       } catch (error) {
         console.error('Search failed:', error);
@@ -240,7 +234,7 @@ const BillingNav: React.FC = () => {
       if (customerSuccessTimer) clearTimeout(customerSuccessTimer);
 
       // Create customer (shopId is handled by backend from token)
-      const customerResponse = await authAxios.post('/customer/create', {
+      const customerResponse = await api.post('customer/create', {
         companyName: customerInfo.companyName,
         name: customerInfo.name,
         email: customerInfo.email,
@@ -262,7 +256,7 @@ const BillingNav: React.FC = () => {
       const customerId = customerResponse.data.data.id;
 
       // Create invoice (shopId is handled by backend from token)
-      const invoiceResponse = await authAxios.post('/billing/create', {
+      const invoiceResponse = await api.post('billing/create', {
         products: selectedProducts,
         customerId,
         paymentMethod,
@@ -295,7 +289,7 @@ const BillingNav: React.FC = () => {
       }
     } catch (err) {
       console.error('Checkout error:', err);
-      const message = axios.isAxiosError(err) 
+      const message = isAxiosError(err)
         ? err.response?.data?.message || 'Failed to process checkout'
         : err instanceof Error ? err.message : 'Failed to process checkout';
       

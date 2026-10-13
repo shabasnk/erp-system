@@ -1,7 +1,7 @@
 
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api, { isAxiosError } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ interface PersonalInformationProps {
 }
 
 const PersonalInformation = ({ darkMode, initialData }: PersonalInformationProps) => {
-  const { getAuthHeaders, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [shopData, setShopData] = useState<ShopData>(initialData);
   const [originalData, setOriginalData] = useState<ShopData>(initialData);
   const [loading, setLoading] = useState(false);
@@ -38,9 +38,7 @@ const PersonalInformation = ({ darkMode, initialData }: PersonalInformationProps
   const fetchShopData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8080/api/shops/shops', {
-        headers: getAuthHeaders()
-      });
+      const response = await api.get('shops/shops');
       const newData = {
         ownerName: response.data.ownerName || initialData.ownerName,
         phoneNumber: response.data.phoneNumber || initialData.phoneNumber,
@@ -77,10 +75,8 @@ const PersonalInformation = ({ darkMode, initialData }: PersonalInformationProps
       setError('');
       setLoading(true);
       
-      const response = await axios.put('http://localhost:8080/api/shops/shops', {
+      await api.put('shops/shops', {
         [field]: shopData[field]
-      }, {
-        headers: getAuthHeaders()
       });
       
       setOriginalData({
@@ -92,7 +88,7 @@ const PersonalInformation = ({ darkMode, initialData }: PersonalInformationProps
       setTimeout(() => setSuccessMessage(''), 3000);
       setEditingField(null);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         setError(err.response?.data?.message || 'Failed to save changes');
       } else {
         setError('An unexpected error occurred');
@@ -398,8 +394,6 @@ const PersonalInformation = ({ darkMode, initialData }: PersonalInformationProps
 };
 
 export default PersonalInformation;
-
-
 
 
 

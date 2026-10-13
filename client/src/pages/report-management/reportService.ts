@@ -139,9 +139,7 @@
 
 // for ordr dtbse chngng
 // reportService.ts
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+import api, { isAxiosError } from '@/services/api';
 
 interface DateRange {
   from: Date;
@@ -160,7 +158,7 @@ export const fetchSalesReport = async (dateRange: DateRange, token: string) => {
 
     console.log('Fetching sales with params:', params);
 
-    const response = await axios.get(`${API_URL}/reports/sales`, {
+    const response = await api.get('reports/sales', {
       params,
       headers: {
         Authorization: `Bearer ${token}`
@@ -171,7 +169,7 @@ export const fetchSalesReport = async (dateRange: DateRange, token: string) => {
     return response.data.data;
   } catch (error) {
     console.error('Sales report error:', error);
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       console.error('Error fetching sales report:', error.response?.status, error.message);
       throw new Error(error.response?.data?.message || 'Failed to fetch sales report');
     }
@@ -184,14 +182,14 @@ export const fetchInventoryReport = async (token: string) => {
   console.log( "fetchInventoryReport", fetchInventoryReport);
 
   try {
-    const response = await axios.get(`${API_URL}/reports/inventory`, {
+    const response = await api.get('reports/inventory', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
     return response.data.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       console.error('Error fetching inventory report:', error.response?.status);
       throw new Error(error.response?.data?.message || 'Failed to fetch inventory report');
     }
@@ -204,14 +202,14 @@ export const fetchRevenueReport = async (token: string) => {
   console.log( "fetchRevenueReport", fetchRevenueReport);
 
   try {
-    const response = await axios.get(`${API_URL}/reports/revenue`, {
+    const response = await api.get('reports/revenue', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
     return response.data.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       console.error('Error fetching revenue report:', error.response?.status);
       throw new Error(error.response?.data?.message || 'Failed to fetch revenue report');
     }
@@ -224,14 +222,14 @@ export const fetchProfitReport = async (token: string) => {
   console.log( "fetchProfitReport", fetchProfitReport);
 
   try {
-    const response = await axios.get(`${API_URL}/reports/profit`, {
+    const response = await api.get('reports/profit', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
     return response.data.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       console.error('Error fetching profit report:', error.response?.status);
       throw new Error(error.response?.data?.message || 'Failed to fetch profit report');
     }
@@ -244,14 +242,14 @@ export const fetchRecentOrders = async (token: string) => {
   console.log( "fetchRecentOrders", fetchRecentOrders);
 
   try {
-    const response = await axios.get(`${API_URL}/reports/recent-orders`, {
+    const response = await api.get('reports/recent-orders', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
     return response.data.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       console.error('Error fetching recent orders:', error.response?.status);
       throw new Error(error.response?.data?.message || 'Failed to fetch recent orders');
     }
@@ -264,7 +262,7 @@ export const fetchRecentOrders = async (token: string) => {
 
 export const fetchDashboardSummary = async (token: string) => {
   try {
-    const response = await axios.get(`${API_URL}/reports/dashboard-summary`, {
+    const response = await api.get('reports/dashboard-summary', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -272,7 +270,7 @@ export const fetchDashboardSummary = async (token: string) => {
     return response.data.data;
   } catch (error) {
     console.error('Error fetching dashboard summary:', error);
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       throw new Error(error.response?.data?.message || 'Failed to fetch dashboard summary');
     }
     throw new Error('An unexpected error occurred');
@@ -286,7 +284,7 @@ export const fetchDailySales = async (dateRange: DateRange, token: string) => {
       endDate: dateRange.to.toISOString().split('T')[0]
     };
 
-    const response = await axios.get(`${API_URL}/reports/daily-sales`, {
+    const response = await api.get('reports/daily-sales', {
       params,
       headers: {
         Authorization: `Bearer ${token}`
@@ -295,7 +293,7 @@ export const fetchDailySales = async (dateRange: DateRange, token: string) => {
     return response.data.data;
   } catch (error) {
     console.error('Error fetching daily sales:', error);
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       throw new Error(error.response?.data?.message || 'Failed to fetch daily sales');
     }
     throw new Error('An unexpected error occurred');

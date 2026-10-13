@@ -501,7 +501,7 @@ import { motion, MotionProps } from 'framer-motion';
 import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api, { isAxiosError } from '@/services/api';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -654,7 +654,7 @@ function LoginForm({
     setIsLoading(true);
     
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/login', {
+      const response = await api.post('auth/login', {
         email,
         password
       }, {
@@ -675,7 +675,7 @@ function LoginForm({
         navigate(from, { replace: true });
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         if (error.response) {
           setLoginError(error.response.data.message || 'Login failed');
         } else if (error.request) {
@@ -977,5 +977,4 @@ function LoginForm({
     </motion.div>
   );
 }
-
 

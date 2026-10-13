@@ -521,7 +521,7 @@
 // src/components/products/ProductsNav.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import axios from "axios";
+import api, { isAxiosError } from "@/services/api";
 import { useAuth } from '@/hooks/useAuth';
 
 interface Product {
@@ -547,7 +547,7 @@ interface Product {
 const ProductsNav: React.FC = () => {
   const { darkMode } = useOutletContext<{ darkMode: boolean }>();
   const navigate = useNavigate();
-  const { getAuthHeaders, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -555,12 +555,6 @@ const ProductsNav: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [sortBy, setSortBy] = useState<string>("name");
-
-  // API client with auth headers
-  const authAxios = axios.create({
-    baseURL: '/api',
-    headers: getAuthHeaders()
-  });
 
   // Filter products based on search term
   useEffect(() => {
@@ -597,13 +591,12 @@ const ProductsNav: React.FC = () => {
         setLoading(true);
         setError(null);
         
-        // Use your authAxios instance instead of manual token handling
-        const response = await authAxios.get("/product/product");
+        const response = await api.get("product/product");
         
         setProducts(response.data.products);
       } catch (error) {
         console.error("Error fetching products:", error);
-        if (axios.isAxiosError(error)) {
+        if (isAxiosError(error)) {
           if (error.response?.status === 401) {
             setError("Authentication failed. Please login again.");
           } else if (error.response?.status === 403) {

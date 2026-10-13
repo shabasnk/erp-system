@@ -660,7 +660,7 @@ import {
   CheckCircle,
   Plus
 } from "lucide-react";
-import axios from "axios";
+import api, { isAxiosError } from "@/services/api";
 import { useAuth } from "@/hooks/useAuth";
 
 /** -----------------------------
@@ -1084,7 +1084,7 @@ const AddProduct: React.FC = () => {
           isActive: product.isActive
         };
 
-        await axios.post("http://localhost:8080/api/product/product", submissionData, {
+        await api.post("product/product", submissionData, {
           headers: {
             "Content-Type": "application/json",
             ...getAuthHeaders()
@@ -1114,7 +1114,7 @@ const AddProduct: React.FC = () => {
         setErrors({});
         setSubmitSuccess(true);
       } catch (err: unknown) {
-        if (axios.isAxiosError(err)) {
+        if (isAxiosError(err)) {
           if (err.response?.status === 401) {
             setSubmitError("Session expired. Please log in again.");
             localStorage.removeItem("token");
