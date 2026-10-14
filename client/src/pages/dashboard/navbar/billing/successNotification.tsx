@@ -122,7 +122,7 @@ export const SuccessNotification: React.FC<SuccessNotificationProps> = ({
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `invoice_${invoiceData.invoiceNumber}.pdf`;
+      link.download = `invoice_${invoiceData.invoiceNumber ?? invoiceData.id}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -158,7 +158,7 @@ export const SuccessNotification: React.FC<SuccessNotificationProps> = ({
           </h3>
           <div className={`mt-2 px-4 py-3 rounded-md ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
             <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              Invoice #: <span className="font-medium">{invoiceData.invoiceNumber}</span>
+              Invoice #: <span className="font-medium">{invoiceData.invoiceNumber ?? invoiceData.id}</span>
             </p>
             <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               Total Amount: <span className="font-medium">{formatCurrency(invoiceData.total)}</span>

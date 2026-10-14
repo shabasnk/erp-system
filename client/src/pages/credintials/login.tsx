@@ -497,7 +497,7 @@
 
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
-import { motion, MotionProps } from 'framer-motion';
+import { motion, MotionProps, Variants } from 'framer-motion';
 import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -693,7 +693,7 @@ function LoginForm({
   };
 
   // Animation variants for text
-  const titleVariants = {
+  const titleVariants: Variants = {
     hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
     visible: { 
       opacity: 1, 
@@ -706,7 +706,7 @@ function LoginForm({
     }
   };
 
-  const characterVariants = {
+  const characterVariants: Variants = {
     hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
     visible: (i: number) => ({
       opacity: 1,
@@ -977,4 +977,3 @@ function LoginForm({
     </motion.div>
   );
 }
-

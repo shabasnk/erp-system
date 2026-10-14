@@ -617,7 +617,7 @@
 
 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Particles } from '@/components/magicui/particles';
 import StepsIndicator from '@/pages/credintials/components/StepIndicator';

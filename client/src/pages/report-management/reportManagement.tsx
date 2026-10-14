@@ -1090,7 +1090,6 @@ import { RevenueBarChart } from "@/pages/report-management/bar-chart";
 import { ProfitBarChart } from "@/pages/report-management/profit-chart";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  fetchSalesReport,
   fetchInventoryReport,
   fetchRevenueReport,
   fetchProfitReport,
@@ -1117,16 +1116,6 @@ interface ProfitData {
   month: string;
   profit: number;
   revenue?: number;
-}
-
-interface DashboardData {
-  dailySales: number;
-  monthlySales: number;
-  yearlySales: number;
-  totalRevenue: number;
-  totalProfit: number;
-  monthlyProfit: number;
-  pendingOrders: number;
 }
 
 interface ApiOrder {
@@ -1171,29 +1160,6 @@ interface ReportData {
   salesTrend: SalesData[];
   revenueTrend: RevenueData[];
   profitTrend: ProfitData[];
-}
-
-interface ApiInventoryItem {
-  id: number;
-  name: string;
-  sku: string;
-  currentStock: number;
-  lowStockThreshold: number;
-  status: "In Stock" | "Low Stock" | "Out of Stock";
-}
-
-interface ApiOrder {
-  id: number;
-  customer?: { name: string };
-  totalAmount: number;
-  status: "Completed" | "Pending" | "Cancelled";
-  createdAt: string;
-}
-
-interface ApiSalesData {
-  date: string;
-  totalSales: number | string;
-  totalOrders: number | string;
 }
 
 interface DateRange {
@@ -1259,19 +1225,15 @@ function ReportManagement() {
       
       // Inventory data transformation - handle different possible API response structures
 
-      inventoryStatus: (
-        inventoryData?.inventoryItems || 
-        inventoryData?.data?.inventoryItems || 
-        []
-      ).map((item: any) => ({
+      inventoryStatus: (Array.isArray(inventoryData) ? inventoryData : []).map((item: InventoryItem) => ({
         id: item.id,
         name: item.name,
         sku: item.sku || '',
-        currentStock: item.currentStock || item.stockQuantity || 0,
+        currentStock: item.currentStock ?? 0,
         lowStockThreshold: item.lowStockThreshold || 10,
         status: item.status as "In Stock" | "Low Stock" | "Out of Stock" || 
                (() => {
-                 const stock = item.currentStock || item.stockQuantity || 0;
+                 const stock = item.currentStock ?? 0;
                  const threshold = item.lowStockThreshold || 10;
                  if (stock <= 0) return "Out of Stock";
                  if (stock <= threshold) return "Low Stock";
@@ -1321,15 +1283,6 @@ function ReportManagement() {
   fetchReportData();
 }, [date, token, authLoading, isAuthenticated]);
   //
-  useEffect(() => {
-    console.log("Report data:", reportData);
-
-    console.log('Inventory data:', reportData?.inventoryStatus);
-    console.log('Inventory items:', reportData?.inventoryStatus?.inventoryItems);
-  }, [reportData]);
-  //
-
-
   if (loading) {
     return (
       <div
@@ -1425,7 +1378,11 @@ function ReportManagement() {
       <div className="mb-6 flex justify-end">
         <CalendarDateRangePicker
           date={date}
-          setDate={setDate}
+          setDate={(selectedDate) => {
+            if (selectedDate?.from && selectedDate.to) {
+              setDate({ from: selectedDate.from, to: selectedDate.to });
+            }
+          }}
           darkMode={darkMode}
         />
       </div>

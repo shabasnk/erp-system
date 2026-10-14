@@ -3,7 +3,7 @@
 
 //C:\coding\WEZ-ERP-APP\client\src\pages\report-management\bar-chart.tsx
 import React from 'react';
-import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface RevenueBarChartProps {
   data: { month: string; revenue: number }[];

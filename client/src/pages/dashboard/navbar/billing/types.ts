@@ -25,6 +25,7 @@ export interface CustomerInfo {
 
 export interface InvoiceData {
   id: number;
+  invoiceNumber?: string;
   total: number;
   items: SelectedProduct[];
   customerInfo: CustomerInfo;

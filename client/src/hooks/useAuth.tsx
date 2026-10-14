@@ -1,4 +1,3 @@
-import { log } from "console";
 import { useEffect, useState } from "react";
 
 // Updated User interface with shop information

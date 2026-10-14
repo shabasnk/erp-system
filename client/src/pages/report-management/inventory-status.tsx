@@ -137,7 +137,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   CartesianGrid 
 } from 'recharts';
@@ -255,7 +254,6 @@ export const InventoryStatus: React.FC<InventoryStatusProps> = ({ items, darkMod
     </div>
   );
 };
-
 
 
 
